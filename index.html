@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>呼吸練習 · 靜息</title>
+
+  <!-- 距離感與安定感的字體：中文 Noto Serif TC、數字 Cormorant Garamond -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Serif+TC:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 背景：極光漂移 + 顆粒紋理 -->
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <main class="stage">
+
+    <!-- 畫面 1：模式選擇 -->
+    <section id="screen-select" class="screen" hidden>
+      <header class="select-head">
+        <p class="eyebrow">靜息 · BREATHE</p>
+        <h1 class="title">選一種呼吸<br />讓自己慢下來</h1>
+      </header>
+      <ul class="mode-list" id="mode-list"><!-- JS 注入 --></ul>
+    </section>
+
+    <!-- 畫面 2：引導前介紹 -->
+    <section id="screen-intro" class="screen" hidden>
+      <div class="intro-card">
+        <p class="eyebrow" id="intro-eyebrow">呼吸練習</p>
+        <h2 class="intro-title" id="intro-title">4-7-8 呼吸法</h2>
+        <p class="intro-desc" id="intro-desc"></p>
+        <p class="intro-meta" id="intro-meta"></p>
+        <button class="btn-primary" id="btn-begin">開始</button>
+        <button class="btn-ghost" id="btn-back-select">換一種</button>
+      </div>
+    </section>
+
+    <!-- 畫面 3：呼吸進行 -->
+    <section id="screen-breathe" class="screen" hidden>
+      <p class="cycle-indicator" id="cycle-indicator">第 1 / 4 循環</p>
+
+      <div class="orb-wrap">
+        <div class="orb-halo" id="orb-halo"></div>
+        <div class="orb" id="orb">
+          <div class="orb-inner">
+            <span class="phase-label" id="phase-label">準備</span>
+            <span class="phase-count" id="phase-count">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="ctl" id="btn-pause" aria-label="暫停或繼續">暫停</button>
+        <button class="ctl" id="btn-sound" aria-label="音效開關">♪ 音效</button>
+        <button class="ctl" id="btn-stop" aria-label="結束">結束</button>
+      </div>
+    </section>
+
+    <!-- 畫面 4：完成 -->
+    <section id="screen-done" class="screen" hidden>
+      <div class="done-card">
+        <div class="done-mark">🌿</div>
+        <h2 class="done-title">完成</h2>
+        <p class="done-sub">願你帶著這份平靜，繼續今天。</p>
+        <button class="btn-primary" id="btn-again">再做一次</button>
+        <button class="btn-ghost" id="btn-other">換一種呼吸</button>
+        <button class="btn-ghost" id="btn-close">關閉</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- LINE LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <!-- 應用程式模組 -->
+  <script src="js/patterns.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/breathing.js"></script>
+  <script src="js/liff-init.js"></script>
+
+  <!-- 介面接線（DOM × 引擎 × LIFF） -->
+  <script>
+    (function () {
+      const screens = {
+        select: document.getElementById('screen-select'),
+        intro: document.getElementById('screen-intro'),
+        breathe: document.getElementById('screen-breathe'),
+        done: document.getElementById('screen-done'),
+      };
+
+      const el = {
+        modeList: document.getElementById('mode-list'),
+        introEyebrow: document.getElementById('intro-eyebrow'),
+        introTitle: document.getElementById('intro-title'),
+        introDesc: document.getElementById('intro-desc'),
+        introMeta: document.getElementById('intro-meta'),
+        cycle: document.getElementById('cycle-indicator'),
+        orb: document.getElementById('orb'),
+        halo: document.getElementById('orb-halo'),
+        phaseLabel: document.getElementById('phase-label'),
+        phaseCount: document.getElementById('phase-count'),
+        btnBegin: document.getElementById('btn-begin'),
+        btnBackSelect: document.getElementById('btn-back-select'),
+        btnPause: document.getElementById('btn-pause'),
+        btnSound: document.getElementById('btn-sound'),
+        btnStop: document.getElementById('btn-stop'),
+        btnAgain: document.getElementById('btn-again'),
+        btnOther: document.getElementById('btn-other'),
+        btnClose: document.getElementById('btn-close'),
+      };
+
+      const audio = new window.BreathAudio();
+      let engine = null;
+      let currentType = window.DEFAULT_PATTERN;
+
+      function show(name) {
+        Object.values(screens).forEach((s) => (s.hidden = true));
+        screens[name].hidden = false;
+      }
+
+      // —— 選擇畫面 ——
+      function buildSelect() {
+        el.modeList.innerHTML = '';
+        Object.values(window.BREATHING_PATTERNS).forEach((p, i) => {
+          const li = document.createElement('li');
+          li.className = 'mode-item';
+          li.style.setProperty('--i', i);
+          li.innerHTML =
+            '<span class="mode-name">' + p.name + '</span>' +
+            '<span class="mode-desc">' + p.intro + '</span>';
+          li.addEventListener('click', () => gotoIntro(p.id));
+          el.modeList.appendChild(li);
+        });
+      }
+
+      // —— 介紹畫面 ——
+      function gotoIntro(type) {
+        currentType = type;
+        const p = window.BREATHING_PATTERNS[type];
+        el.introEyebrow.textContent = '呼吸練習';
+        el.introTitle.textContent = p.name;
+        el.introDesc.textContent = p.intro;
+        const total = p.phases.reduce((a, ph) => a + ph.sec, 0) * p.cycles;
+        const mins = Math.round(total / 60);
+        el.introMeta.textContent = p.cycles + ' 個循環 · 約 ' + (mins < 1 ? '不到 1' : mins) + ' 分鐘';
+        show('intro');
+      }
+
+      // —— 呼吸畫面 ——
+      function beginSession() {
+        const pattern = window.BREATHING_PATTERNS[currentType];
+        show('breathe');
+        el.btnPause.textContent = '暫停';
+
+        engine = new window.BreathingEngine(pattern, {
+          onPhaseStart(phase, cycleIndex, totalCycles) {
+            el.cycle.textContent = '第 ' + (cycleIndex + 1) + ' / ' + totalCycles + ' 循環';
+            el.phaseLabel.textContent = phase.label;
+            // 呼吸圈用「轉場時間 = 該階段秒數」做擴縮，與引導同步
+            el.orb.style.transitionDuration = phase.sec + 's';
+            el.halo.style.transitionDuration = phase.sec + 's';
+            el.orb.style.transform = 'scale(' + phase.scale + ')';
+            el.halo.style.transform = 'scale(' + (phase.scale * 1.25) + ')';
+            el.halo.style.opacity = phase.scale > 0.7 ? '0.9' : '0.45';
+            audio.cue(phase.tone);
+          },
+          onTick(remainingSec) {
+            el.phaseCount.textContent = remainingSec;
+          },
+          onComplete() {
+            audio.cue(528, 1.2);
+            show('done');
+          },
+        });
+        engine.start();
+      }
+
+      // —— 事件 ——
+      el.btnBegin.addEventListener('click', async () => {
+        await audio.unlock(); // 必須在使用者手勢中啟動 AudioContext
+        beginSession();
+      });
+      el.btnBackSelect.addEventListener('click', () => show('select'));
+
+      el.btnPause.addEventListener('click', () => {
+        if (!engine) return;
+        const paused = engine.togglePause();
+        el.btnPause.textContent = paused ? '繼續' : '暫停';
+        el.orb.classList.toggle('paused', paused);
+      });
+
+      el.btnSound.addEventListener('click', () => {
+        audio.enabled = !audio.enabled;
+        el.btnSound.classList.toggle('off', !audio.enabled);
+        el.btnSound.textContent = audio.enabled ? '♪ 音效' : '♪ 靜音';
+      });
+
+      el.btnStop.addEventListener('click', () => {
+        if (engine) engine.stop();
+        show('done');
+      });
+
+      el.btnAgain.addEventListener('click', () => beginSession());
+      el.btnOther.addEventListener('click', () => { buildSelect(); show('select'); });
+      el.btnClose.addEventListener('click', () => window.AppLiff.close());
+
+      // —— 啟動 ——
+      (async function boot() {
+        buildSelect();
+        await window.AppLiff.init();
+        currentType = window.AppLiff.getType();
+
+        // 由 LIFF 連結帶 ?type= 進來：直接進入該模式的介紹。
+        // 一般瀏覽器無指定時：顯示選擇畫面。
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('type') && window.BREATHING_PATTERNS[params.get('type')]) {
+          gotoIntro(currentType);
+        } else {
+          show('select');
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>

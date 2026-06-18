@@ -1,0 +1,354 @@
+/* ============================================================
+   靜息 · 呼吸練習 — 「拂曉星空」視覺
+   深夜→拂曉的漸層、漂浮極光、發光呼吸圈、顆粒紋理。
+   ============================================================ */
+
+:root {
+  --c-night: #0a0e23;
+  --c-deep: #121a3a;
+  --c-violet: #3a2d6b;
+  --c-teal: #1f6d6b;
+  --c-mist: #e9ecf7;
+  --c-mist-dim: #97a0c4;
+  --c-orb-a: #8fe3d6; /* 薄荷 */
+  --c-orb-b: #6f8bf0; /* 長春花藍 */
+  --c-orb-c: #b89cf0; /* 柔紫 */
+  --c-accent: #f3d9a4; /* 暖光點綴 */
+
+  --font-zh: 'Noto Serif TC', serif;
+  --font-num: 'Cormorant Garamond', 'Noto Serif TC', serif;
+
+  --ease-breath: cubic-bezier(0.45, 0.05, 0.4, 0.95);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-zh);
+  color: var(--c-mist);
+  background: radial-gradient(140% 120% at 50% -10%, var(--c-deep) 0%, var(--c-night) 55%, #05071a 100%);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+}
+
+/* —— 漂浮極光 —— */
+.aurora {
+  position: fixed;
+  inset: -25%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 32% at 22% 28%, rgba(111, 139, 240, 0.40), transparent 70%),
+    radial-gradient(34% 30% at 78% 22%, rgba(184, 156, 240, 0.32), transparent 70%),
+    radial-gradient(46% 40% at 60% 88%, rgba(31, 109, 107, 0.40), transparent 72%);
+  filter: blur(28px) saturate(120%);
+  animation: aurora-drift 26s var(--ease-breath) infinite alternate;
+}
+@keyframes aurora-drift {
+  0%   { transform: translate3d(-3%, -2%, 0) scale(1.05) rotate(0deg); opacity: 0.85; }
+  50%  { transform: translate3d(2%, 3%, 0) scale(1.12) rotate(4deg);  opacity: 1; }
+  100% { transform: translate3d(4%, -3%, 0) scale(1.08) rotate(-3deg); opacity: 0.8; }
+}
+
+/* —— 顆粒紋理 —— */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* —— 舞台 —— */
+.stage {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(28px, env(safe-area-inset-top)) 26px max(28px, env(safe-area-inset-bottom));
+}
+
+.screen {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: rise 0.7s var(--ease-breath) both;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  opacity: 0.85;
+  margin-bottom: 1.1rem;
+  padding-left: 0.42em;
+}
+
+/* ===================== 選擇畫面 ===================== */
+.select-head { margin-bottom: 2.2rem; }
+.title {
+  font-weight: 400;
+  font-size: clamp(1.7rem, 7vw, 2.3rem);
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+
+.mode-list {
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mode-item {
+  position: relative;
+  text-align: left;
+  padding: 20px 22px;
+  border: 1px solid rgba(233, 236, 247, 0.14);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.4s var(--ease-breath), border-color 0.4s, background 0.4s;
+  animation: rise 0.6s var(--ease-breath) both;
+  animation-delay: calc(var(--i) * 90ms + 120ms);
+}
+.mode-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(var(--c-orb-a), var(--c-orb-b));
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.mode-item:hover, .mode-item:active {
+  transform: translateY(-3px);
+  border-color: rgba(143, 227, 214, 0.5);
+  background: linear-gradient(135deg, rgba(143,227,214,0.10), rgba(111,139,240,0.05));
+}
+.mode-item:hover::before { opacity: 1; }
+.mode-name {
+  display: block;
+  font-size: 1.22rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+.mode-desc {
+  display: block;
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: var(--c-mist-dim);
+  font-weight: 300;
+}
+
+/* ===================== 介紹畫面 ===================== */
+.intro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.intro-title {
+  font-weight: 500;
+  font-size: clamp(2rem, 9vw, 2.8rem);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.6rem;
+}
+.intro-desc {
+  font-size: 1rem;
+  line-height: 2;
+  font-weight: 300;
+  color: var(--c-mist);
+  max-width: 22em;
+  margin-bottom: 0.4rem;
+}
+.intro-meta {
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  color: var(--c-mist-dim);
+  margin-bottom: 2rem;
+}
+
+/* ===================== 呼吸畫面 ===================== */
+.cycle-indicator {
+  font-size: 0.8rem;
+  letter-spacing: 0.24em;
+  color: var(--c-mist-dim);
+  margin-bottom: clamp(2rem, 8vh, 4rem);
+}
+
+.orb-wrap {
+  position: relative;
+  width: min(74vw, 300px);
+  height: min(74vw, 300px);
+  display: grid;
+  place-items: center;
+  margin-bottom: clamp(2.4rem, 9vh, 4.5rem);
+}
+
+.orb-halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(143,227,214,0.45), rgba(111,139,240,0.18) 55%, transparent 72%);
+  filter: blur(26px);
+  transform: scale(0.6);
+  opacity: 0.5;
+  transition: transform var(--ease-breath), opacity 1.2s ease;
+  will-change: transform, opacity;
+}
+
+.orb {
+  position: relative;
+  width: 64%;
+  height: 64%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,0.75), transparent 42%),
+    conic-gradient(from 200deg, var(--c-orb-a), var(--c-orb-c), var(--c-orb-b), var(--c-orb-a));
+  box-shadow:
+    inset 0 0 40px rgba(255,255,255,0.25),
+    0 0 60px rgba(111,139,240,0.45);
+  display: grid;
+  place-items: center;
+  transform: scale(0.45);
+  transition: transform var(--ease-breath);
+  will-change: transform;
+  animation: orb-shimmer 9s ease-in-out infinite;
+}
+@keyframes orb-shimmer {
+  0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+  50%      { filter: hue-rotate(18deg) brightness(1.08); }
+}
+.orb.paused { animation-play-state: paused; }
+
+.orb-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: #0c1130;
+  mix-blend-mode: normal;
+}
+.phase-label {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 8px rgba(255,255,255,0.5);
+}
+.phase-count {
+  font-family: var(--font-num);
+  font-size: 3.4rem;
+  font-weight: 400;
+  line-height: 1;
+  text-shadow: 0 1px 10px rgba(255,255,255,0.45);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+}
+.ctl {
+  font-family: var(--font-zh);
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: var(--c-mist);
+  padding: 12px 20px;
+  border: 1px solid rgba(233, 236, 247, 0.22);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, opacity 0.3s;
+}
+.ctl:hover, .ctl:active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(143,227,214,0.5);
+}
+.ctl.off { opacity: 0.45; }
+
+/* ===================== 完成畫面 ===================== */
+.done-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.done-mark {
+  font-size: 3.4rem;
+  margin-bottom: 0.4rem;
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.done-title {
+  font-weight: 500;
+  font-size: 2.2rem;
+  letter-spacing: 0.16em;
+}
+.done-sub {
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 2;
+  color: var(--c-mist-dim);
+  margin-bottom: 1.8rem;
+}
+
+/* ===================== 按鈕 ===================== */
+.btn-primary {
+  font-family: var(--font-zh);
+  font-size: 1.05rem;
+  letter-spacing: 0.16em;
+  color: #0c1130;
+  padding: 15px 56px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--c-orb-a), var(--c-orb-b));
+  box-shadow: 0 8px 30px rgba(111,139,240,0.5);
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-breath), box-shadow 0.3s;
+  margin-bottom: 0.4rem;
+}
+.btn-primary:hover, .btn-primary:active {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 38px rgba(143,227,214,0.55);
+}
+.btn-ghost {
+  font-family: var(--font-zh);
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  color: var(--c-mist-dim);
+  padding: 10px 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.btn-ghost:hover { color: var(--c-mist); }
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora, .orb, .done-mark { animation: none; }
+}

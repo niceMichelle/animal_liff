@@ -25,16 +25,20 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;
 }
 
 body {
   font-family: var(--font-zh);
   color: var(--c-mist);
   background: radial-gradient(140% 120% at 50% -10%, var(--c-deep) 0%, var(--c-night) 55%, #05071a 100%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* —— 漂浮極光 —— */
@@ -71,16 +75,19 @@ body {
 .stage {
   position: relative;
   z-index: 2;
-  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: max(28px, env(safe-area-inset-top)) 26px max(28px, env(safe-area-inset-bottom));
+  padding: max(20px, env(safe-area-inset-top)) 24px max(20px, env(safe-area-inset-bottom));
 }
 
 .screen {
   width: 100%;
   max-width: 460px;
+  margin: auto; /* 內容比畫面短時置中；過高時自動可捲動，不被裁切 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -195,16 +202,16 @@ body {
   font-size: 0.8rem;
   letter-spacing: 0.24em;
   color: var(--c-mist-dim);
-  margin-bottom: clamp(2rem, 8vh, 4rem);
+  margin-bottom: clamp(1.2rem, 5vh, 3rem);
 }
 
 .orb-wrap {
   position: relative;
-  width: min(74vw, 300px);
-  height: min(74vw, 300px);
+  width: min(68vw, 300px);
+  height: min(68vw, 300px);
   display: grid;
   place-items: center;
-  margin-bottom: clamp(2.4rem, 9vh, 4.5rem);
+  margin-bottom: clamp(1.5rem, 6vh, 3.5rem);
 }
 
 .orb-halo {

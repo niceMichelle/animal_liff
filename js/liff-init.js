@@ -3,7 +3,7 @@
 // 若沒有 liff SDK 或 LIFF_ID 尚未設定，會自動 fallback 成 standalone 模式，方便本機測試。
 
 // ⬇️ 在 LINE Developers Console 建立 LIFF App 後，把這裡換成你的 LIFF ID。
-const LIFF_ID = 'YOUR_LIFF_ID';
+const LIFF_ID = '2005860539-kp1kp106';
 
 window.AppLiff = {
   ready: false,
@@ -20,7 +20,7 @@ window.AppLiff = {
 
   async init() {
     const hasSdk = typeof window.liff !== 'undefined';
-    const idSet = LIFF_ID && LIFF_ID !== 'YOUR_LIFF_ID';
+    const idSet = LIFF_ID && LIFF_ID !== '2005860539-kp1kp106';
 
     if (!hasSdk || !idSet) {
       this.standalone = true;

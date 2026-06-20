@@ -3,24 +3,52 @@
 // 若沒有 liff SDK 或 LIFF_ID 尚未設定，會自動 fallback 成 standalone 模式，方便本機測試。
 
 // ⬇️ 在 LINE Developers Console 建立 LIFF App 後，把這裡換成你的 LIFF ID。
-const LIFF_ID = '2005860539-kp1kp106';
+const LIFF_ID = 'YOUR_LIFF_ID';
 
 window.AppLiff = {
   ready: false,
   standalone: true, // 非 LINE 環境（瀏覽器直開）
   profile: null,
 
+  // 從一段字串取出 type，可吃 "?type=box"、"type=box"、"/?type=box"、"/path?type=box"。
+  _readType(s) {
+    if (!s) return null;
+    const i = s.indexOf('?');
+    const q = i >= 0 ? s.slice(i + 1) : s;
+    return new URLSearchParams(q).get('type');
+  },
+
   // 解析 ?type=，回傳合法的模式 id，否則用預設。
+  // 注意：透過 https://liff.line.me/{id}?type=box 進入時，LINE 會把原始 query
+  // 包進 liff.state（例如 ?liff.state=%3Ftype%3Dbox），需額外解析，否則一律變預設。
   getType() {
     const params = new URLSearchParams(window.location.search);
-    const t = params.get('type');
+
+    // 1) 直接帶在網址上（瀏覽器測試、或 LIFF 已把參數展開）
+    let t = params.get('type');
+
+    // 2) 被包進 liff.state（LINE in-app 常見）；可能再多一層編碼，故再 decode 一次。
+    if (!t) {
+      const state = params.get('liff.state'); // URLSearchParams 已解一層碼
+      if (state) {
+        let decoded = state;
+        try { decoded = decodeURIComponent(state); } catch (_) { /* 保留原值 */ }
+        t = this._readType(decoded);
+      }
+    }
+
+    // 3) 保險：有些情況參數會落在 hash
+    if (!t && window.location.hash) {
+      t = this._readType(window.location.hash.replace(/^#/, ''));
+    }
+
     if (t && window.BREATHING_PATTERNS[t]) return t;
     return window.DEFAULT_PATTERN;
   },
 
   async init() {
     const hasSdk = typeof window.liff !== 'undefined';
-    const idSet = LIFF_ID && LIFF_ID !== '2005860539-kp1kp106';
+    const idSet = LIFF_ID && LIFF_ID !== 'YOUR_LIFF_ID';
 
     if (!hasSdk || !idSet) {
       this.standalone = true;

@@ -19,16 +19,7 @@
 
   <main class="stage">
 
-    <!-- 畫面 1：模式選擇 -->
-    <section id="screen-select" class="screen" hidden>
-      <header class="select-head">
-        <p class="eyebrow">靜息 · BREATHE</p>
-        <h1 class="title">選一種呼吸<br />讓自己慢下來</h1>
-      </header>
-      <ul class="mode-list" id="mode-list"><!-- JS 注入 --></ul>
-    </section>
-
-    <!-- 畫面 2：引導前介紹 -->
+    <!-- 畫面 1：引導前準備（呼吸法由 Flex message 帶 ?type= 進入） -->
     <section id="screen-intro" class="screen" hidden>
       <div class="intro-card">
         <p class="eyebrow" id="intro-eyebrow">呼吸練習</p>
@@ -36,11 +27,10 @@
         <p class="intro-desc" id="intro-desc"></p>
         <p class="intro-meta" id="intro-meta"></p>
         <button class="btn-primary" id="btn-begin">開始</button>
-        <button class="btn-ghost" id="btn-back-select">換一種</button>
       </div>
     </section>
 
-    <!-- 畫面 3：呼吸進行 -->
+    <!-- 畫面 2：呼吸進行 -->
     <section id="screen-breathe" class="screen" hidden>
       <p class="cycle-indicator" id="cycle-indicator">第 1 / 4 循環</p>
 
@@ -61,14 +51,13 @@
       </div>
     </section>
 
-    <!-- 畫面 4：完成 -->
+    <!-- 畫面 3：完成 -->
     <section id="screen-done" class="screen" hidden>
       <div class="done-card">
         <div class="done-mark">🌿</div>
         <h2 class="done-title">完成</h2>
         <p class="done-sub">願你帶著這份平靜，繼續今天。</p>
         <button class="btn-primary" id="btn-again">再做一次</button>
-        <button class="btn-ghost" id="btn-other">換一種呼吸</button>
         <button class="btn-ghost" id="btn-close">關閉</button>
       </div>
     </section>
@@ -88,14 +77,12 @@
   <script>
     (function () {
       const screens = {
-        select: document.getElementById('screen-select'),
         intro: document.getElementById('screen-intro'),
         breathe: document.getElementById('screen-breathe'),
         done: document.getElementById('screen-done'),
       };
 
       const el = {
-        modeList: document.getElementById('mode-list'),
         introEyebrow: document.getElementById('intro-eyebrow'),
         introTitle: document.getElementById('intro-title'),
         introDesc: document.getElementById('intro-desc'),
@@ -106,12 +93,10 @@
         phaseLabel: document.getElementById('phase-label'),
         phaseCount: document.getElementById('phase-count'),
         btnBegin: document.getElementById('btn-begin'),
-        btnBackSelect: document.getElementById('btn-back-select'),
         btnPause: document.getElementById('btn-pause'),
         btnSound: document.getElementById('btn-sound'),
         btnStop: document.getElementById('btn-stop'),
         btnAgain: document.getElementById('btn-again'),
-        btnOther: document.getElementById('btn-other'),
         btnClose: document.getElementById('btn-close'),
       };
 
@@ -124,22 +109,7 @@
         screens[name].hidden = false;
       }
 
-      // —— 選擇畫面 ——
-      function buildSelect() {
-        el.modeList.innerHTML = '';
-        Object.values(window.BREATHING_PATTERNS).forEach((p, i) => {
-          const li = document.createElement('li');
-          li.className = 'mode-item';
-          li.style.setProperty('--i', i);
-          li.innerHTML =
-            '<span class="mode-name">' + p.name + '</span>' +
-            '<span class="mode-desc">' + p.intro + '</span>';
-          li.addEventListener('click', () => gotoIntro(p.id));
-          el.modeList.appendChild(li);
-        });
-      }
-
-      // —— 介紹畫面 ——
+      // —— 準備畫面 ——
       function gotoIntro(type) {
         currentType = type;
         const p = window.BREATHING_PATTERNS[type];
@@ -186,7 +156,6 @@
         await audio.unlock(); // 必須在使用者手勢中啟動 AudioContext
         beginSession();
       });
-      el.btnBackSelect.addEventListener('click', () => show('select'));
 
       el.btnPause.addEventListener('click', () => {
         if (!engine) return;
@@ -207,23 +176,15 @@
       });
 
       el.btnAgain.addEventListener('click', () => beginSession());
-      el.btnOther.addEventListener('click', () => { buildSelect(); show('select'); });
       el.btnClose.addEventListener('click', () => window.AppLiff.close());
 
       // —— 啟動 ——
+      // 呼吸法由 Flex message 的 ?type= 決定，直接進入該呼吸法的準備頁。
+      // 未帶參數時（開發或直接開啟）退回預設呼吸法。
       (async function boot() {
-        buildSelect();
         await window.AppLiff.init();
-        currentType = window.AppLiff.getType();
-
-        // 由 LIFF 連結帶 ?type= 進來：直接進入該模式的介紹。
-        // 一般瀏覽器無指定時：顯示選擇畫面。
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('type') && window.BREATHING_PATTERNS[params.get('type')]) {
-          gotoIntro(currentType);
-        } else {
-          show('select');
-        }
+        currentType = window.AppLiff.getType(); // 找不到參數時回傳 DEFAULT_PATTERN
+        gotoIntro(currentType);
       })();
     })();
   </script>

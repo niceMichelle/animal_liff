@@ -109,67 +109,7 @@ body {
   padding-left: 0.42em;
 }
 
-/* ===================== 選擇畫面 ===================== */
-.select-head { margin-bottom: 2.2rem; }
-.title {
-  font-weight: 400;
-  font-size: clamp(1.7rem, 7vw, 2.3rem);
-  line-height: 1.5;
-  letter-spacing: 0.04em;
-}
-
-.mode-list {
-  list-style: none;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.mode-item {
-  position: relative;
-  text-align: left;
-  padding: 20px 22px;
-  border: 1px solid rgba(233, 236, 247, 0.14);
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  backdrop-filter: blur(8px);
-  cursor: pointer;
-  overflow: hidden;
-  transition: transform 0.4s var(--ease-breath), border-color 0.4s, background 0.4s;
-  animation: rise 0.6s var(--ease-breath) both;
-  animation-delay: calc(var(--i) * 90ms + 120ms);
-}
-.mode-item::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: linear-gradient(var(--c-orb-a), var(--c-orb-b));
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.mode-item:hover, .mode-item:active {
-  transform: translateY(-3px);
-  border-color: rgba(143, 227, 214, 0.5);
-  background: linear-gradient(135deg, rgba(143,227,214,0.10), rgba(111,139,240,0.05));
-}
-.mode-item:hover::before { opacity: 1; }
-.mode-name {
-  display: block;
-  font-size: 1.22rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.4rem;
-}
-.mode-desc {
-  display: block;
-  font-size: 0.86rem;
-  line-height: 1.7;
-  color: var(--c-mist-dim);
-  font-weight: 300;
-}
-
-/* ===================== 介紹畫面 ===================== */
+/* ===================== 準備畫面 ===================== */
 .intro-card {
   display: flex;
   flex-direction: column;

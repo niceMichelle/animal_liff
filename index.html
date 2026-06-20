@@ -19,20 +19,11 @@
 
   <main class="stage">
 
-    <!-- 畫面 1：引導前準備（呼吸法由 Flex message 帶 ?type= 進入） -->
-    <section id="screen-intro" class="screen" hidden>
-      <div class="intro-card">
-        <p class="eyebrow" id="intro-eyebrow">呼吸練習</p>
-        <h2 class="intro-title" id="intro-title">4-7-8 呼吸法</h2>
-        <p class="intro-desc" id="intro-desc"></p>
-        <p class="intro-meta" id="intro-meta"></p>
-        <button class="btn-primary" id="btn-begin">開始</button>
-      </div>
-    </section>
-
-    <!-- 畫面 2：呼吸進行 -->
-    <section id="screen-breathe" class="screen" hidden>
-      <p class="cycle-indicator" id="cycle-indicator">第 1 / 4 循環</p>
+    <!-- 畫面 1：引導（呼吸法由 Flex message 帶 ?type= 進入；開始/重新開始皆在此） -->
+    <section id="screen-guide" class="screen">
+      <p class="eyebrow">呼吸練習</p>
+      <h2 class="guide-title" id="guide-title">4-7-8 呼吸法</h2>
+      <p class="guide-sub" id="guide-sub"></p>
 
       <div class="orb-wrap">
         <div class="orb-halo" id="orb-halo"></div>
@@ -45,14 +36,17 @@
       </div>
 
       <div class="controls">
-        <button class="ctl" id="btn-pause" aria-label="暫停或繼續">暫停</button>
-        <button class="ctl" id="btn-sound" aria-label="音效開關">♪ 音效</button>
-        <button class="ctl" id="btn-stop" aria-label="結束">結束</button>
+        <button class="btn-primary" id="btn-start">開始</button>
+        <div class="ctl-row" id="ctl-row">
+          <button class="ctl" id="btn-pause" aria-label="暫停或繼續">暫停</button>
+          <button class="ctl" id="btn-sound" aria-label="音效開關">♪ 音效</button>
+          <button class="ctl" id="btn-stop" aria-label="結束">結束</button>
+        </div>
       </div>
     </section>
 
-    <!-- 畫面 3：完成 -->
-    <section id="screen-done" class="screen" hidden>
+    <!-- 畫面 2：完成（滿版） -->
+    <section id="screen-done" class="screen">
       <div class="done-card">
         <div class="done-mark">🌿</div>
         <h2 class="done-title">完成</h2>
@@ -77,22 +71,19 @@
   <script>
     (function () {
       const screens = {
-        intro: document.getElementById('screen-intro'),
-        breathe: document.getElementById('screen-breathe'),
+        guide: document.getElementById('screen-guide'),
         done: document.getElementById('screen-done'),
       };
 
       const el = {
-        introEyebrow: document.getElementById('intro-eyebrow'),
-        introTitle: document.getElementById('intro-title'),
-        introDesc: document.getElementById('intro-desc'),
-        introMeta: document.getElementById('intro-meta'),
-        cycle: document.getElementById('cycle-indicator'),
+        guideEl: document.getElementById('screen-guide'),
+        guideTitle: document.getElementById('guide-title'),
+        guideSub: document.getElementById('guide-sub'),
         orb: document.getElementById('orb'),
         halo: document.getElementById('orb-halo'),
         phaseLabel: document.getElementById('phase-label'),
         phaseCount: document.getElementById('phase-count'),
-        btnBegin: document.getElementById('btn-begin'),
+        btnStart: document.getElementById('btn-start'),
         btnPause: document.getElementById('btn-pause'),
         btnSound: document.getElementById('btn-sound'),
         btnStop: document.getElementById('btn-stop'),
@@ -103,36 +94,73 @@
       const audio = new window.BreathAudio();
       let engine = null;
       let currentType = window.DEFAULT_PATTERN;
+      let currentScreen = null;
 
-      function show(name) {
-        Object.values(screens).forEach((s) => (s.hidden = true));
-        screens[name].hidden = false;
+      // —— 上下滑動轉場 ——
+      // dir='down'：目標從下方滑入（往下到完成頁）；dir='up'：目標從上方滑入（往上回引導頁）
+      function activate(name, dir) {
+        const target = screens[name];
+        if (currentScreen === target) return;
+
+        if (!currentScreen) {
+          target.classList.add('is-active');
+          currentScreen = target;
+          return;
+        }
+
+        const prev = currentScreen;
+        target.classList.remove('is-active', 'above', 'below');
+        target.classList.add(dir === 'down' ? 'below' : 'above'); // 進場起點
+        prev.classList.remove('is-active');
+        prev.classList.add(dir === 'down' ? 'above' : 'below');    // 舊畫面退場方向
+
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          target.classList.remove('above', 'below');
+          target.classList.add('is-active');
+        }));
+        currentScreen = target;
       }
 
-      // —— 準備畫面 ——
-      function gotoIntro(type) {
+      // —— 呼吸圈回到待機狀態 ——
+      function setOrbIdle() {
+        el.orb.classList.remove('paused');
+        el.orb.style.transitionDuration = '0.6s';
+        el.halo.style.transitionDuration = '0.6s';
+        el.orb.style.transform = 'scale(0.5)';
+        el.halo.style.transform = 'scale(0.62)';
+        el.halo.style.opacity = '0.4';
+        el.phaseLabel.textContent = '準備';
+        el.phaseCount.textContent = '—';
+      }
+
+      // —— 載入某呼吸法到引導畫面（待機） ——
+      function loadGuide(type) {
         currentType = type;
         const p = window.BREATHING_PATTERNS[type];
-        el.introEyebrow.textContent = '呼吸練習';
-        el.introTitle.textContent = p.name;
-        el.introDesc.textContent = p.intro;
+        el.guideTitle.textContent = p.name;
         const total = p.phases.reduce((a, ph) => a + ph.sec, 0) * p.cycles;
         const mins = Math.round(total / 60);
-        el.introMeta.textContent = p.cycles + ' 個循環 · 約 ' + (mins < 1 ? '不到 1' : mins) + ' 分鐘';
-        show('intro');
+        el.guideSub.textContent = p.cycles + ' 個循環 · 約 ' + (mins < 1 ? '不到 1' : mins) + ' 分鐘';
+        el.guideEl.classList.remove('running');
+        el.btnStart.textContent = '開始';
+        setOrbIdle();
       }
 
-      // —— 呼吸畫面 ——
-      function beginSession() {
+      // —— 開始 / 重新開始（同一顆按鈕） ——
+      function startRun() {
+        if (engine) engine.stop();
         const pattern = window.BREATHING_PATTERNS[currentType];
-        show('breathe');
+
+        el.guideEl.classList.add('running');
+        el.btnStart.textContent = '重新開始';
         el.btnPause.textContent = '暫停';
+        setOrbIdle(); // 讓第一次吸氣從小圈擴起
 
         engine = new window.BreathingEngine(pattern, {
           onPhaseStart(phase, cycleIndex, totalCycles) {
-            el.cycle.textContent = '第 ' + (cycleIndex + 1) + ' / ' + totalCycles + ' 循環';
+            el.guideSub.textContent = '第 ' + (cycleIndex + 1) + ' / ' + totalCycles + ' 循環';
             el.phaseLabel.textContent = phase.label;
-            // 呼吸圈用「轉場時間 = 該階段秒數」做擴縮，與引導同步
+            // 呼吸圈：轉場時間 = 該階段秒數，與引導同步
             el.orb.style.transitionDuration = phase.sec + 's';
             el.halo.style.transitionDuration = phase.sec + 's';
             el.orb.style.transform = 'scale(' + phase.scale + ')';
@@ -145,16 +173,21 @@
           },
           onComplete() {
             audio.cue(528, 1.2);
-            show('done');
+            finishToDone();
           },
         });
         engine.start();
       }
 
+      function finishToDone() {
+        el.guideEl.classList.remove('running');
+        activate('done', 'down'); // 自動往下跳到完成頁
+      }
+
       // —— 事件 ——
-      el.btnBegin.addEventListener('click', async () => {
+      el.btnStart.addEventListener('click', async () => {
         await audio.unlock(); // 必須在使用者手勢中啟動 AudioContext
-        beginSession();
+        startRun();           // 第一次=開始；之後=重新開始
       });
 
       el.btnPause.addEventListener('click', () => {
@@ -172,19 +205,24 @@
 
       el.btnStop.addEventListener('click', () => {
         if (engine) engine.stop();
-        show('done');
+        finishToDone(); // 按結束 → 自動往下跳到完成頁
       });
 
-      el.btnAgain.addEventListener('click', () => beginSession());
+      el.btnAgain.addEventListener('click', () => {
+        loadGuide(currentType);   // 重置引導畫面，開始鈕回到「開始」
+        activate('guide', 'up');  // 自動往上跳回引導畫面
+      });
+
       el.btnClose.addEventListener('click', () => window.AppLiff.close());
 
       // —— 啟動 ——
-      // 呼吸法由 Flex message 的 ?type= 決定，直接進入該呼吸法的準備頁。
+      // 呼吸法由 Flex message 的 ?type= 決定，直接進入該呼吸法的引導畫面。
       // 未帶參數時（開發或直接開啟）退回預設呼吸法。
       (async function boot() {
         await window.AppLiff.init();
-        currentType = window.AppLiff.getType(); // 找不到參數時回傳 DEFAULT_PATTERN
-        gotoIntro(currentType);
+        currentType = window.AppLiff.getType();
+        loadGuide(currentType);
+        activate('guide');
       })();
     })();
   </script>

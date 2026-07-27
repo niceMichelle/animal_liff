@@ -1,0 +1,62 @@
+{
+  "name": "LINE Relaxation Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "line-webhook",
+        "responseMode": "onReceived",
+        "responseCode": 200,
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "LINE Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 320],
+      "webhookId": "line-relaxation-bot"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 專屬放鬆/運動頻道：收到訊息或被加好友 → 回覆呼吸練習選單。\n// 無可回覆對象時回傳空陣列，下游 LINE Reply 節點就不會執行。\n// ⬇️ 把 LIFF_ID 換成你的 LIFF App ID（建立 LIFF 後取得）。\nconst LIFF_ID = 'YOUR_LIFF_ID';\n\nconst webhookItem = $input.first().json;\nconst events = (webhookItem.body && webhookItem.body.events) || [];\n\nfunction liffButton(label, type, color) {\n  return {\n    type: 'button',\n    style: 'primary',\n    color,\n    height: 'sm',\n    margin: 'sm',\n    action: { type: 'uri', label, uri: 'https://liff.line.me/' + LIFF_ID + '?type=' + type },\n  };\n}\n\nfunction buildMenu(replyToken, intro) {\n  const bubble = {\n    type: 'bubble',\n    body: {\n      type: 'box',\n      layout: 'vertical',\n      spacing: 'md',\n      contents: [\n        { type: 'text', text: '來做個呼吸練習 🌿', weight: 'bold', size: 'lg' },\n        { type: 'text', text: intro, size: 'sm', color: '#888888', wrap: true },\n        liffButton('4-7-8 呼吸法', '478', '#6F8BF0'),\n        liffButton('箱式呼吸法', 'box', '#5FA8A6'),\n        liffButton('腹式呼吸', 'belly', '#8F76C9'),\n        liffButton('正念呼吸', 'mindful', '#C99A6B')\n      ]\n    }\n  };\n  return { replyToken, messages: [{ type: 'flex', altText: '來做個呼吸練習 🌿', contents: bubble }] };\n}\n\nconst out = [];\nfor (const event of events) {\n  if (!event.replyToken) continue;\n  if (event.type === 'follow') {\n    out.push({ json: { replyBody: buildMenu(event.replyToken, '歡迎～需要放鬆或想動一動時，隨時選一種節奏跟著呼吸。') } });\n  } else if (event.type === 'message') {\n    out.push({ json: { replyBody: buildMenu(event.replyToken, '選一種節奏，跟著畫面一起呼吸，幾分鐘就能放鬆下來。') } });\n  }\n}\n\nreturn out;"
+      },
+      "id": "build-reply",
+      "name": "Build Breathing Menu",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 320]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Authorization", "value": "Bearer YOUR_CHANNEL_ACCESS_TOKEN" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.replyBody) }}",
+        "options": {}
+      },
+      "id": "line-reply",
+      "name": "LINE Reply (Flex)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [760, 320]
+    }
+  ],
+  "connections": {
+    "LINE Webhook": {
+      "main": [[{ "node": "Build Breathing Menu", "type": "main", "index": 0 }]]
+    },
+    "Build Breathing Menu": {
+      "main": [[{ "node": "LINE Reply (Flex)", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

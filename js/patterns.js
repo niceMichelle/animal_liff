@@ -6,7 +6,9 @@ window.BREATHING_PATTERNS = {
   '478': {
     id: '478',
     name: '4-7-8 呼吸法',
-    intro: '吸氣 4 秒、屏息 7 秒、吐氣 8 秒。幫助快速放鬆、更好入睡。',
+    intro: '吸氣 4 秒、屏息 7 秒、吐氣 8 秒。以較長的吐氣安撫神經，幫助快速放鬆、更好入睡。',
+    situation: '睡前、焦慮或緊張時想快速冷靜',
+    difficulty: '中級', // 需屏息 7 秒，對新手稍有挑戰
     cycles: 4,
     phases: [
       { label: '吸氣', sec: 4, scale: 1.0, tone: 396 },
@@ -18,7 +20,9 @@ window.BREATHING_PATTERNS = {
   box: {
     id: 'box',
     name: '箱式呼吸法',
-    intro: '吸氣 4 秒、屏息 4 秒、吐氣 4 秒、屏息 4 秒。穩定情緒、提升專注。',
+    intro: '吸氣 4 秒、屏息 4 秒、吐氣 4 秒、屏息 4 秒，四段等長。節奏規律，能穩定情緒、提升專注。',
+    situation: '壓力大、情緒起伏，或重要事情前需要穩定自己',
+    difficulty: '初級',
     cycles: 5,
     phases: [
       { label: '吸氣', sec: 4, scale: 1.0, tone: 396 },
@@ -31,7 +35,9 @@ window.BREATHING_PATTERNS = {
   belly: {
     id: 'belly',
     name: '腹式呼吸',
-    intro: '一手放在腹部，吸氣 4 秒讓腹部鼓起、吐氣 6 秒緩緩收回。拉長吐氣安定神經。',
+    intro: '一手放在腹部，吸氣 4 秒讓腹部鼓起、吐氣 6 秒緩緩收回。動作單純、拉長吐氣安定神經。',
+    situation: '呼吸練習新手、日常放鬆、想緩解身體緊繃',
+    difficulty: '入門', // 只有吸與吐、無屏息，最容易上手
     cycles: 7,
     phases: [
       { label: '吸氣（腹部鼓起）', sec: 4, scale: 1.0, tone: 396 },
@@ -42,7 +48,9 @@ window.BREATHING_PATTERNS = {
   mindful: {
     id: 'mindful',
     name: '正念呼吸',
-    intro: '自然地吸氣 4 秒、吐氣 4 秒，把注意力溫柔地放回呼吸。',
+    intro: '自然地吸氣 4 秒、吐氣 4 秒，時間較長，練習把注意力溫柔地放回呼吸。',
+    situation: '想靜心、練習專注當下，或情緒低落時陪伴自己',
+    difficulty: '初級', // 節奏簡單，但需要較長時間維持專注
     cycles: 9,
     phases: [
       { label: '吸氣，感受空氣進入', sec: 4, scale: 1.0, tone: 396 },

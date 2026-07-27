@@ -18,10 +18,10 @@ window.AppLiff = {
     return new URLSearchParams(q).get('type');
   },
 
-  // 解析 ?type=，回傳合法的模式 id，否則用預設。
+  // 解析出「明確指定」的 type（合法才回傳，否則 null；不套用預設）。
   // 注意：透過 https://liff.line.me/{id}?type=box 進入時，LINE 會把原始 query
-  // 包進 liff.state（例如 ?liff.state=%3Ftype%3Dbox），需額外解析，否則一律變預設。
-  getType() {
+  // 包進 liff.state（例如 ?liff.state=%3Ftype%3Dbox），需額外解析。
+  _rawType() {
     const params = new URLSearchParams(window.location.search);
 
     // 1) 直接帶在網址上（瀏覽器測試、或 LIFF 已把參數展開）
@@ -42,8 +42,17 @@ window.AppLiff = {
       t = this._readType(window.location.hash.replace(/^#/, ''));
     }
 
-    if (t && window.BREATHING_PATTERNS[t]) return t;
-    return window.DEFAULT_PATTERN;
+    return (t && window.BREATHING_PATTERNS[t]) ? t : null;
+  },
+
+  // 是否由 Flex 深連結明確指定呼吸法（有 → 直接進引導；無 → 顯示首頁選單）。
+  hasType() {
+    return this._rawType() !== null;
+  },
+
+  // 回傳合法的模式 id，未指定時用預設。
+  getType() {
+    return this._rawType() || window.DEFAULT_PATTERN;
   },
 
   async init() {

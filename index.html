@@ -19,8 +19,16 @@
 
   <main class="stage">
 
+    <!-- 畫面 0：首頁選單（直接開啟／未指定呼吸法時顯示；Flex 深連結會略過此頁） -->
+    <section id="screen-menu" class="screen">
+      <p class="eyebrow">靜息 · BREATHE</p>
+      <h1 class="menu-title">選一種呼吸<br />讓自己慢下來</h1>
+      <ul class="mode-list" id="mode-list"><!-- JS 依 patterns 產生 --></ul>
+    </section>
+
     <!-- 畫面 1：引導（呼吸法由 Flex message 帶 ?type= 進入；開始/重新開始皆在此） -->
     <section id="screen-guide" class="screen">
+      <button class="guide-back" id="btn-menu" aria-label="返回選單">‹ 選單</button>
       <p class="eyebrow">呼吸練習</p>
       <h2 class="guide-title" id="guide-title">4-7-8 呼吸法</h2>
       <p class="guide-sub" id="guide-sub"></p>
@@ -71,11 +79,14 @@
   <script>
     (function () {
       const screens = {
+        menu: document.getElementById('screen-menu'),
         guide: document.getElementById('screen-guide'),
         done: document.getElementById('screen-done'),
       };
 
       const el = {
+        modeList: document.getElementById('mode-list'),
+        btnMenu: document.getElementById('btn-menu'),
         guideEl: document.getElementById('screen-guide'),
         guideTitle: document.getElementById('guide-title'),
         guideSub: document.getElementById('guide-sub'),
@@ -95,6 +106,9 @@
       let engine = null;
       let currentType = window.DEFAULT_PATTERN;
       let currentScreen = null;
+      let cameFromMenu = false; // 由首頁選單進入時，引導畫面顯示「返回選單」
+
+      const DIFF_LEVEL = { '入門': 1, '初級': 2, '中級': 3 };
 
       // —— 上下滑動轉場 ——
       // dir='down'：目標從下方滑入（往下到完成頁）；dir='up'：目標從上方滑入（往上回引導頁）
@@ -133,15 +147,47 @@
         el.phaseCount.textContent = '—';
       }
 
+      // —— 首頁選單 ——
+      function durationText(p) {
+        const total = p.phases.reduce((a, ph) => a + ph.sec, 0) * p.cycles;
+        const mins = Math.round(total / 60);
+        return p.cycles + ' 個循環 · 約 ' + (mins < 1 ? '不到 1' : mins) + ' 分鐘';
+      }
+
+      function buildMenu() {
+        el.modeList.innerHTML = '';
+        Object.values(window.BREATHING_PATTERNS).forEach((p, i) => {
+          const li = document.createElement('li');
+          li.className = 'mode-item';
+          li.style.setProperty('--i', i);
+          const lvl = DIFF_LEVEL[p.difficulty] || 1;
+          li.innerHTML =
+            '<div class="mode-head">' +
+              '<span class="mode-name">' + p.name + '</span>' +
+              '<span class="mode-diff diff-' + lvl + '">' + p.difficulty + '</span>' +
+            '</div>' +
+            '<p class="mode-intro">' + p.intro + '</p>' +
+            '<p class="mode-situation">適合：' + p.situation + '</p>' +
+            '<p class="mode-meta">' + durationText(p) + '</p>';
+          li.addEventListener('click', () => selectFromMenu(p.id));
+          el.modeList.appendChild(li);
+        });
+      }
+
+      function selectFromMenu(type) {
+        cameFromMenu = true;
+        loadGuide(type);
+        activate('guide', 'down'); // 往下進入引導畫面
+      }
+
       // —— 載入某呼吸法到引導畫面（待機） ——
       function loadGuide(type) {
         currentType = type;
         const p = window.BREATHING_PATTERNS[type];
         el.guideTitle.textContent = p.name;
-        const total = p.phases.reduce((a, ph) => a + ph.sec, 0) * p.cycles;
-        const mins = Math.round(total / 60);
-        el.guideSub.textContent = p.cycles + ' 個循環 · 約 ' + (mins < 1 ? '不到 1' : mins) + ' 分鐘';
+        el.guideSub.textContent = durationText(p);
         el.guideEl.classList.remove('running');
+        el.guideEl.classList.toggle('from-menu', cameFromMenu); // 有選單來源才顯示返回鍵
         el.btnStart.textContent = '開始';
         setOrbIdle();
       }
@@ -215,14 +261,24 @@
 
       el.btnClose.addEventListener('click', () => window.AppLiff.close());
 
+      el.btnMenu.addEventListener('click', () => {
+        if (engine) engine.stop();
+        activate('menu', 'up'); // 往上返回首頁選單
+      });
+
       // —— 啟動 ——
-      // 呼吸法由 Flex message 的 ?type= 決定，直接進入該呼吸法的引導畫面。
-      // 未帶參數時（開發或直接開啟）退回預設呼吸法。
+      // Flex 深連結帶 ?type= → 直接進入該呼吸法的引導畫面。
+      // 未指定（直接開啟首頁）→ 顯示呼吸法選單。
       (async function boot() {
         await window.AppLiff.init();
-        currentType = window.AppLiff.getType();
-        loadGuide(currentType);
-        activate('guide');
+        buildMenu();
+        if (window.AppLiff.hasType()) {
+          cameFromMenu = false;
+          loadGuide(window.AppLiff.getType());
+          activate('guide');
+        } else {
+          activate('menu');
+        }
       })();
     })();
   </script>

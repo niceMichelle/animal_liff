@@ -86,10 +86,10 @@ body {
 /* 滿月（緩緩呼吸的微笑臉） */
 .moon {
   position: absolute;
-  top: 8%;
-  right: 13%;
-  width: 60px;
-  height: 60px;
+  top: 7%;
+  right: 12%;
+  width: 86px;
+  height: 86px;
   opacity: 0.72;
   transform-origin: center;
   filter: drop-shadow(0 0 12px rgba(244, 213, 141, 0.5));
@@ -227,11 +227,11 @@ body {
 }
 .branch .bough { stroke: var(--c-silhouette); }
 .branch .leaf { fill: var(--c-silhouette); }
-/* 毛茸茸輪廓：填色 + 略亮描邊，再經 #fuzzy 位移濾鏡打散邊緣 */
+/* 毛茸茸輪廓：描邊與填色同色，再經 #fuzzy 位移濾鏡打散邊緣（絨毛與身體同色） */
 .owl-sil {
   fill: var(--c-silhouette);
-  stroke: #4a5a94;
-  stroke-width: 2;
+  stroke: var(--c-silhouette);
+  stroke-width: 2.4;
   stroke-linejoin: round;
 }
 .owl-beak { fill: #10193a; }

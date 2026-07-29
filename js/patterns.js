@@ -40,8 +40,8 @@ window.BREATHING_PATTERNS = {
     difficulty: '入門', // 只有吸與吐、無屏息，最容易上手
     cycles: 7,
     phases: [
-      { label: '吸氣（腹部鼓起）', sec: 4, scale: 1.0, tone: 396 },
-      { label: '吐氣（腹部收回）', sec: 6, scale: 0.45, tone: 288 },
+      { label: '吸氣', hint: '腹部鼓起', sec: 4, scale: 1.0, tone: 396 },
+      { label: '吐氣', hint: '腹部收回', sec: 6, scale: 0.45, tone: 288 },
     ],
   },
 
@@ -53,8 +53,8 @@ window.BREATHING_PATTERNS = {
     difficulty: '初級', // 節奏簡單，但需要較長時間維持專注
     cycles: 9,
     phases: [
-      { label: '吸氣，感受空氣進入', sec: 4, scale: 1.0, tone: 396 },
-      { label: '吐氣，放下念頭', sec: 4, scale: 0.45, tone: 288 },
+      { label: '吸氣', hint: '感受空氣進入', sec: 4, scale: 1.0, tone: 396 },
+      { label: '吐氣', hint: '放下念頭', sec: 4, scale: 0.45, tone: 288 },
     ],
   },
 };

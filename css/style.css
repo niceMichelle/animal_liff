@@ -14,6 +14,9 @@
   --c-orb-b: #6f8bf0; /* 長春花藍 */
   --c-orb-c: #b89cf0; /* 柔紫 */
   --c-accent: #f3d9a4; /* 暖光點綴 */
+  --c-silhouette: #28325f; /* 樹枝/停棲貓頭鷹剪影（比夜空底色略亮，才看得見） */
+  --c-flyer: #323d6e; /* 飛行剪影 */
+  --c-owl-eye: #f4d58d; /* 貓頭鷹眼 */
 
   --font-zh: 'Noto Serif TC', serif;
   --font-num: 'Cormorant Garamond', 'Noto Serif TC', serif;
@@ -69,6 +72,129 @@ body {
   opacity: 0.05;
   mix-blend-mode: screen;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* —— 夜晚場景（在極光之上、內容之下） —— */
+.night {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* 彎月 */
+.moon {
+  position: absolute;
+  top: 8%;
+  right: 14%;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fdf3d6, #efe0b0 60%, #e9d4a0);
+  box-shadow: 0 0 34px 6px rgba(244, 213, 141, 0.28), inset -10px -6px 0 0 rgba(10,14,35,0.92);
+  opacity: 0.55;
+}
+
+/* 星星 */
+.star {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: #eaf0ff;
+  opacity: 0.5;
+  animation: twinkle 3.4s ease-in-out infinite;
+  animation-delay: var(--d);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.18; transform: scale(0.7); }
+  50%      { opacity: 0.85; transform: scale(1.15); }
+}
+
+/* 飛行剪影（蝙蝠 / 貓頭鷹） */
+.bat, .owl-fly {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--c-flyer);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.bat { width: 42px; }
+.owl-fly { width: 60px; color: var(--c-silhouette); }
+.bat .wings, .owl-fly .wings {
+  fill: currentColor;
+  transform-origin: 50% 50%;
+  animation: flap 0.32s ease-in-out infinite;
+}
+.owl-fly .wings { animation-duration: 0.7s; }
+@keyframes flap {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(0.5); }
+}
+
+/* 各自的飛行路徑（穿越畫面 + 上下起伏） */
+.bat-1 { animation: fly-1 24s linear infinite; animation-delay: 2s; }
+.bat-2 { animation: fly-2 31s linear infinite; animation-delay: 12s; }
+.bat-3 { animation: fly-3 27s linear infinite; animation-delay: 20s; }
+.owl-fly { animation: fly-owl 46s linear infinite; animation-delay: 8s; }
+
+@keyframes fly-1 {
+  0%   { transform: translate(-14vw, 20vh) scale(0.8); opacity: 0; }
+  10%  { opacity: 0.5; }
+  50%  { transform: translate(50vw, 11vh) scale(0.95); opacity: 0.5; }
+  90%  { opacity: 0.5; }
+  100% { transform: translate(116vw, 24vh) scale(0.85); opacity: 0; }
+}
+@keyframes fly-2 {
+  0%   { transform: translate(116vw, 32vh) scaleX(-0.75) scaleY(0.75); opacity: 0; }
+  12%  { opacity: 0.45; }
+  55%  { transform: translate(45vw, 22vh) scaleX(-0.9) scaleY(0.9); opacity: 0.45; }
+  88%  { opacity: 0.45; }
+  100% { transform: translate(-16vw, 30vh) scaleX(-0.8) scaleY(0.8); opacity: 0; }
+}
+@keyframes fly-3 {
+  0%   { transform: translate(-14vw, 40vh) scale(0.65); opacity: 0; }
+  15%  { opacity: 0.4; }
+  50%  { transform: translate(52vw, 33vh) scale(0.75); opacity: 0.4; }
+  85%  { opacity: 0.4; }
+  100% { transform: translate(116vw, 42vh) scale(0.7); opacity: 0; }
+}
+@keyframes fly-owl {
+  0%   { transform: translate(118vw, 14vh) scaleX(-0.9) scaleY(0.9); opacity: 0; }
+  14%  { opacity: 0.5; }
+  52%  { transform: translate(48vw, 9vh) scaleX(-1) scaleY(1); opacity: 0.5; }
+  86%  { opacity: 0.5; }
+  100% { transform: translate(-18vw, 16vh) scaleX(-0.85) scaleY(0.85); opacity: 0; }
+}
+
+/* 樹枝與停棲的貓頭鷹（右下角） */
+.branch {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(58vw, 300px);
+  height: auto;
+  opacity: 0.9;
+}
+.branch .bough { stroke: var(--c-silhouette); }
+.branch .leaf { fill: var(--c-silhouette); }
+.owl-sil { fill: var(--c-silhouette); }
+.owl-beak { fill: #10193a; }
+.owl-eye {
+  fill: var(--c-owl-eye);
+  opacity: 0.85;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: blink 5.5s ease-in-out infinite;
+}
+.owl-b .owl-eye { animation-delay: 2.6s; }
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.1); }
 }
 
 /* —— 舞台（滿版滑動面板的容器） —— */
@@ -294,22 +420,39 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
+  justify-content: center;
+  gap: 0.15rem;
+  width: 84%;          /* 限制在圈內，文字不外溢 */
+  max-width: 84%;
   color: #0c1130;
-  mix-blend-mode: normal;
+  text-align: center;
+  overflow: hidden;
 }
 .phase-label {
-  font-size: 1.05rem;
+  font-size: clamp(0.9rem, 4.2vw, 1.05rem);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  white-space: nowrap;
   text-shadow: 0 1px 8px rgba(255,255,255,0.5);
 }
 .phase-count {
   font-family: var(--font-num);
-  font-size: 3.4rem;
+  font-size: clamp(2.6rem, 13vw, 3.4rem);
   font-weight: 400;
   line-height: 1;
   text-shadow: 0 1px 10px rgba(255,255,255,0.45);
+}
+
+/* 圈下方的引導提示（腹部鼓起、放下念頭…），避免塞進圈內造成溢出 */
+.phase-hint {
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  color: var(--c-mist);
+  font-weight: 300;
+  min-height: 1.3em;
+  margin-top: -0.6rem;
+  margin-bottom: clamp(1rem, 4vh, 2rem);
 }
 
 .controls {
@@ -415,5 +558,14 @@ body {
 .btn-ghost:hover { color: var(--c-mist); }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora, .orb, .done-mark { animation: none; }
+  .aurora, .orb, .done-mark,
+  .star, .bat, .owl-fly, .bat .wings, .owl-fly .wings, .owl-eye {
+    animation: none;
+  }
+  /* 靜態時仍讓夜行動物停在畫面內、不要卡在畫面外 */
+  .bat, .owl-fly { opacity: 0.4; }
+  .bat-1 { transform: translate(20vw, 14vh); }
+  .bat-2 { transform: translate(70vw, 20vh) scaleX(-0.85) scaleY(0.85); }
+  .bat-3 { transform: translate(40vw, 34vh) scale(0.7); }
+  .owl-fly { transform: translate(60vw, 10vh) scaleX(-0.9) scaleY(0.9); }
 }

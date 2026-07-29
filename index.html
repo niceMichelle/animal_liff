@@ -19,8 +19,22 @@
 
   <!-- 夜晚場景：月亮、星星、飛過的蝙蝠與貓頭鷹、停棲樹枝的貓頭鷹（皆為 SVG/CSS 生成） -->
   <div class="night" aria-hidden="true">
-    <!-- 彎月 -->
-    <div class="moon"></div>
+    <!-- 滿月（隱約微笑、緩緩呼吸） -->
+    <svg class="moon" viewBox="0 0 100 100">
+      <defs>
+        <radialGradient id="moonGrad" cx="38%" cy="34%" r="72%">
+          <stop offset="0%" stop-color="#fdf6de" />
+          <stop offset="60%" stop-color="#f0e2b2" />
+          <stop offset="100%" stop-color="#e3cf96" />
+        </radialGradient>
+      </defs>
+      <circle class="moon-disc" cx="50" cy="50" r="42" fill="url(#moonGrad)" />
+      <g class="moon-face">
+        <circle cx="38" cy="45" r="3" />
+        <circle cx="62" cy="45" r="3" />
+        <path d="M37 59 Q50 69 63 59" fill="none" stroke-width="3" stroke-linecap="round" />
+      </g>
+    </svg>
 
     <!-- 星星（--x/--y 位置、--d 閃爍延遲） -->
     <span class="star" style="--x:14%;--y:16%;--s:2px;--d:0s"></span>
@@ -52,6 +66,16 @@
       <path d="M37 15 l1.4 -6 l2 5 z M43 15 l-1.4 -6 l-2 5 z"/>
     </g></svg>
 
+    <!-- 飛過的鳥（成對） -->
+    <svg class="bird bird-1" viewBox="0 0 60 24"><g class="wings">
+      <ellipse cx="30" cy="12" rx="2.4" ry="3.2"/>
+      <path d="M30 12 C24 5 16 6 8 11 C15 9 22 11 30 14 C38 11 45 9 52 11 C44 6 36 5 30 12 Z"/>
+    </g></svg>
+    <svg class="bird bird-2" viewBox="0 0 60 24"><g class="wings">
+      <ellipse cx="30" cy="12" rx="2.4" ry="3.2"/>
+      <path d="M30 12 C24 5 16 6 8 11 C15 9 22 11 30 14 C38 11 45 9 52 11 C44 6 36 5 30 12 Z"/>
+    </g></svg>
+
     <!-- 滑翔的貓頭鷹 -->
     <svg class="owl-fly" viewBox="0 0 90 44"><g class="wings">
       <ellipse cx="45" cy="24" rx="7" ry="9"/>
@@ -62,6 +86,13 @@
 
     <!-- 樹枝與停棲的貓頭鷹（右下角） -->
     <svg class="branch" viewBox="0 0 340 170" preserveAspectRatio="xMaxYMax meet">
+      <defs>
+        <!-- 讓輪廓變毛茸茸的位移濾鏡 -->
+        <filter id="fuzzy" x="-25%" y="-25%" width="150%" height="150%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
       <path class="bough" d="M340 92 C286 86 236 78 186 84 C150 88 120 82 92 96 M186 84 C160 70 150 60 138 46 M120 88 C104 82 92 74 84 62"
             fill="none" stroke-width="7" stroke-linecap="round"/>
       <!-- 小葉 -->
@@ -70,7 +101,7 @@
 
       <!-- 貓頭鷹 A -->
       <g class="owl owl-a" transform="translate(150 40)">
-        <path class="owl-sil" d="M12 6 l4 -9 l5 10 M28 8 l4 -9 l4 9
+        <path class="owl-sil" filter="url(#fuzzy)" d="M12 6 l4 -9 l5 10 M28 8 l4 -9 l4 9
           M20 -2 C31 -2 37 8 37 22 C37 38 30 50 20 50 C10 50 3 38 3 22 C3 8 9 -2 20 -2 Z"/>
         <circle class="owl-eye" cx="13" cy="18" r="4.2"/>
         <circle class="owl-eye" cx="27" cy="18" r="4.2"/>
@@ -79,7 +110,7 @@
 
       <!-- 貓頭鷹 B（較小） -->
       <g class="owl owl-b" transform="translate(238 60) scale(0.8)">
-        <path class="owl-sil" d="M12 6 l4 -9 l5 10 M28 8 l4 -9 l4 9
+        <path class="owl-sil" filter="url(#fuzzy)" d="M12 6 l4 -9 l5 10 M28 8 l4 -9 l4 9
           M20 -2 C31 -2 37 8 37 22 C37 38 30 50 20 50 C10 50 3 38 3 22 C3 8 9 -2 20 -2 Z"/>
         <circle class="owl-eye" cx="13" cy="18" r="4.2"/>
         <circle class="owl-eye" cx="27" cy="18" r="4.2"/>

@@ -83,17 +83,26 @@ body {
   overflow: hidden;
 }
 
-/* 彎月 */
+/* 滿月（緩緩呼吸的微笑臉） */
 .moon {
   position: absolute;
   top: 8%;
-  right: 14%;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fdf3d6, #efe0b0 60%, #e9d4a0);
-  box-shadow: 0 0 34px 6px rgba(244, 213, 141, 0.28), inset -10px -6px 0 0 rgba(10,14,35,0.92);
-  opacity: 0.55;
+  right: 13%;
+  width: 60px;
+  height: 60px;
+  opacity: 0.72;
+  transform-origin: center;
+  filter: drop-shadow(0 0 12px rgba(244, 213, 141, 0.5));
+  animation: moon-breathe 7s ease-in-out infinite;
+}
+.moon-face {
+  fill: #b89a5e;
+  stroke: #b89a5e;
+  opacity: 0.5;
+}
+@keyframes moon-breathe {
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 10px rgba(244, 213, 141, 0.38)); }
+  50%      { transform: scale(1.06); filter: drop-shadow(0 0 22px rgba(244, 213, 141, 0.65)); }
 }
 
 /* 星星 */
@@ -171,6 +180,42 @@ body {
   100% { transform: translate(-18vw, 16vh) scaleX(-0.85) scaleY(0.85); opacity: 0; }
 }
 
+/* 鳥（成對飛過） */
+.bird {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34px;
+  color: var(--c-flyer);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.bird .wings {
+  fill: currentColor;
+  transform-origin: 50% 50%;
+  animation: flap-bird 0.5s ease-in-out infinite;
+}
+@keyframes flap-bird {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(0.55); }
+}
+.bird-1 { animation: fly-bird-1 34s linear infinite; animation-delay: 6s; }
+.bird-2 { width: 26px; animation: fly-bird-2 34s linear infinite; animation-delay: 7.4s; }
+@keyframes fly-bird-1 {
+  0%   { transform: translate(-16vw, 27vh) scale(0.9); opacity: 0; }
+  12%  { opacity: 0.5; }
+  50%  { transform: translate(50vw, 16vh) scale(1); opacity: 0.5; }
+  88%  { opacity: 0.5; }
+  100% { transform: translate(118vw, 22vh) scale(0.9); opacity: 0; }
+}
+@keyframes fly-bird-2 {
+  0%   { transform: translate(-16vw, 31vh) scale(0.8); opacity: 0; }
+  14%  { opacity: 0.45; }
+  50%  { transform: translate(46vw, 21vh) scale(0.9); opacity: 0.45; }
+  86%  { opacity: 0.45; }
+  100% { transform: translate(118vw, 28vh) scale(0.8); opacity: 0; }
+}
+
 /* 樹枝與停棲的貓頭鷹（右下角） */
 .branch {
   position: absolute;
@@ -182,7 +227,13 @@ body {
 }
 .branch .bough { stroke: var(--c-silhouette); }
 .branch .leaf { fill: var(--c-silhouette); }
-.owl-sil { fill: var(--c-silhouette); }
+/* 毛茸茸輪廓：填色 + 略亮描邊，再經 #fuzzy 位移濾鏡打散邊緣 */
+.owl-sil {
+  fill: var(--c-silhouette);
+  stroke: #4a5a94;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
 .owl-beak { fill: #10193a; }
 .owl-eye {
   fill: var(--c-owl-eye);
@@ -558,14 +609,17 @@ body {
 .btn-ghost:hover { color: var(--c-mist); }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora, .orb, .done-mark,
-  .star, .bat, .owl-fly, .bat .wings, .owl-fly .wings, .owl-eye {
+  .aurora, .orb, .done-mark, .moon,
+  .star, .bat, .owl-fly, .bird,
+  .bat .wings, .owl-fly .wings, .bird .wings, .owl-eye {
     animation: none;
   }
   /* 靜態時仍讓夜行動物停在畫面內、不要卡在畫面外 */
-  .bat, .owl-fly { opacity: 0.4; }
+  .bat, .owl-fly, .bird { opacity: 0.4; }
   .bat-1 { transform: translate(20vw, 14vh); }
   .bat-2 { transform: translate(70vw, 20vh) scaleX(-0.85) scaleY(0.85); }
   .bat-3 { transform: translate(40vw, 34vh) scale(0.7); }
   .owl-fly { transform: translate(60vw, 10vh) scaleX(-0.9) scaleY(0.9); }
+  .bird-1 { transform: translate(30vw, 20vh); }
+  .bird-2 { transform: translate(64vw, 24vh) scale(0.8); }
 }

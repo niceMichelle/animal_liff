@@ -254,6 +254,127 @@ body {
   95%           { transform: scaleY(0.1); }
 }
 
+/* ============================================================
+   早晨場景 + 主題切換
+   ============================================================ */
+.day { /* 預設隱藏；.theme-morning 時才顯示 */
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  display: none;
+}
+.theme-morning .day { display: block; }
+.theme-morning .night { display: none; }
+.theme-morning .aurora { display: none; }
+
+/* 早晨天空與可讀的文字色（覆蓋深色主題變數） */
+body.theme-morning {
+  background: radial-gradient(140% 120% at 50% -10%, #bfe9f7 0%, #ddf1ef 45%, #fdeecd 100%);
+  background-attachment: fixed;
+  --c-mist: #34454f;
+  --c-mist-dim: #6f7d88;
+  --c-accent: #e0912f;
+}
+
+/* 微笑的太陽（左上，緩緩呼吸、光芒慢轉） */
+.sun {
+  position: absolute;
+  top: 6%;
+  left: 8%;
+  width: 108px;
+  height: 108px;
+  filter: drop-shadow(0 0 20px rgba(255, 200, 80, 0.5));
+  transform-origin: center;
+  animation: sun-breathe 6.5s ease-in-out infinite;
+}
+.sun-rays {
+  transform-box: view-box;
+  transform-origin: 60px 60px;
+  animation: sun-spin 60s linear infinite;
+}
+.sun-face { fill: #cf7a1e; stroke: #cf7a1e; }
+@keyframes sun-spin { to { transform: rotate(360deg); } }
+@keyframes sun-breathe {
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 16px rgba(255, 200, 80, 0.45)); }
+  50%      { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(255, 200, 80, 0.65)); }
+}
+
+/* 樹（右下）與隨風搖曳的樹葉 */
+.tree {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(60vw, 320px);
+  height: auto;
+}
+.trunk { stroke: #9a6438; fill: none; }
+.foliage {
+  transform-box: view-box;
+  transform-origin: 268px 118px;
+  animation: sway 5.5s ease-in-out infinite;
+}
+.foliage circle { fill: #66ab52; }
+.foliage circle:nth-child(odd) { fill: #77b962; }
+@keyframes sway {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50%      { transform: rotate(1.9deg); }
+}
+
+/* 無尾熊 */
+.koala-ear, .koala-head, .koala-body { fill: #a6afb6; }
+.koala-ear-in { fill: #cfd4d9; }
+.koala-nose { fill: #41474f; }
+.koala-eye { fill: #2c313a; }
+
+/* 隨風散出的光點 */
+.spark {
+  position: absolute;
+  left: var(--sx);
+  top: var(--sy);
+  width: calc(var(--sz, 4px) * 0.8);
+  height: calc(var(--sz, 4px) * 0.8);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.55) 42%, transparent 72%);
+  box-shadow: 0 0 7px 2px rgba(255, 255, 255, 0.7);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: wind-drift var(--dur, 8s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes wind-drift {
+  0%   { opacity: 0;   transform: translate(0, 0) scale(0.4); }
+  12%  { opacity: 1;   transform: translate(-16px, -10px) scale(1); }
+  65%  { opacity: 0.9; }
+  100% { opacity: 0;   transform: translate(-140px, -88px) scale(1.25); }
+}
+
+/* 早晨主題下，把深色玻璃表面改為淺色可讀 */
+.theme-morning .mode-item {
+  background: linear-gradient(135deg, rgba(255,255,255,0.62), rgba(255,255,255,0.36));
+  border-color: rgba(90, 110, 130, 0.22);
+}
+.theme-morning .mode-item:hover, .theme-morning .mode-item:active {
+  background: linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,247,225,0.5));
+  border-color: rgba(224, 145, 47, 0.5);
+}
+.theme-morning .mode-situation { color: #2a8f86; }
+.theme-morning .mode-diff.diff-1 { color: #1f7a6e; background: rgba(95,180,150,0.18); border-color: rgba(95,180,150,0.4); }
+.theme-morning .mode-diff.diff-2 { color: #3350c0; background: rgba(111,139,240,0.16); border-color: rgba(111,139,240,0.4); }
+.theme-morning .mode-diff.diff-3 { color: #7a44b0; background: rgba(150,110,210,0.16); border-color: rgba(150,110,210,0.4); }
+.theme-morning .ctl,
+.theme-morning .guide-back {
+  background: rgba(255,255,255,0.55);
+  border-color: rgba(90, 110, 130, 0.28);
+}
+.theme-morning .ctl:hover, .theme-morning .ctl:active { background: rgba(255,255,255,0.72); }
+.theme-morning #screen-done {
+  background:
+    radial-gradient(120% 80% at 50% 26%, rgba(255,210,120,0.20), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(120,200,230,0.22), transparent 70%);
+}
+
 /* —— 舞台（滿版滑動面板的容器） —— */
 .stage {
   position: relative;
@@ -396,13 +517,15 @@ body {
 .guide-back {
   display: none;
   position: absolute;
-  top: max(18px, calc(env(safe-area-inset-top) + 10px));
-  left: 18px;
+  top: max(16px, calc(env(safe-area-inset-top) + 8px));
+  left: 16px;
+  width: auto;        /* 覆蓋 .screen > * 的 width:100%，否則會被撐滿 */
+  max-width: none;
   font-family: var(--font-zh);
-  font-size: 0.86rem;
-  letter-spacing: 0.1em;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
   color: var(--c-mist-dim);
-  padding: 8px 14px;
+  padding: 5px 11px;
   border: 1px solid rgba(233, 236, 247, 0.18);
   border-radius: 999px;
   background: rgba(255,255,255,0.04);
@@ -617,9 +740,11 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .aurora, .orb, .done-mark, .moon,
   .star, .bat, .owl-fly, .bird,
-  .bat .wings, .owl-fly .wings, .bird .wings, .owl-eye {
+  .bat .wings, .owl-fly .wings, .bird .wings, .owl-eye,
+  .sun, .sun-rays, .foliage, .spark {
     animation: none;
   }
+  .spark { opacity: 0.5; }
   /* 靜態時仍讓夜行動物停在畫面內、不要卡在畫面外 */
   .bat, .owl-fly, .bird { opacity: 0.4; }
   .bat-1 { transform: translate(20vw, 14vh); }

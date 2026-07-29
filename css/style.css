@@ -235,6 +235,12 @@ body {
   stroke-linejoin: round;
 }
 .owl-beak { fill: #10193a; }
+.owl-claw path {
+  fill: none;
+  stroke: var(--c-silhouette);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+}
 .owl-eye {
   fill: var(--c-owl-eye);
   opacity: 0.85;

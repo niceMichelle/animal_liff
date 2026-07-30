@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>節律步伐 · 律動</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Serif+TC:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 背景：極光漂移 + 顆粒紋理 -->
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- 夜晚場景 -->
+  <div class="night" aria-hidden="true">
+    <svg class="moon" viewBox="0 0 100 100">
+      <defs>
+        <radialGradient id="moonGrad" cx="38%" cy="34%" r="72%">
+          <stop offset="0%" stop-color="#fdf6de" />
+          <stop offset="60%" stop-color="#f0e2b2" />
+          <stop offset="100%" stop-color="#e3cf96" />
+        </radialGradient>
+      </defs>
+      <circle class="moon-disc" cx="50" cy="50" r="42" fill="url(#moonGrad)" />
+      <g class="moon-face">
+        <path d="M32 43 Q38 49 44 43" fill="none" stroke-width="3" stroke-linecap="round" />
+        <path d="M56 43 Q62 49 68 43" fill="none" stroke-width="3" stroke-linecap="round" />
+        <path d="M37 59 Q50 69 63 59" fill="none" stroke-width="3" stroke-linecap="round" />
+      </g>
+    </svg>
+
+    <span class="star" style="--x:14%;--y:16%;--s:2px;--d:0s"></span>
+    <span class="star" style="--x:26%;--y:9%;--s:1.5px;--d:1.1s"></span>
+    <span class="star" style="--x:63%;--y:12%;--s:2.5px;--d:.5s"></span>
+    <span class="star" style="--x:82%;--y:20%;--s:1.5px;--d:1.8s"></span>
+    <span class="star" style="--x:47%;--y:7%;--s:2px;--d:2.4s"></span>
+    <span class="star" style="--x:91%;--y:38%;--s:2px;--d:1.4s"></span>
+    <span class="star" style="--x:8%;--y:34%;--s:1.5px;--d:3s"></span>
+    <span class="star" style="--x:72%;--y:28%;--s:1.5px;--d:.8s"></span>
+
+    <!-- 樹叢 + 浣熊（右下角） -->
+    <svg class="scene scene-night" viewBox="0 0 340 180" preserveAspectRatio="xMaxYMax meet">
+      <g class="raccoon" transform="translate(15,0)">
+        <!-- 尾巴（同一路徑：底色 + 虛線環紋） -->
+        <path class="rac-tail" d="M210 150 q50 8 52 -30 q2 -22 -20 -26" fill="none" stroke-width="15" stroke-linecap="round"/>
+        <path class="rac-ring" d="M210 150 q50 8 52 -30 q2 -22 -20 -26" fill="none" stroke-width="15" stroke-linecap="butt"/>
+        <!-- 身體（鐘型，與頭部相似） -->
+        <path class="rac-body" d="M176 126 C160 126 152 134 151 148 C149 162 144 172 145 178 C147 184 159 186 176 186 C193 186 205 184 207 178 C208 172 203 162 201 148 C200 134 192 126 176 126 Z"/>
+        <!-- 圓形肚皮（淺灰） -->
+        <circle class="rac-belly" cx="176" cy="162" r="22"/>
+        <!-- 頭部整組（向上移） -->
+        <g transform="translate(0,-8)">
+          <!-- 腮幫子（每邊兩個，畫在頭之前，基部被頭蓋住、只露尖端） -->
+          <path class="rac-cheek" d="M158 123 L138 129 L158 131 Z M158 131 L138 133 L158 139 Z"/>
+          <path class="rac-cheek" d="M194 123 L214 129 L194 131 Z M194 131 L214 133 L194 139 Z"/>
+          <!-- 耳朵（杏仁核形，原本形狀） -->
+          <path class="rac-ear" d="M165 97 Q155 92 159 80 Q168 85 167 97 Z"/>
+          <path class="rac-ear" d="M187 97 Q197 92 193 80 Q184 85 185 97 Z"/>
+          <!-- 頭（鐘型，下擺較圓潤） -->
+          <path class="rac-head" d="M176 88 C163 88 155 94 152 104 C148 116 142 121 142 131 C142 139 154 144 168 144 L184 144 C198 144 210 139 210 131 C210 121 204 116 200 104 C197 94 189 88 176 88 Z"/>
+          <!-- 內耳 -->
+          <path class="rac-ear-in" d="M164 94 Q158 90 160 83 Q166 86 165 94 Z"/>
+          <path class="rac-ear-in" d="M188 94 Q194 90 192 83 Q186 86 187 94 Z"/>
+          <!-- 臉（僅鼻子周圍、淺灰） -->
+          <ellipse class="rac-face" cx="176" cy="127" rx="8" ry="7"/>
+          <!-- 眼罩（八字、分開，眼尾落在灰區） -->
+          <ellipse class="rac-mask" cx="164" cy="118" rx="7.5" ry="11" transform="rotate(30 164 118)"/>
+          <ellipse class="rac-mask" cx="188" cy="118" rx="7.5" ry="11" transform="rotate(-30 188 118)"/>
+          <!-- 眼睛 -->
+          <circle class="rac-eye" cx="164" cy="119" r="2.6"/>
+          <circle class="rac-eye" cx="188" cy="119" r="2.6"/>
+          <!-- 鼻（倒三角） -->
+          <path class="rac-nose" d="M172 126 h8 l-4 5 z"/>
+        </g>
+      </g>
+      <g class="bush">
+        <circle cx="248" cy="162" r="40"/>
+        <circle cx="292" cy="170" r="36"/>
+        <circle cx="320" cy="162" r="30"/>
+        <circle cx="270" cy="140" r="30"/>
+        <circle cx="302" cy="146" r="26"/>
+      </g>
+    </svg>
+
+    <!-- 樹叢飄出的音符 -->
+    <span class="note" style="--nx:80%;--nb:14%;--nz:20px;--dur:6s;--delay:0s">♪</span>
+    <span class="note" style="--nx:86%;--nb:18%;--nz:16px;--dur:7s;--delay:1.4s">♫</span>
+    <span class="note" style="--nx:74%;--nb:12%;--nz:22px;--dur:6.5s;--delay:2.6s">♩</span>
+    <span class="note" style="--nx:90%;--nb:16%;--nz:16px;--dur:7.5s;--delay:3.8s">♪</span>
+    <span class="note" style="--nx:78%;--nb:20%;--nz:18px;--dur:6.8s;--delay:5s">♫</span>
+  </div>
+
+  <!-- 早晨場景 -->
+  <div class="day" aria-hidden="true">
+    <svg class="sun" viewBox="0 0 120 120">
+      <defs>
+        <radialGradient id="sunGrad" cx="42%" cy="38%" r="65%">
+          <stop offset="0%" stop-color="#fff6c2" />
+          <stop offset="55%" stop-color="#ffd24d" />
+          <stop offset="100%" stop-color="#ffb020" />
+        </radialGradient>
+      </defs>
+      <g class="sun-rays" stroke="#ffc84d" stroke-width="4" stroke-linecap="round">
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(0 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(45 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(90 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(135 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(180 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(225 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(270 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(315 60 60)" />
+      </g>
+      <circle class="sun-disc" cx="60" cy="60" r="32" fill="url(#sunGrad)" />
+      <g class="sun-face">
+        <circle cx="51" cy="56" r="3" />
+        <circle cx="69" cy="56" r="3" />
+        <path d="M49 66 Q60 76 71 66" fill="none" stroke-width="3.5" stroke-linecap="round" />
+      </g>
+    </svg>
+
+    <!-- 樹叢 + 斑馬（右下角） -->
+    <svg class="scene scene-day" viewBox="0 0 340 180" preserveAspectRatio="xMaxYMax meet">
+      <defs>
+        <clipPath id="zbody"><path d="M110 124 C108 106 122 100 150 101 C186 100 224 104 244 114 C256 120 256 134 248 148 C238 162 210 166 180 166 C148 166 124 163 115 149 C110 141 111 132 110 124 Z"/></clipPath>
+      </defs>
+      <!-- 面向右方低頭吃草：頭與脖子沒入樹叢，只露出身體與尾巴 -->
+      <g class="zebra">
+        <!-- 尾巴 + 毛球（屁股後方、微微偏上） -->
+        <path class="zeb-tail" d="M114 128 C106 125 99 122 91 117" fill="none"/>
+        <path class="zeb-tail-tuft" d="M91 117 q-9 -3 -10 -13 q12 1 13 12 z"/>
+        <!-- 腿 + 蹄（兩後腿在屁股下方） -->
+        <rect class="zeb-leg" x="126" y="150" width="9" height="26" rx="2"/>
+        <rect class="zeb-leg" x="144" y="152" width="9" height="24" rx="2"/>
+        <rect class="zeb-leg" x="200" y="150" width="9" height="26" rx="2"/>
+        <rect class="zeb-leg" x="218" y="152" width="9" height="24" rx="2"/>
+        <rect class="zeb-hoof" x="126" y="172" width="9" height="4" rx="1"/>
+        <rect class="zeb-hoof" x="144" y="172" width="9" height="4" rx="1"/>
+        <rect class="zeb-hoof" x="200" y="172" width="9" height="4" rx="1"/>
+        <rect class="zeb-hoof" x="218" y="172" width="9" height="4" rx="1"/>
+        <!-- 身體＋臀部：一整塊馬鈴薯形（身體回前一版大小，只有臀部變鼓） -->
+        <path class="zeb-body" d="M110 124 C108 106 122 100 150 101 C186 100 224 104 244 114 C256 120 256 134 248 148 C238 162 210 166 180 166 C148 166 124 163 115 149 C110 141 111 132 110 124 Z"/>
+        <!-- 脖子（往右下沒入樹叢） -->
+        <path class="zeb-neck" d="M216 122 C238 118 254 126 262 150 L246 152 C242 134 234 130 218 137 Z"/>
+        <!-- 頭（藏在樹叢裡） -->
+        <ellipse class="zeb-head" cx="264" cy="152" rx="16" ry="10" transform="rotate(26 264 152)"/>
+        <!-- 鬃毛 -->
+        <path class="zeb-mane" d="M218 110 L221 100 L225 109 L229 101 L233 110 L237 102 L242 111 L245 104 L249 113 L253 106 L257 116" fill="none"/>
+        <!-- 身體條紋（直向、全部平行、裁切到馬鈴薯形） -->
+        <g class="zeb-stripes" clip-path="url(#zbody)">
+          <rect x="158" y="102" width="6" height="66"/>
+          <rect x="172" y="102" width="6" height="66"/>
+          <rect x="186" y="102" width="6" height="66"/>
+          <rect x="200" y="104" width="6" height="62"/>
+          <rect x="214" y="106" width="6" height="56"/>
+          <rect x="228" y="110" width="6" height="48"/>
+        </g>
+        <!-- 臀部條紋（直向微弧、朝尾巴方向凹） -->
+        <g clip-path="url(#zbody)">
+          <path class="zeb-hstripe" d="M118 104 Q124 134 118 164"/>
+          <path class="zeb-hstripe" d="M130 102 Q136 134 130 166"/>
+          <path class="zeb-hstripe" d="M142 104 Q148 134 142 164"/>
+        </g>
+        <!-- 腿部條紋（橫向、身體下方，不與身體交叉） -->
+        <path class="zeb-nstripe" d="M126 167 h9 M144 168 h9 M200 167 h9 M218 168 h9" fill="none" stroke-width="3"/>
+      </g>
+      <g class="bush">
+        <circle cx="248" cy="162" r="40"/>
+        <circle cx="292" cy="170" r="36"/>
+        <circle cx="320" cy="162" r="30"/>
+        <circle cx="270" cy="140" r="30"/>
+        <circle cx="302" cy="146" r="26"/>
+      </g>
+    </svg>
+
+    <!-- 樹叢飄出的音符 -->
+    <span class="note" style="--nx:80%;--nb:14%;--nz:20px;--dur:6s;--delay:0s">♪</span>
+    <span class="note" style="--nx:86%;--nb:18%;--nz:16px;--dur:7s;--delay:1.4s">♫</span>
+    <span class="note" style="--nx:74%;--nb:12%;--nz:22px;--dur:6.5s;--delay:2.6s">♩</span>
+    <span class="note" style="--nx:90%;--nb:16%;--nz:16px;--dur:7.5s;--delay:3.8s">♪</span>
+    <span class="note" style="--nx:78%;--nb:20%;--nz:18px;--dur:6.8s;--delay:5s">♫</span>
+  </div>
+
+  <main class="stage">
+
+    <!-- 畫面 0：首頁選單 -->
+    <section id="screen-menu" class="screen">
+      <p class="eyebrow">律動 · STEP</p>
+      <h1 class="menu-title">選一種節奏<br />跟著音樂動起來</h1>
+      <ul class="mode-list" id="mode-list"><!-- JS 依 patterns 產生 --></ul>
+    </section>
+
+    <!-- 畫面 1：引導（步伐舞台） -->
+    <section id="screen-guide" class="screen">
+      <button class="guide-back" id="btn-menu" aria-label="返回選單">‹ 選單</button>
+      <p class="eyebrow">節律步伐</p>
+      <h2 class="guide-title" id="guide-title">原地踏步</h2>
+      <p class="stage-banner" id="stage-banner"></p>
+      <p class="guide-sub" id="guide-sub"></p>
+
+      <div class="step-stage">
+        <div class="beat-dots" id="beat-dots"></div>
+
+        <div class="cue-center" id="cue-center">
+          <span class="cue-arrow" id="cue-arrow"></span>
+          <span class="cue-label" id="cue-label">準備</span>
+        </div>
+
+        <div class="foot-area">
+          <!-- 方塊步的方塊背景（只在方塊步顯示） -->
+          <div class="step-square" id="step-square" hidden>
+            <span class="sq-dot" style="left:0;top:0"></span>
+            <span class="sq-dot" style="left:100%;top:0"></span>
+            <span class="sq-dot" style="left:0;top:100%"></span>
+            <span class="sq-dot" style="left:100%;top:100%"></span>
+          </div>
+          <div class="foot foot-l" id="foot-l">
+            <div class="foot-rot"><svg viewBox="0 0 60 96"><path class="foot-shape" d="M30 4 C43 4 49 18 47 38 C46 54 44 66 42 78 C41 88 36 92 30 92 C24 92 19 88 18 78 C16 66 14 54 13 38 C11 18 17 4 30 4 Z"/></svg></div>
+          </div>
+          <div class="foot foot-r" id="foot-r">
+            <div class="foot-rot"><svg viewBox="0 0 60 96"><path class="foot-shape" d="M30 4 C43 4 49 18 47 38 C46 54 44 66 42 78 C41 88 36 92 30 92 C24 92 19 88 18 78 C16 66 14 54 13 38 C11 18 17 4 30 4 Z"/></svg></div>
+          </div>
+        </div>
+
+        <div class="countin" id="countin"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary" id="btn-start">開始</button>
+        <div class="ctl-row" id="ctl-row">
+          <button class="ctl" id="btn-pause" aria-label="暫停或繼續">暫停</button>
+          <button class="ctl" id="btn-sound" aria-label="音效開關">♪ 音效</button>
+          <button class="ctl" id="btn-stop" aria-label="結束">結束</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 畫面 2：完成（滿版） -->
+    <section id="screen-done" class="screen">
+      <div class="done-card">
+        <div class="done-mark">💪</div>
+        <h2 class="done-title">完成</h2>
+        <p class="done-sub">身體暖了、節奏也回來了，做得好！</p>
+        <button class="btn-primary" id="btn-again">再做一次</button>
+        <button class="btn-ghost" id="btn-close">關閉</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- LINE LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <!-- 應用程式模組 -->
+  <script src="js/patterns.js"></script>
+  <script src="js/rhythm-audio.js"></script>
+  <script src="js/rhythm-engine.js"></script>
+  <script src="js/liff-init.js"></script>
+
+  <!-- 介面接線（DOM × 引擎 × LIFF） -->
+  <script>
+    (function () {
+      const screens = {
+        menu: document.getElementById('screen-menu'),
+        guide: document.getElementById('screen-guide'),
+        done: document.getElementById('screen-done'),
+      };
+
+      const el = {
+        modeList: document.getElementById('mode-list'),
+        btnMenu: document.getElementById('btn-menu'),
+        guideEl: document.getElementById('screen-guide'),
+        guideTitle: document.getElementById('guide-title'),
+        stageBanner: document.getElementById('stage-banner'),
+        guideSub: document.getElementById('guide-sub'),
+        footL: document.getElementById('foot-l'),
+        footR: document.getElementById('foot-r'),
+        stepSquare: document.getElementById('step-square'),
+        cueCenter: document.getElementById('cue-center'),
+        cueArrow: document.getElementById('cue-arrow'),
+        cueLabel: document.getElementById('cue-label'),
+        beatDots: document.getElementById('beat-dots'),
+        countin: document.getElementById('countin'),
+        btnStart: document.getElementById('btn-start'),
+        btnPause: document.getElementById('btn-pause'),
+        btnSound: document.getElementById('btn-sound'),
+        btnStop: document.getElementById('btn-stop'),
+        btnAgain: document.getElementById('btn-again'),
+        btnClose: document.getElementById('btn-close'),
+      };
+
+      const audio = new window.RhythmAudio();
+      let engine = null;
+      let currentType = window.DEFAULT_PATTERN;
+      let currentScreen = null;
+      let cameFromMenu = false;
+
+      const DIFF_LEVEL = { '入門': 1, '初級': 2, '中級': 3, '進階': 4 };
+      const ARROWS = { front: '↑', back: '↓', left: '←', right: '→' };
+
+      // 腳印位置（單位 → 像素）。待機：左腳 -1、右腳 +1。
+      // 左右(X)與前後(Y)分開單位：Y 較大讓方塊步上下不重疊；須與 CSS .step-square 尺寸一致。
+      const FOOT_UX = 40;
+      const FOOT_UY = 44;
+      const footPos = { L: { x: -1, y: 0 }, R: { x: 1, y: 0 } };
+      function applyFeet() {
+        el.footL.style.transform =
+          'translate(calc(-50% + ' + (footPos.L.x * FOOT_UX) + 'px), calc(-50% + ' + (footPos.L.y * FOOT_UY) + 'px))';
+        el.footR.style.transform =
+          'translate(calc(-50% + ' + (footPos.R.x * FOOT_UX) + 'px), calc(-50% + ' + (footPos.R.y * FOOT_UY) + 'px))';
+      }
+      function resetFeet() {
+        footPos.L = { x: -1, y: 0 };
+        footPos.R = { x: 1, y: 0 };
+        applyFeet();
+      }
+
+      // —— 上下滑動轉場 ——
+      function activate(name, dir) {
+        const target = screens[name];
+        if (currentScreen === target) return;
+        if (!currentScreen) { target.classList.add('is-active'); currentScreen = target; return; }
+        const prev = currentScreen;
+        target.classList.remove('is-active', 'above', 'below');
+        target.classList.add(dir === 'down' ? 'below' : 'above');
+        prev.classList.remove('is-active');
+        prev.classList.add(dir === 'down' ? 'above' : 'below');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          target.classList.remove('above', 'below');
+          target.classList.add('is-active');
+        }));
+        currentScreen = target;
+      }
+
+      // —— 選單 ——
+      function durationText(p) {
+        const sec = Math.round(p.bars * (p.beatsPerBar || 4) * 60 / p.bpm);
+        const m = Math.floor(sec / 60), s = sec % 60;
+        const t = m > 0 ? (m + ' 分' + (s ? ' ' + s + ' 秒' : '')) : (s + ' 秒');
+        return p.bpm + ' BPM · 約 ' + t;
+      }
+
+      function buildMenu() {
+        el.modeList.innerHTML = '';
+        Object.values(window.STEP_PATTERNS).forEach((p, i) => {
+          const li = document.createElement('li');
+          li.className = 'mode-item';
+          li.style.setProperty('--i', i);
+          const lvl = DIFF_LEVEL[p.difficulty] || 1;
+          li.innerHTML =
+            '<div class="mode-head">' +
+              '<span class="mode-name">' + p.name + '</span>' +
+              '<span class="mode-diff diff-' + lvl + '">' + p.difficulty + '</span>' +
+            '</div>' +
+            '<p class="mode-intro">' + p.intro + '</p>' +
+            '<p class="mode-situation">適合：' + p.situation + '</p>' +
+            '<p class="mode-meta">' + durationText(p) + '</p>';
+          li.addEventListener('click', () => selectFromMenu(p.id));
+          el.modeList.appendChild(li);
+        });
+      }
+
+      function selectFromMenu(type) {
+        cameFromMenu = true;
+        loadGuide(type);
+        activate('guide', 'down');
+      }
+
+      function buildBeatDots(n) {
+        el.beatDots.innerHTML = '';
+        for (let i = 0; i < n; i++) {
+          const d = document.createElement('span');
+          d.className = 'beat-dot';
+          el.beatDots.appendChild(d);
+        }
+      }
+
+      function setStageIdle() {
+        el.footL.classList.remove('active');
+        el.footR.classList.remove('active');
+        el.cueCenter.classList.remove('pulse', 'accent');
+        el.cueArrow.textContent = '';
+        el.cueLabel.textContent = '準備';
+        el.countin.classList.remove('show');
+        Array.from(el.beatDots.children).forEach((d) => d.classList.remove('lit'));
+        el.stageBanner.textContent = '';
+        el.stageBanner.classList.remove('show', 'rest');
+        resetFeet();
+      }
+
+      function loadGuide(type) {
+        currentType = type;
+        const p = window.STEP_PATTERNS[type];
+        el.guideTitle.textContent = p.name;
+        el.guideSub.textContent = durationText(p);
+        el.guideEl.classList.remove('running');
+        el.guideEl.classList.toggle('from-menu', cameFromMenu);
+        el.btnStart.textContent = '開始';
+        el.stepSquare.hidden = (type !== 'box'); // 方塊背景只在方塊步顯示
+        buildBeatDots(p.beatsPerBar || 4);
+        setStageIdle();
+      }
+
+      // —— 開始 / 重新開始 ——
+      function startRun() {
+        if (engine) engine.stop();
+        const p = window.STEP_PATTERNS[currentType];
+
+        el.guideEl.classList.add('running');
+        el.btnStart.textContent = '重新開始';
+        el.btnPause.textContent = '暫停';
+        buildBeatDots(p.beatsPerBar || 4);
+        setStageIdle();
+
+        engine = new window.RhythmEngine(p, audio, {
+          onStage(stage, index) {
+            el.stageBanner.textContent = '① ② ③'.split(' ')[index] + ' ' + stage.banner;
+            el.stageBanner.classList.add('show');
+            el.stageBanner.classList.remove('rest');
+          },
+          onRest(n, stage, index) {
+            // 階段間休息：靜下來、提醒接下來的階段並倒數 5→1
+            el.footL.classList.remove('active');
+            el.footR.classList.remove('active');
+            resetFeet();
+            Array.from(el.beatDots.children).forEach((d) => d.classList.remove('lit'));
+            el.cueCenter.classList.remove('pulse', 'accent');
+            el.cueArrow.textContent = '';
+            el.cueLabel.textContent = '休息';
+            el.stageBanner.textContent = '休息一下 · 接下來是「' + stage.name + '」';
+            el.stageBanner.classList.add('show', 'rest');
+            el.guideSub.textContent = stage.name + ' 即將開始';
+            el.countin.textContent = n;
+            el.countin.classList.remove('show');
+            void el.countin.offsetWidth;
+            el.countin.classList.add('show');
+          },
+          onCountIn(n) {
+            el.countin.textContent = n;
+            // 每個數字都要重新觸發動畫（否則第一次之後動畫已結束、停在 opacity:0 而看不見）
+            el.countin.classList.remove('show');
+            void el.countin.offsetWidth;
+            el.countin.classList.add('show');
+            el.cueLabel.textContent = '預備';
+          },
+          onBeat(cue, beatInBar, barIndex, stageBars, stage) {
+            el.countin.classList.remove('show');
+            el.guideSub.textContent = stage.name + ' · 第 ' + (barIndex + 1) + ' / ' + stageBars + ' 小節';
+            el.cueLabel.textContent = cue.label;
+            el.cueArrow.textContent = ARROWS[cue.dir] || '';
+
+            // 更新腳印位置：有位移(x)就滑過去並停住；y 指定前後、未指定回到地面線
+            const activeKeys = cue.foot === 'both' ? ['L', 'R'] : [cue.foot];
+            activeKeys.forEach((k) => {
+              if (cue.x !== undefined) footPos[k].x = cue.x;
+              footPos[k].y = cue.y !== undefined ? cue.y : 0;
+            });
+            applyFeet();
+
+            // 腳印高亮 + 抬腳（移除再加以重新觸發動畫）
+            el.footL.classList.remove('active');
+            el.footR.classList.remove('active');
+            const targets = cue.foot === 'both' ? [el.footL, el.footR]
+              : cue.foot === 'L' ? [el.footL] : [el.footR];
+            targets.forEach((f) => { void f.offsetWidth; f.classList.add('active'); });
+
+            // 中央脈動
+            el.cueCenter.classList.remove('pulse', 'accent');
+            void el.cueCenter.offsetWidth;
+            el.cueCenter.classList.add('pulse');
+            if (cue.accent) el.cueCenter.classList.add('accent');
+
+            // 拍點指示
+            Array.from(el.beatDots.children).forEach((d, i) => d.classList.toggle('lit', i === beatInBar));
+          },
+          onComplete() {
+            el.guideEl.classList.remove('running');
+            activate('done', 'down');
+          },
+        });
+        engine.start();
+      }
+
+      // —— 事件 ——
+      el.btnStart.addEventListener('click', async () => {
+        await audio.unlock();
+        startRun();
+      });
+
+      el.btnPause.addEventListener('click', () => {
+        if (!engine) return;
+        const paused = engine.togglePause();
+        el.btnPause.textContent = paused ? '繼續' : '暫停';
+        el.guideEl.classList.toggle('paused', paused);
+      });
+
+      el.btnSound.addEventListener('click', () => {
+        audio.enabled = !audio.enabled;
+        el.btnSound.classList.toggle('off', !audio.enabled);
+        el.btnSound.textContent = audio.enabled ? '♪ 音效' : '♪ 靜音';
+      });
+
+      el.btnStop.addEventListener('click', () => {
+        if (engine) engine.stop();
+        el.guideEl.classList.remove('running');
+        activate('done', 'down');
+      });
+
+      el.btnAgain.addEventListener('click', () => {
+        loadGuide(currentType);
+        activate('guide', 'up');
+      });
+
+      el.btnClose.addEventListener('click', () => window.AppLiff.close());
+
+      el.btnMenu.addEventListener('click', () => {
+        if (engine) engine.stop();
+        activate('menu', 'up');
+      });
+
+      // —— 啟動 ——
+      function pickTheme() {
+        const bg = new URLSearchParams(window.location.search).get('bg');
+        if (bg === 'morning' || bg === 'day') return 'morning';
+        if (bg === 'night') return 'night';
+        const h = new Date().getHours();
+        return (h >= 6 && h < 18) ? 'morning' : 'night';
+      }
+
+      (async function boot() {
+        document.body.classList.add('theme-' + pickTheme());
+        await window.AppLiff.init();
+        buildMenu();
+        if (window.AppLiff.hasType()) {
+          cameFromMenu = false;
+          loadGuide(window.AppLiff.getType());
+          activate('guide');
+        } else {
+          activate('menu');
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+/* ============================================================
+   律動 · 節律步伐 — 沿用呼吸 App 的「拂曉星空 / 早晨」視覺
+   背景場景、選單、按鈕、滑動面板與呼吸 App 一致；中央改為步伐舞台。
+   ============================================================ */
+
+:root {
+  --c-night: #0a0e23;
+  --c-deep: #121a3a;
+  --c-violet: #3a2d6b;
+  --c-teal: #1f6d6b;
+  --c-mist: #e9ecf7;
+  --c-mist-dim: #97a0c4;
+  --c-orb-a: #8fe3d6; /* 薄荷 */
+  --c-orb-b: #6f8bf0; /* 長春花藍 */
+  --c-orb-c: #b89cf0; /* 柔紫 */
+  --c-accent: #f3d9a4; /* 暖光點綴 */
+  --c-silhouette: #28325f;
+  --c-flyer: #323d6e;
+  --c-owl-eye: #f4d58d;
+
+  --font-zh: 'Noto Serif TC', serif;
+  --font-num: 'Cormorant Garamond', 'Noto Serif TC', serif;
+
+  --ease-breath: cubic-bezier(0.45, 0.05, 0.4, 0.95);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font-zh);
+  color: var(--c-mist);
+  background: radial-gradient(140% 120% at 50% -10%, var(--c-deep) 0%, var(--c-night) 55%, #05071a 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* —— 漂浮極光 —— */
+.aurora {
+  position: fixed;
+  inset: -25%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 32% at 22% 28%, rgba(111, 139, 240, 0.40), transparent 70%),
+    radial-gradient(34% 30% at 78% 22%, rgba(184, 156, 240, 0.32), transparent 70%),
+    radial-gradient(46% 40% at 60% 88%, rgba(31, 109, 107, 0.40), transparent 72%);
+  filter: blur(28px) saturate(120%);
+  animation: aurora-drift 26s var(--ease-breath) infinite alternate;
+}
+@keyframes aurora-drift {
+  0%   { transform: translate3d(-3%, -2%, 0) scale(1.05) rotate(0deg); opacity: 0.85; }
+  50%  { transform: translate3d(2%, 3%, 0) scale(1.12) rotate(4deg);  opacity: 1; }
+  100% { transform: translate3d(4%, -3%, 0) scale(1.08) rotate(-3deg); opacity: 0.8; }
+}
+
+/* —— 顆粒紋理 —— */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* —— 夜晚場景 —— */
+.night { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.moon {
+  position: absolute; top: 7%; right: 12%; width: 86px; height: 86px;
+  opacity: 0.72; transform-origin: center;
+  filter: drop-shadow(0 0 12px rgba(244, 213, 141, 0.5));
+  animation: moon-breathe 7s ease-in-out infinite;
+}
+.moon-face { fill: #b89a5e; stroke: #b89a5e; opacity: 0.5; }
+@keyframes moon-breathe {
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 10px rgba(244, 213, 141, 0.38)); }
+  50%      { transform: scale(1.06); filter: drop-shadow(0 0 22px rgba(244, 213, 141, 0.65)); }
+}
+.star {
+  position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s);
+  border-radius: 50%; background: #eaf0ff; opacity: 0.5;
+  animation: twinkle 3.4s ease-in-out infinite; animation-delay: var(--d);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.18; transform: scale(0.7); }
+  50%      { opacity: 0.85; transform: scale(1.15); }
+}
+/* —— 地面場景：樹叢 + 動物 + 音符（步伐專用，與呼吸不同） —— */
+.scene { position: absolute; right: 0; bottom: 0; width: min(64vw, 340px); height: auto; }
+
+/* 樹叢（夜暗綠 / 日亮綠） */
+.scene-night .bush circle { fill: #21403a; }
+.scene-night .bush circle:nth-child(odd) { fill: #284c44; }
+.scene-day .bush circle { fill: #5aa551; }
+.scene-day .bush circle:nth-child(odd) { fill: #6cb862; }
+
+/* 浣熊（夜晚） */
+.rac-body, .rac-head, .rac-ear, .rac-cheek { fill: #8b939c; }
+.rac-cheek { stroke: #8b939c; stroke-width: 3.5; stroke-linejoin: round; } /* 尖端變鈍、略放大 */
+.rac-belly { fill: #b6bcc4; } /* 圓形肚皮，略淺於身體 */
+.rac-ear-in { fill: #c7ccd2; }
+.rac-tail { stroke: #8b939c; }
+.rac-ring { stroke: #2b2f36; stroke-dasharray: 9 21; } /* 尾巴環紋 */
+.rac-face { fill: #c9ced4; } /* 僅鼻子周圍的淺灰內圈 */
+.rac-mask { fill: #2b2f36; }
+.rac-eye  { fill: #eef1f4; }
+.rac-nose { fill: #1c1f24; }
+
+/* 音符（樹叢飄出） */
+.note {
+  position: absolute; left: var(--nx); bottom: var(--nb);
+  font-size: var(--nz, 18px); line-height: 1;
+  opacity: 0; will-change: transform, opacity;
+  animation: note-float var(--dur, 6s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+.night .note { color: #c3d0f7; text-shadow: 0 0 8px rgba(180, 200, 255, 0.5); }
+.day .note   { color: #2f8f6e; text-shadow: 0 0 8px rgba(120, 200, 150, 0.4); }
+@keyframes note-float {
+  0%   { opacity: 0;    transform: translate(0, 0) rotate(-10deg) scale(0.7); }
+  15%  { opacity: 0.95; }
+  70%  { opacity: 0.75; transform: translate(-26px, -70px) rotate(8deg) scale(1); }
+  100% { opacity: 0;    transform: translate(-44px, -120px) rotate(-4deg) scale(1.05); }
+}
+
+/* —— 早晨場景 + 主題切換 —— */
+.day { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; display: none; }
+.theme-morning .day { display: block; }
+.theme-morning .night { display: none; }
+.theme-morning .aurora { display: none; }
+body.theme-morning {
+  background: radial-gradient(140% 120% at 50% -10%, #bfe9f7 0%, #ddf1ef 45%, #fdeecd 100%);
+  background-attachment: fixed;
+  --c-mist: #34454f;
+  --c-mist-dim: #6f7d88;
+  --c-accent: #e0912f;
+}
+.sun {
+  position: absolute; top: 6%; left: 8%; width: 108px; height: 108px;
+  filter: drop-shadow(0 0 20px rgba(255, 200, 80, 0.5));
+  transform-origin: center; animation: sun-breathe 6.5s ease-in-out infinite;
+}
+.sun-rays { transform-box: view-box; transform-origin: 60px 60px; animation: sun-spin 60s linear infinite; }
+.sun-face { fill: #cf7a1e; stroke: #cf7a1e; }
+@keyframes sun-spin { to { transform: rotate(360deg); } }
+@keyframes sun-breathe {
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 16px rgba(255, 200, 80, 0.45)); }
+  50%      { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(255, 200, 80, 0.65)); }
+}
+/* 斑馬（白天） */
+.zeb-body, .zeb-neck, .zeb-head, .zeb-ear, .zeb-leg { fill: #f2f1ec; }
+.zeb-muzzle { fill: #6b7076; }
+.zeb-hoof { fill: #2b2f36; }
+.zeb-tail { stroke: #23262b; fill: none; stroke-width: 3; stroke-linecap: round; }
+.zeb-tail-tuft { fill: #23262b; }
+.zeb-mane { stroke: #23262b; fill: none; stroke-width: 4; stroke-linejoin: round; }
+.zeb-nstripe { stroke: #23262b; fill: none; stroke-linecap: round; }
+.zeb-hstripe { stroke: #23262b; fill: none; stroke-width: 6; stroke-linecap: round; } /* 臀部平行微弧條紋 */
+.zeb-stripes rect { fill: #23262b; }
+
+/* 早晨主題下的淺色可讀表面 */
+.theme-morning .mode-item {
+  background: linear-gradient(135deg, rgba(255,255,255,0.62), rgba(255,255,255,0.36));
+  border-color: rgba(90, 110, 130, 0.22);
+}
+.theme-morning .mode-item:hover, .theme-morning .mode-item:active {
+  background: linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,247,225,0.5));
+  border-color: rgba(224, 145, 47, 0.5);
+}
+.theme-morning .mode-situation { color: #2a8f86; }
+.theme-morning .mode-diff.diff-1 { color: #1f7a6e; background: rgba(95,180,150,0.18); border-color: rgba(95,180,150,0.4); }
+.theme-morning .mode-diff.diff-2 { color: #3350c0; background: rgba(111,139,240,0.16); border-color: rgba(111,139,240,0.4); }
+.theme-morning .mode-diff.diff-3 { color: #7a44b0; background: rgba(150,110,210,0.16); border-color: rgba(150,110,210,0.4); }
+.theme-morning .mode-diff.diff-4 { color: #c2632a; background: rgba(230,130,60,0.16); border-color: rgba(230,130,60,0.4); }
+.theme-morning .ctl, .theme-morning .guide-back {
+  background: rgba(255,255,255,0.55); border-color: rgba(90, 110, 130, 0.28);
+}
+.theme-morning .ctl:hover, .theme-morning .ctl:active { background: rgba(255,255,255,0.72); }
+.theme-morning .foot-shape { fill: rgba(90,110,130,0.14); stroke: rgba(90,110,130,0.32); }
+.theme-morning .beat-dot { background: rgba(90,110,130,0.22); }
+.theme-morning #screen-done {
+  background:
+    radial-gradient(120% 80% at 50% 26%, rgba(255,210,120,0.20), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(120,200,230,0.22), transparent 70%);
+}
+
+/* —— 舞台（滿版滑動面板） —— */
+.stage { position: relative; z-index: 2; min-height: 100vh; min-height: 100dvh; }
+.screen {
+  position: fixed; inset: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; justify-content: safe center;
+  text-align: center;
+  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  opacity: 0; transform: translateY(100%); pointer-events: none;
+  transition: transform 0.55s var(--ease-breath), opacity 0.5s var(--ease-breath);
+  will-change: transform, opacity;
+}
+.screen > * { width: 100%; max-width: 460px; }
+.screen.is-active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.screen.above     { opacity: 0; transform: translateY(-100%); pointer-events: none; }
+.screen.below     { opacity: 0; transform: translateY(100%);  pointer-events: none; }
+
+.eyebrow {
+  font-size: 0.72rem; letter-spacing: 0.42em; text-transform: uppercase;
+  color: var(--c-accent); opacity: 0.85; margin-bottom: 1.1rem; padding-left: 0.42em;
+}
+
+/* ===================== 首頁選單 ===================== */
+#screen-menu {
+  justify-content: flex-start;
+  padding-top: max(40px, calc(env(safe-area-inset-top) + 32px));
+  padding-bottom: 40px;
+}
+.menu-title {
+  font-weight: 400; font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+  line-height: 1.5; letter-spacing: 0.04em; margin-bottom: 1.8rem;
+}
+.mode-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.mode-item {
+  position: relative; text-align: left; padding: 18px 20px;
+  border: 1px solid rgba(233, 236, 247, 0.14); border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  backdrop-filter: blur(8px); cursor: pointer; overflow: hidden;
+  transition: transform 0.4s var(--ease-breath), border-color 0.4s, background 0.4s;
+  animation: rise 0.6s var(--ease-breath) both; animation-delay: calc(var(--i) * 80ms + 120ms);
+}
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.mode-item::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(var(--c-orb-a), var(--c-orb-b)); opacity: 0; transition: opacity 0.4s;
+}
+.mode-item:hover, .mode-item:active {
+  transform: translateY(-3px); border-color: rgba(143, 227, 214, 0.5);
+  background: linear-gradient(135deg, rgba(143,227,214,0.10), rgba(111,139,240,0.05));
+}
+.mode-item:hover::before { opacity: 1; }
+.mode-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 0.5rem; }
+.mode-name { font-size: 1.18rem; font-weight: 500; letter-spacing: 0.05em; }
+.mode-diff { flex: none; font-size: 0.7rem; letter-spacing: 0.08em; padding: 3px 11px; border-radius: 999px; border: 1px solid transparent; }
+.mode-diff.diff-1 { color: #9ff0dd; background: rgba(143,227,214,0.16); border-color: rgba(143,227,214,0.35); }
+.mode-diff.diff-2 { color: #b6c4ff; background: rgba(111,139,240,0.18); border-color: rgba(111,139,240,0.38); }
+.mode-diff.diff-3 { color: #d7c2f5; background: rgba(184,156,240,0.18); border-color: rgba(184,156,240,0.40); }
+.mode-diff.diff-4 { color: #ffc9a3; background: rgba(240,150,90,0.18); border-color: rgba(240,150,90,0.42); }
+.mode-intro { font-size: 0.86rem; line-height: 1.75; color: var(--c-mist); font-weight: 300; margin-bottom: 0.5rem; }
+.mode-situation { font-size: 0.82rem; line-height: 1.7; color: var(--c-orb-a); font-weight: 300; margin-bottom: 0.3rem; }
+.mode-meta { font-size: 0.74rem; letter-spacing: 0.12em; color: var(--c-mist-dim); }
+
+/* ===================== 引導畫面 ===================== */
+.guide-back {
+  display: none; position: absolute;
+  top: max(16px, calc(env(safe-area-inset-top) + 8px)); left: 16px;
+  width: auto; max-width: none;
+  font-family: var(--font-zh); font-size: 0.78rem; letter-spacing: 0.06em; color: var(--c-mist-dim);
+  padding: 5px 11px; border: 1px solid rgba(233, 236, 247, 0.18); border-radius: 999px;
+  background: rgba(255,255,255,0.04); backdrop-filter: blur(6px); cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+}
+.guide-back:hover { color: var(--c-mist); border-color: rgba(143,227,214,0.5); }
+#screen-guide.from-menu #btn-menu { display: inline-flex; }
+#screen-guide.from-menu.running #btn-menu { display: none; }
+
+.guide-title { font-weight: 500; font-size: clamp(1.8rem, 8vw, 2.6rem); letter-spacing: 0.06em; margin-bottom: 0.5rem; transition: font-size 0.4s, opacity 0.4s; }
+/* 執行時縮小標題，讓上方的階段提示更醒目 */
+#screen-guide.running .guide-title { font-size: clamp(1.3rem, 6vw, 1.7rem); opacity: 0.72; margin-bottom: 0.3rem; }
+
+/* 階段提示：置於畫面最上方的高對比膠囊（教學/練習/正式、休息倒數） */
+.stage-banner {
+  position: absolute; z-index: 3;
+  top: max(14px, calc(env(safe-area-inset-top) + 8px));
+  left: 50%; transform: translateX(-50%);
+  width: auto; max-width: 92%;
+  font-size: clamp(0.95rem, 4.4vw, 1.12rem); letter-spacing: 0.04em; font-weight: 600;
+  line-height: 1.45; text-align: center;
+  color: #0c1130; background: var(--c-orb-a);
+  padding: 9px 20px; border-radius: 18px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.32);
+  opacity: 0; transition: opacity 0.3s var(--ease-breath), background 0.3s;
+  pointer-events: none;
+}
+.stage-banner.show { opacity: 1; }
+.stage-banner.rest { color: #2a1c05; background: var(--c-accent); } /* 休息時改暖色 */
+.guide-sub {
+  font-size: 0.85rem; letter-spacing: 0.14em; color: var(--c-mist-dim);
+  margin-bottom: clamp(1rem, 4vh, 2.2rem); min-height: 1.2em;
+  transition: font-size 0.3s, color 0.3s;
+}
+/* 執行時放大「第 X / 總 小節」的說明文字 */
+#screen-guide.running .guide-sub {
+  font-size: clamp(1.05rem, 5vw, 1.35rem);
+  color: var(--c-mist); font-weight: 500; letter-spacing: 0.08em;
+}
+
+/* ===================== 步伐舞台 ===================== */
+.step-stage {
+  position: relative; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(1.2rem, 5vh, 2.4rem);
+  margin-bottom: clamp(1.5rem, 6vh, 3.5rem);
+}
+.beat-dots { display: flex; gap: 12px; }
+.beat-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(233, 236, 247, 0.18);
+  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+}
+.beat-dot.lit {
+  background: var(--c-orb-a); transform: scale(1.5);
+  box-shadow: 0 0 12px rgba(143, 227, 214, 0.8);
+}
+
+/* 腳印在此軌道內以絕對定位移動；JS 用 transform:translate 帶到 cue 指定位置並平滑滑動 */
+.foot-area {
+  position: relative;
+  width: 100%;
+  height: clamp(220px, 60vw, 260px);
+}
+.foot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(34px, 11vw, 42px);
+  transform: translate(-50%, -50%);
+  transition: transform 0.22s var(--ease-breath); /* 位移滑動 */
+  will-change: transform;
+}
+
+/* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 80px、高 = 2·FOOT_UY = 88px） */
+.step-square {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 80px;
+  height: 88px;
+  transform: translate(-50%, calc(-50% - 44px));
+  border: 2px dashed rgba(233, 236, 247, 0.30);
+  border-radius: 12px;
+}
+.sq-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c-orb-a);
+  opacity: 0.7;
+  transform: translate(-50%, -50%);
+}
+.theme-morning .step-square { border-color: rgba(90, 110, 130, 0.4); }
+.foot-l .foot-rot { transform: rotate(-9deg); }
+.foot-r .foot-rot { transform: rotate(9deg); }
+.foot svg { width: 100%; height: auto; display: block; }
+.foot-shape {
+  fill: rgba(233, 236, 247, 0.12);
+  stroke: rgba(233, 236, 247, 0.28);
+  stroke-width: 2;
+  transition: fill 0.12s ease, stroke 0.12s ease;
+}
+/* 左右腳以不同顏色區分：左＝薄荷、右＝柔紫（待機淡淡染色，踏出時亮起） */
+.foot-l .foot-shape { stroke: rgba(143, 227, 214, 0.55); }
+.foot-r .foot-shape { stroke: rgba(184, 156, 240, 0.6); }
+.foot-l.active .foot-shape { fill: var(--c-orb-a); stroke: var(--c-orb-b); }
+.foot-r.active .foot-shape { fill: var(--c-orb-c); stroke: #8f6fe0; }
+/* 抬腳（在 svg 上，與外層的位移 transform 互不干擾） */
+.foot.active svg { animation: foot-pop 0.3s var(--ease-breath); }
+@keyframes foot-pop {
+  0%   { transform: translateY(0) scale(1); }
+  40%  { transform: translateY(-12px) scale(1.12); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.cue-center {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.1rem; min-width: 4.2em;
+}
+.cue-center.pulse { animation: cue-pulse 0.3s var(--ease-breath); }
+.cue-center.accent.pulse { animation: cue-pulse-accent 0.3s var(--ease-breath); }
+@keyframes cue-pulse { 0% { transform: scale(1.1); } 100% { transform: scale(1); } }
+@keyframes cue-pulse-accent { 0% { transform: scale(1.28); } 100% { transform: scale(1); } }
+.cue-arrow {
+  font-size: clamp(1.5rem, 7vw, 2.1rem); line-height: 1;
+  color: var(--c-orb-a); min-height: 1.05em;
+  text-shadow: 0 0 14px rgba(143, 227, 214, 0.5);
+}
+.cue-label {
+  font-size: clamp(1.4rem, 7vw, 2rem); font-weight: 600; letter-spacing: 0.06em;
+  color: var(--c-mist); white-space: nowrap;
+}
+
+.countin {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font-family: var(--font-num); font-size: clamp(4rem, 26vw, 8rem); line-height: 1;
+  color: var(--c-orb-a); text-shadow: 0 0 30px rgba(143, 227, 214, 0.6);
+  opacity: 0; pointer-events: none;
+}
+.countin.show { animation: countin-pop 0.6s ease-out; }
+@keyframes countin-pop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+  30%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
+
+/* ===================== 控制列 ===================== */
+.controls { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.ctl-row { display: none; gap: 12px; }
+#screen-guide.running .ctl-row { display: flex; }
+#screen-guide.running #btn-start { padding: 12px 40px; font-size: 0.98rem; margin-bottom: 0; }
+.ctl {
+  font-family: var(--font-zh); font-size: 0.9rem; letter-spacing: 0.1em; color: var(--c-mist);
+  padding: 12px 20px; border: 1px solid rgba(233, 236, 247, 0.22); border-radius: 999px;
+  background: rgba(255,255,255,0.05); backdrop-filter: blur(6px); cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, opacity 0.3s;
+}
+.ctl:hover, .ctl:active { background: rgba(255,255,255,0.12); border-color: rgba(143,227,214,0.5); }
+.ctl.off { opacity: 0.45; }
+
+/* ===================== 完成畫面（滿版） ===================== */
+#screen-done {
+  background:
+    radial-gradient(120% 80% at 50% 28%, rgba(143,227,214,0.12), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(111,139,240,0.20), transparent 70%);
+}
+.done-card { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+.done-mark { font-size: 3.4rem; margin-bottom: 0.4rem; animation: float 4s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.done-title { font-weight: 500; font-size: 2.2rem; letter-spacing: 0.16em; }
+.done-sub { font-size: 0.95rem; font-weight: 300; line-height: 2; color: var(--c-mist-dim); margin-bottom: 1.8rem; }
+
+/* ===================== 按鈕 ===================== */
+.btn-primary {
+  font-family: var(--font-zh); font-size: 1.05rem; letter-spacing: 0.16em; color: #0c1130;
+  padding: 15px 56px; border: none; border-radius: 999px;
+  background: linear-gradient(135deg, var(--c-orb-a), var(--c-orb-b));
+  box-shadow: 0 8px 30px rgba(111,139,240,0.5); cursor: pointer;
+  transition: transform 0.3s var(--ease-breath), box-shadow 0.3s; margin-bottom: 0.4rem;
+}
+.btn-primary:hover, .btn-primary:active { transform: translateY(-2px); box-shadow: 0 12px 38px rgba(143,227,214,0.55); }
+.btn-ghost {
+  font-family: var(--font-zh); font-size: 0.9rem; letter-spacing: 0.14em; color: var(--c-mist-dim);
+  padding: 10px 24px; border: none; background: none; cursor: pointer; transition: color 0.3s;
+}
+.btn-ghost:hover { color: var(--c-mist); }
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora, .moon, .star, .sun, .sun-rays, .note, .done-mark,
+  .foot.active svg, .cue-center, .countin.show {
+    animation: none;
+  }
+  .note { opacity: 0.6; }
+}

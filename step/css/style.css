@@ -271,11 +271,11 @@ body.theme-morning {
 #screen-guide.from-menu #btn-menu { display: inline-flex; }
 #screen-guide.from-menu.running #btn-menu { display: none; }
 
-.guide-title { font-weight: 500; font-size: clamp(1.8rem, 8vw, 2.6rem); letter-spacing: 0.06em; margin-bottom: 0.5rem; transition: font-size 0.4s, opacity 0.4s; }
-/* 執行時縮小標題，讓上方的階段提示更醒目 */
-#screen-guide.running .guide-title { font-size: clamp(1.3rem, 6vw, 1.7rem); opacity: 0.72; margin-bottom: 0.3rem; }
+.guide-title { font-weight: 500; font-size: clamp(1.8rem, 8vw, 2.6rem); letter-spacing: 0.06em; margin-bottom: 0.5rem; transition: font-size 0.4s, opacity 0.3s; }
+/* 執行時標題略縮但保持清楚可見（休息提示與階段說明改放在下方 guide-sub） */
+#screen-guide.running .guide-title { font-size: clamp(1.5rem, 6.5vw, 2rem); margin-bottom: 0.35rem; }
 
-/* 階段提示：置於畫面最上方的高對比膠囊（教學/練習/正式、休息倒數） */
+/* 綜合舞步預告膠囊：置於頂部、藍色強調（僅綜合舞步踏步時出現） */
 .stage-banner {
   position: absolute; z-index: 3;
   top: max(14px, calc(env(safe-area-inset-top) + 8px));
@@ -283,30 +283,29 @@ body.theme-morning {
   width: auto; max-width: 92%;
   font-size: clamp(0.95rem, 4.4vw, 1.12rem); letter-spacing: 0.04em; font-weight: 600;
   line-height: 1.45; text-align: center;
-  color: #0c1130; background: var(--c-orb-a);
+  color: #fff; background: var(--c-orb-b);
   padding: 9px 20px; border-radius: 18px;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.32);
-  opacity: 0; transition: opacity 0.3s var(--ease-breath), background 0.3s;
+  opacity: 0; transition: opacity 0.3s var(--ease-breath);
   pointer-events: none;
 }
 .stage-banner.show { opacity: 1; }
-.stage-banner.rest { color: #2a1c05; background: var(--c-accent); }        /* 休息中：暖色 */
-.stage-banner.next { color: #fff; background: var(--c-orb-b); }            /* 綜合舞步預告下一段：藍色強調 */
-/* 休息/預備/綜合舞步進行時淡出上方眉標與標題，讓膠囊獨佔頂部、不互相覆蓋（保留版位不位移） */
-#screen-guide.resting .eyebrow,
-#screen-guide.resting .guide-title,
+/* 綜合舞步踏步時淡出眉標與標題，讓預告膠囊獨佔頂部（不位移版面） */
 #screen-guide.combo-running .eyebrow,
 #screen-guide.combo-running .guide-title { opacity: 0; }
+
 .guide-sub {
   font-size: 0.85rem; letter-spacing: 0.14em; color: var(--c-mist-dim);
   margin-bottom: clamp(1rem, 4vh, 2.2rem); min-height: 1.2em;
   transition: font-size 0.3s, color 0.3s;
 }
-/* 執行時放大「第 X / 總 小節」的說明文字 */
+/* 執行時放大說明文字（休息提示 / 階段說明 / 小節進度都顯示在此） */
 #screen-guide.running .guide-sub {
   font-size: clamp(1.05rem, 5vw, 1.35rem);
-  color: var(--c-mist); font-weight: 500; letter-spacing: 0.08em;
+  color: var(--c-mist); font-weight: 500; letter-spacing: 0.08em; line-height: 1.5;
 }
+/* 休息提示：暖色，語氣親切 */
+#screen-guide.running .guide-sub.note-rest { color: var(--c-accent); }
 
 /* ===================== 步伐舞台 ===================== */
 .step-stage {

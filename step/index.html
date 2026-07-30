@@ -387,15 +387,16 @@
         el.cueLabel.textContent = '準備';
         el.countin.classList.remove('show');
         Array.from(el.beatDots.children).forEach((d) => d.classList.remove('lit'));
+        el.guideSub.classList.remove('note-rest');
         el.stageBanner.textContent = '';
-        el.stageBanner.classList.remove('show', 'rest', 'next');
-        el.guideEl.classList.remove('resting', 'combo-running');
+        el.stageBanner.classList.remove('show');
+        el.guideEl.classList.remove('combo-running');
         resetFeet();
       }
 
       // 階段提示文字（① 教學 · ...）
-      function stageDesc(stage, index) {
-        return '① ② ③'.split(' ')[index] + ' ' + stage.banner;
+      function stageDesc(stage) {
+        return stage.banner; // 純句子（不加階段標籤與編號）
       }
 
       function loadGuide(type) {
@@ -425,7 +426,7 @@
 
         engine = new window.RhythmEngine(p, audio, {
           onRest(n, stage, index) {
-            // 休息 5 秒：靜下來、腳步歸位。整段 5 秒都顯示提示
+            // 休息 5 秒：靜下來、腳步歸位。提示文字放在標題下方（guide-sub），標題保留在上方
             el.footL.classList.remove('active');
             el.footR.classList.remove('active');
             resetFeet();
@@ -433,14 +434,14 @@
             el.cueCenter.classList.remove('pulse', 'accent');
             el.cueArrow.textContent = '';
             el.cueLabel.textContent = '休息';
-            el.guideEl.classList.add('resting');
-            el.guideEl.classList.remove('combo-running');
 
-            // 練習/正式 休息：整 5 秒親切提示接續（暖色）；教學不會進到這裡
-            el.stageBanner.textContent = '先喘口氣、放鬆一下～等等換「' + stage.name + '」囉';
-            el.stageBanner.classList.add('show', 'rest');
-            el.stageBanner.classList.remove('next');
-            el.guideSub.textContent = '放輕鬆，' + stage.name + '馬上開始';
+            // 練習/正式 休息：親切提示接續（教學不會進到這裡）
+            el.guideSub.textContent = (stage.name === '正式')
+              ? '準備好了嗎？要正式開始嘍！'
+              : '先喘口氣、放鬆一下～準備加快速度嘍！';
+            el.guideSub.classList.add('note-rest');
+            el.stageBanner.classList.remove('show'); // 隱藏綜合預告膠囊，讓標題回來
+            el.guideEl.classList.remove('combo-running');
 
             el.countin.textContent = n;
             el.countin.classList.remove('show');
@@ -448,11 +449,11 @@
             el.countin.classList.add('show');
           },
           onCountIn(n, stage, index) {
-            // 預備倒數：顯示該階段說明（薄荷色），標題維持隱藏
-            el.guideEl.classList.add('resting');
-            el.stageBanner.textContent = stageDesc(stage, index);
-            el.stageBanner.classList.add('show');
-            el.stageBanner.classList.remove('rest', 'next');
+            // 預備倒數：階段說明放在標題下方（guide-sub），標題保留
+            el.guideSub.textContent = stageDesc(stage);
+            el.guideSub.classList.remove('note-rest');
+            el.stageBanner.classList.remove('show'); // 預備倒數不顯示綜合預告膠囊
+            el.guideEl.classList.remove('combo-running');
             el.cueLabel.textContent = '預備';
             el.countin.textContent = n;
             // 每個數字都要重新觸發動畫（否則第一次之後動畫已結束、停在 opacity:0 而看不見）
@@ -462,19 +463,20 @@
           },
           onBeat(cue, beatInBar, barIndex, stageBars, stage) {
             el.countin.classList.remove('show');
-            el.guideSub.textContent = stage.name + ' · 第 ' + (barIndex + 1) + ' / ' + stageBars + ' 小節';
+            el.guideSub.classList.remove('note-rest');
             el.cueLabel.textContent = cue.label;
             el.cueArrow.textContent = ARROWS[cue.dir] || '';
 
-            // 綜合舞步：頂部膠囊整段持續預告「接下來 · 下一段舞步」，讓用戶提前準備
-            el.guideEl.classList.remove('resting');
+            // guide-sub 顯示進度（所有模式一致）
+            el.guideSub.textContent = stage.name + ' · 第 ' + (barIndex + 1) + ' / ' + stageBars + ' 小節';
+
+            // 綜合舞步：頂部藍色膠囊持續預告「接下來 · 下一段舞步」（此時淡出標題讓膠囊獨佔頂部）
             if (cue.nextMove) {
               el.guideEl.classList.add('combo-running');
               el.stageBanner.textContent = '接下來 · ' + cue.nextMove;
-              el.stageBanner.classList.add('show', 'next');
-              el.stageBanner.classList.remove('rest');
+              el.stageBanner.classList.add('show');
             } else {
-              el.stageBanner.classList.remove('show', 'rest', 'next');
+              el.stageBanner.classList.remove('show');
               el.guideEl.classList.remove('combo-running');
             }
 

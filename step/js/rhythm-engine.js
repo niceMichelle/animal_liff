@@ -25,9 +25,9 @@ class RhythmEngine {
     const loops = seqLen <= 6 ? 4 : 1;
     // 三階段（速度倍率 + 拍數）
     this.stages = [
-      { name: '教學', banner: '教學 · 別急，慢慢看清楚左右腳和方向就好', bpm: base * 0.5,  beats: seqLen * loops },
-      { name: '練習', banner: '練習 · 抓到感覺了嗎？一起再快一點點', bpm: base * 0.72, beats: seqLen * loops },
-      { name: '正式', banner: '正式開始 · 放輕鬆，跟著音樂盡情動起來吧！', bpm: base, beats: pattern.bars * this.beatsPerBar },
+      { name: '教學', banner: '別急，慢慢看清楚左右腳和方向', bpm: base * 0.5,  beats: seqLen * loops },
+      { name: '練習', banner: '抓到感覺了嗎？一起再快一點點', bpm: base * 0.72, beats: seqLen * loops },
+      { name: '正式', banner: '放輕鬆，跟著音樂盡情動起來吧！', bpm: base, beats: pattern.bars * this.beatsPerBar },
     ];
     this._buildEvents();
 

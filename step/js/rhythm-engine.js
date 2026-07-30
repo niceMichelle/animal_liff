@@ -6,9 +6,9 @@
 // 每階段前有一小節預備拍（畫面 3-2-1）。
 //
 // callbacks:
-//   onStage(stage, index)                           進入新階段（更新階段提示文字）
-//   onRest(n, stage, index)                         階段間休息倒數（提醒接下來的階段）
-//   onCountIn(n, stage)                              預備拍倒數
+//   onStage(stage, index)                           進入新階段（可選）
+//   onRest(n, stage, index)                         階段前休息倒數 5→1
+//   onCountIn(n, stage, index)                       預備拍倒數
 //   onBeat(cue, beatInBar, barIndex, stageBars, stage)  每一正式拍
 //   onComplete()                                    全部階段跑完
 
@@ -21,11 +21,13 @@ class RhythmEngine {
 
     const seqLen = pattern.sequence.length;
     const base = pattern.bpm;
+    // 教學/練習走幾圈：短序列走 4 圈熟悉；長序列（如綜合舞步）走 1 圈即涵蓋所有舞步
+    const loops = seqLen <= 6 ? 4 : 1;
     // 三階段（速度倍率 + 拍數）
     this.stages = [
-      { name: '教學', banner: '教學 · 放慢腳步，看清楚左右腳與方向', bpm: base * 0.5,  beats: seqLen * 4 },
-      { name: '練習', banner: '練習 · 稍微加快，抓住節奏', bpm: base * 0.72, beats: seqLen * 4 },
-      { name: '正式', banner: '正式開始 · 跟著音樂動起來！', bpm: base, beats: pattern.bars * this.beatsPerBar },
+      { name: '教學', banner: '教學 · 別急，慢慢看清楚左右腳和方向就好', bpm: base * 0.5,  beats: seqLen * loops },
+      { name: '練習', banner: '練習 · 抓到感覺了嗎？一起再快一點點', bpm: base * 0.72, beats: seqLen * loops },
+      { name: '正式', banner: '正式開始 · 放輕鬆，跟著音樂盡情動起來吧！', bpm: base, beats: pattern.bars * this.beatsPerBar },
     ];
     this._buildEvents();
 
@@ -48,7 +50,7 @@ class RhythmEngine {
       st.beatDur = 60 / st.bpm;
       st.bars = Math.max(1, Math.round(st.beats / bpb));
 
-      // 階段間休息 5 秒（第一階段除外）：靜下來，文字提醒接下來的階段並倒數
+      // 練習/正式 前休息 5 秒（教學不休息，直接進入預備）
       if (si > 0) {
         for (let r = 5; r >= 1; r--) {
           this.events.push({ type: 'rest', n: r, dur: 1, stage: st, stageIndex: si });
@@ -146,7 +148,7 @@ class RhythmEngine {
         if (ev.type === 'rest') {
           if (this.cb.onRest) this.cb.onRest(ev.n, ev.stage, ev.stageIndex);
         } else if (ev.type === 'countin') {
-          if (this.cb.onCountIn) this.cb.onCountIn(ev.n, ev.stage);
+          if (this.cb.onCountIn) this.cb.onCountIn(ev.n, ev.stage, ev.stageIndex);
         } else if (this.cb.onBeat) {
           this.cb.onBeat(ev.cue, ev.beatInBar, ev.barIndex, ev.stageBars, ev.stage);
         }

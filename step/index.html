@@ -304,8 +304,8 @@
 
       // 腳印位置（單位 → 像素）。待機：左腳 -1、右腳 +1。
       // 左右(X)與前後(Y)分開單位：Y 較大讓方塊步上下不重疊；須與 CSS .step-square 尺寸一致。
-      const FOOT_UX = 40;
-      const FOOT_UY = 44;
+      const FOOT_UX = 44;
+      const FOOT_UY = 48;
       const footPos = { L: { x: -1, y: 0 }, R: { x: 1, y: 0 } };
       function applyFeet() {
         el.footL.style.transform =
@@ -388,8 +388,14 @@
         el.countin.classList.remove('show');
         Array.from(el.beatDots.children).forEach((d) => d.classList.remove('lit'));
         el.stageBanner.textContent = '';
-        el.stageBanner.classList.remove('show', 'rest');
+        el.stageBanner.classList.remove('show', 'rest', 'next');
+        el.guideEl.classList.remove('resting', 'combo-running');
         resetFeet();
+      }
+
+      // 階段提示文字（① 教學 · ...）
+      function stageDesc(stage, index) {
+        return '① ② ③'.split(' ')[index] + ' ' + stage.banner;
       }
 
       function loadGuide(type) {
@@ -408,6 +414,7 @@
       // —— 開始 / 重新開始 ——
       function startRun() {
         if (engine) engine.stop();
+        if (currentType === 'combo' && window.rebuildCombo) window.rebuildCombo(); // 每次隨機組合
         const p = window.STEP_PATTERNS[currentType];
 
         el.guideEl.classList.add('running');
@@ -417,13 +424,8 @@
         setStageIdle();
 
         engine = new window.RhythmEngine(p, audio, {
-          onStage(stage, index) {
-            el.stageBanner.textContent = '① ② ③'.split(' ')[index] + ' ' + stage.banner;
-            el.stageBanner.classList.add('show');
-            el.stageBanner.classList.remove('rest');
-          },
           onRest(n, stage, index) {
-            // 階段間休息：靜下來、提醒接下來的階段並倒數 5→1
+            // 休息 5 秒：靜下來、腳步歸位。整段 5 秒都顯示提示
             el.footL.classList.remove('active');
             el.footR.classList.remove('active');
             resetFeet();
@@ -431,27 +433,53 @@
             el.cueCenter.classList.remove('pulse', 'accent');
             el.cueArrow.textContent = '';
             el.cueLabel.textContent = '休息';
-            el.stageBanner.textContent = '休息一下 · 接下來是「' + stage.name + '」';
+            el.guideEl.classList.add('resting');
+            el.guideEl.classList.remove('combo-running');
+
+            // 練習/正式 休息：整 5 秒親切提示接續（暖色）；教學不會進到這裡
+            el.stageBanner.textContent = '先喘口氣、放鬆一下～等等換「' + stage.name + '」囉';
             el.stageBanner.classList.add('show', 'rest');
-            el.guideSub.textContent = stage.name + ' 即將開始';
+            el.stageBanner.classList.remove('next');
+            el.guideSub.textContent = '放輕鬆，' + stage.name + '馬上開始';
+
             el.countin.textContent = n;
             el.countin.classList.remove('show');
             void el.countin.offsetWidth;
             el.countin.classList.add('show');
           },
-          onCountIn(n) {
+          onCountIn(n, stage, index) {
+            // 預備倒數：顯示該階段說明（薄荷色），標題維持隱藏
+            el.guideEl.classList.add('resting');
+            el.stageBanner.textContent = stageDesc(stage, index);
+            el.stageBanner.classList.add('show');
+            el.stageBanner.classList.remove('rest', 'next');
+            el.cueLabel.textContent = '預備';
             el.countin.textContent = n;
             // 每個數字都要重新觸發動畫（否則第一次之後動畫已結束、停在 opacity:0 而看不見）
             el.countin.classList.remove('show');
             void el.countin.offsetWidth;
             el.countin.classList.add('show');
-            el.cueLabel.textContent = '預備';
           },
           onBeat(cue, beatInBar, barIndex, stageBars, stage) {
             el.countin.classList.remove('show');
             el.guideSub.textContent = stage.name + ' · 第 ' + (barIndex + 1) + ' / ' + stageBars + ' 小節';
             el.cueLabel.textContent = cue.label;
             el.cueArrow.textContent = ARROWS[cue.dir] || '';
+
+            // 綜合舞步：頂部膠囊整段持續預告「接下來 · 下一段舞步」，讓用戶提前準備
+            el.guideEl.classList.remove('resting');
+            if (cue.nextMove) {
+              el.guideEl.classList.add('combo-running');
+              el.stageBanner.textContent = '接下來 · ' + cue.nextMove;
+              el.stageBanner.classList.add('show', 'next');
+              el.stageBanner.classList.remove('rest');
+            } else {
+              el.stageBanner.classList.remove('show', 'rest', 'next');
+              el.guideEl.classList.remove('combo-running');
+            }
+
+            // 綜合舞步每段開頭：先讓雙腳回到中立站姿，避免銜接時腳步重疊
+            if (cue.reset) { footPos.L = { x: -1, y: 0 }; footPos.R = { x: 1, y: 0 }; }
 
             // 更新腳印位置：有位移(x)就滑過去並停住；y 指定前後、未指定回到地面線
             const activeKeys = cue.foot === 'both' ? ['L', 'R'] : [cue.foot];
@@ -486,8 +514,9 @@
       }
 
       // —— 事件 ——
-      el.btnStart.addEventListener('click', async () => {
-        await audio.unlock();
+      el.btnStart.addEventListener('click', () => {
+        // unlock() 會同步建立 AudioContext，resume 在背景進行（不 await，避免卡住畫面）
+        audio.unlock();
         startRun();
       });
 

@@ -62,24 +62,45 @@ window.STEP_PATTERNS = {
 
   combo: {
     id: 'combo',
-    name: '綜合組合步',
-    intro: '併步、原地小跑與交叉點步輪番上陣，節奏快、切換多，全身動起來。',
-    situation: '心肺強化、挑戰協調與反應',
+    name: '綜合舞步',
+    intro: '隨機組合原地踏步、左右併步與方塊步三種舞步；教學階段先帶你逐一複習，再串成一段節奏。',
+    situation: '複習並整合三種基本舞步、全身協調',
     difficulty: '進階',
-    bpm: 134,
+    bpm: 116,
     beatsPerBar: 4,
-    bars: 56,
-    sequence: [
-      { label: '右併', foot: 'R', dir: 'right', x: 2.2, accent: true },
-      { label: '左併', foot: 'L', dir: 'left', x: -2.2, accent: true },
-      { label: '跑', foot: 'R', dir: null }, // 原地小跑（抬腳）
-      { label: '跑', foot: 'L', dir: null },
-      { label: '交叉', foot: 'R', dir: 'left', x: -1.4, y: -1.8, accent: true }, // 右腳交叉到左側前方（抬前避免重疊）
-      { label: '點', foot: 'L', dir: null },
-      { label: '交叉', foot: 'L', dir: 'right', x: 1.4, y: -1.8, accent: true }, // 左腳交叉到右側前方（抬前避免重疊）
-      { label: '點', foot: 'R', dir: null },
-    ],
+    bars: 36, // 每段舞步 4 拍(=1 小節)，三段=3 小節/圈；36 小節=12 圈
+    sequence: [], // 由 buildComboSequence() 隨機組合三種基本舞步填入
   },
+};
+
+// —— 綜合舞步：隨機串接「原地踏步 / 左右併步 / 方塊步」三段 ——
+// 三段都會出現、順序隨機；每段開頭標記 reset，讓腳步先回中立站姿再開始，避免銜接時重疊。
+function _shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function buildComboSequence() {
+  const P = window.STEP_PATTERNS;
+  const blocks = _shuffle([P.march, P.sidestep, P.box]);
+  const seq = [];
+  blocks.forEach((bp, bi) => {
+    const nextName = blocks[(bi + 1) % blocks.length].name; // 下一段舞步（循環時回到開頭）
+    bp.sequence.forEach((cue, i) => {
+      const c = Object.assign({}, cue);
+      c.move = bp.name;       // 目前這一段是哪種舞步
+      c.nextMove = nextName;  // 接下來要換的舞步（供預告）
+      if (i === 0) c.reset = true; // 每段開始回到中立站姿
+      seq.push(c);
+    });
+  });
+  return seq;
+}
+window.STEP_PATTERNS.combo.sequence = buildComboSequence();
+window.rebuildCombo = function () {
+  window.STEP_PATTERNS.combo.sequence = buildComboSequence();
 };
 
 window.DEFAULT_PATTERN = 'march';

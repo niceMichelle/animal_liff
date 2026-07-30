@@ -214,6 +214,7 @@ body.theme-morning {
 .eyebrow {
   font-size: 0.72rem; letter-spacing: 0.42em; text-transform: uppercase;
   color: var(--c-accent); opacity: 0.85; margin-bottom: 1.1rem; padding-left: 0.42em;
+  transition: opacity 0.3s var(--ease-breath);
 }
 
 /* ===================== 首頁選單 ===================== */
@@ -289,7 +290,13 @@ body.theme-morning {
   pointer-events: none;
 }
 .stage-banner.show { opacity: 1; }
-.stage-banner.rest { color: #2a1c05; background: var(--c-accent); } /* 休息時改暖色 */
+.stage-banner.rest { color: #2a1c05; background: var(--c-accent); }        /* 休息中：暖色 */
+.stage-banner.next { color: #fff; background: var(--c-orb-b); }            /* 綜合舞步預告下一段：藍色強調 */
+/* 休息/預備/綜合舞步進行時淡出上方眉標與標題，讓膠囊獨佔頂部、不互相覆蓋（保留版位不位移） */
+#screen-guide.resting .eyebrow,
+#screen-guide.resting .guide-title,
+#screen-guide.combo-running .eyebrow,
+#screen-guide.combo-running .guide-title { opacity: 0; }
 .guide-sub {
   font-size: 0.85rem; letter-spacing: 0.14em; color: var(--c-mist-dim);
   margin-bottom: clamp(1rem, 4vh, 2.2rem); min-height: 1.2em;
@@ -323,33 +330,33 @@ body.theme-morning {
 .foot-area {
   position: relative;
   width: 100%;
-  height: clamp(220px, 60vw, 260px);
+  height: clamp(235px, 64vw, 285px);
 }
 .foot {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(34px, 11vw, 42px);
+  width: clamp(38px, 12.5vw, 48px);
   transform: translate(-50%, -50%);
   transition: transform 0.22s var(--ease-breath); /* 位移滑動 */
   will-change: transform;
 }
 
-/* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 80px、高 = 2·FOOT_UY = 88px） */
+/* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 88px、高 = 2·FOOT_UY = 96px） */
 .step-square {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 80px;
-  height: 88px;
-  transform: translate(-50%, calc(-50% - 44px));
+  width: 88px;
+  height: 96px;
+  transform: translate(-50%, calc(-50% - 48px));
   border: 2px dashed rgba(233, 236, 247, 0.30);
   border-radius: 12px;
 }
 .sq-dot {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
   background: var(--c-orb-a);
   opacity: 0.7;

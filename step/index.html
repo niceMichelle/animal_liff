@@ -304,8 +304,8 @@
 
       // 腳印位置（單位 → 像素）。待機：左腳 -1、右腳 +1。
       // 左右(X)與前後(Y)分開單位：Y 較大讓方塊步上下不重疊；須與 CSS .step-square 尺寸一致。
-      const FOOT_UX = 44;
-      const FOOT_UY = 48;
+      const FOOT_UX = 50;
+      const FOOT_UY = 58;
       const footPos = { L: { x: -1, y: 0 }, R: { x: 1, y: 0 } };
       function applyFeet() {
         el.footL.style.transform =
@@ -467,8 +467,9 @@
             el.cueLabel.textContent = cue.label;
             el.cueArrow.textContent = ARROWS[cue.dir] || '';
 
-            // guide-sub 顯示進度（所有模式一致）
-            el.guideSub.textContent = stage.name + ' · 第 ' + (barIndex + 1) + ' / ' + stageBars + ' 小節';
+            // guide-sub 顯示進度：正式階段不加標籤，教學/練習保留標籤
+            const label = stage.name === '正式' ? '' : (stage.name + ' · ');
+            el.guideSub.textContent = label + '第 ' + (barIndex + 1) + ' / ' + stageBars + ' 小節';
 
             // 綜合舞步：頂部藍色膠囊持續預告「接下來 · 下一段舞步」（此時淡出標題讓膠囊獨佔頂部）
             if (cue.nextMove) {

@@ -35,10 +35,10 @@ window.STEP_PATTERNS = {
     beatsPerBar: 4,
     bars: 47,
     sequence: [
-      { label: '右踏', foot: 'R', dir: 'right', x: 2.4, accent: true },
-      { label: '左併', foot: 'L', dir: 'right', x: 1.0 }, // 左腳併到右腳旁（留間距不重疊）
-      { label: '左踏', foot: 'L', dir: 'left', x: -2.4, accent: true },
-      { label: '右併', foot: 'R', dir: 'left', x: -1.0 }, // 右腳併到左腳旁（留間距不重疊）
+      { label: '右踏', foot: 'R', dir: 'right', x: 2.0, accent: true }, // 橫向幅度略縮，顧及小螢幕
+      { label: '左併', foot: 'L', dir: 'right', x: 0.7 }, // 左腳併到右腳旁（留間距不重疊）
+      { label: '左踏', foot: 'L', dir: 'left', x: -2.0, accent: true },
+      { label: '右併', foot: 'R', dir: 'left', x: -0.7 }, // 右腳併到左腳旁（留間距不重疊）
     ],
   },
 

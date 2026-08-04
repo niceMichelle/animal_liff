@@ -329,33 +329,33 @@ body.theme-morning {
 .foot-area {
   position: relative;
   width: 100%;
-  height: clamp(235px, 64vw, 285px);
+  height: clamp(320px, 82vw, 345px);
 }
 .foot {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(38px, 12.5vw, 48px);
+  width: clamp(46px, 15vw, 58px);
   transform: translate(-50%, -50%);
   transition: transform 0.22s var(--ease-breath); /* 位移滑動 */
   will-change: transform;
 }
 
-/* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 88px、高 = 2·FOOT_UY = 96px） */
+/* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 100px、高 = 2·FOOT_UY = 116px） */
 .step-square {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 88px;
-  height: 96px;
-  transform: translate(-50%, calc(-50% - 48px));
+  width: 100px;
+  height: 116px;
+  transform: translate(-50%, calc(-50% - 58px));
   border: 2px dashed rgba(233, 236, 247, 0.30);
   border-radius: 12px;
 }
 .sq-dot {
   position: absolute;
-  width: 11px;
-  height: 11px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
   background: var(--c-orb-a);
   opacity: 0.7;

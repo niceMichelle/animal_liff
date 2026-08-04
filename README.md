@@ -2,25 +2,34 @@
 
 一個**獨立的 LINE 放鬆/運動頻道**：使用者傳訊息或加好友時，由 **N8N** 回覆一張呼吸練習卡片；點選後開啟 **LIFF** 互動小功能，跟著動畫與柔和音效完成呼吸練習。全部後端邏輯在 N8N 上，**不需要任何後端伺服器（無 Flask）**。
 
-完整願景含三大類（呼吸引導 / 組合有氧 + 手眼協調 / 音樂節律步伐），本版本先完成 **呼吸引導** 的完整垂直切片：`N8N 接收 → LINE 推送 → LIFF 呼吸 App`。
+完整願景含三大類（呼吸引導 / 組合有氧 + 手眼協調 / 音樂節律步伐）。目前已完成 **呼吸引導**（`breathing/`）與 **音樂節律步伐**（`step/`）兩支 LIFF App：`N8N 接收 → LINE 推送 → LIFF App`。
 
 ## 內容物
 
 ```
 Line_Liff/
-├── index.html                 # LIFF 進入點（4 個畫面：選擇 / 介紹 / 呼吸 / 完成）
-├── css/style.css              # 「拂曉星空」視覺：極光背景、發光呼吸圈、顆粒紋理
-├── js/
-│   ├── patterns.js            # 4 種呼吸模式資料（4-7-8 / 箱式 / 腹式 / 正念）
-│   ├── breathing.js           # 呼吸引擎：階段計時、循環、暫停/繼續
-│   ├── audio.js               # Web Audio API 階段提示音（免音檔）
-│   └── liff-init.js           # LIFF 初始化、登入、解析 ?type=、關閉視窗
+├── index.html                 # 根首頁：連到「呼吸練習 / 節律步伐」兩個 App
+├── breathing/                 # 呼吸引導 App
+│   ├── index.html             # LIFF 進入點（選擇 / 介紹 / 呼吸 / 完成）
+│   ├── css/style.css          # 「拂曉星空」視覺：極光背景、發光呼吸圈
+│   └── js/
+│       ├── patterns.js        # 4 種呼吸模式（4-7-8 / 箱式 / 腹式 / 正念）
+│       ├── breathing.js       # 呼吸引擎：階段計時、循環、暫停/繼續
+│       ├── audio.js           # Web Audio 階段提示音（免音檔）
+│       └── liff-init.js       # LIFF 初始化、解析 ?type=、關閉視窗
+├── step/                      # 音樂節律步伐 App
+│   ├── index.html             # LIFF 進入點（選單 / 引導 / 完成）
+│   ├── css/style.css
+│   └── js/                    # patterns / rhythm-audio / rhythm-engine / liff-init
 └── n8n/
     └── line-relaxation-router.json   # 可匯入 n8n.cloud 的 workflow
 ```
 
-呼吸模式由 `?type=` 決定：`478`（預設）、`box`、`belly`、`mindful`。
-新增模式只要在 `patterns.js` 加一筆資料即可，引擎與 UI 會自動套用。
+各 App 的模式由 `?type=` 決定：
+- 呼吸（`breathing/`）：`478`（預設）、`box`、`belly`、`mindful`
+- 步伐（`step/`）：`march`（預設）、`sidestep`、`box`、`combo`
+
+新增模式只要在該 App 的 `js/patterns.js` 加一筆資料即可，引擎與 UI 會自動套用。
 
 ## 架構
 
@@ -53,7 +62,9 @@ LIFF 需要一個**穩定的 HTTPS 網址**。建議用 **GitHub Pages**：免�
 ```bash
 cd Line_Liff
 python3 -m http.server 8080
-# 瀏覽器開 http://localhost:8080/?type=478（或 box / belly / mindful）
+# 根首頁： http://localhost:8080/
+# 呼吸：   http://localhost:8080/breathing/?type=478（或 box / belly / mindful）
+# 步伐：   http://localhost:8080/step/?type=march（或 sidestep / box / combo）
 ```
 未設定 LIFF ID 時會自動以 standalone 模式運作，方便先看動畫與音效。
 
@@ -74,15 +85,16 @@ python3 -m http.server 8080
 2. 在該 channel 的 **Messaging API** 分頁：
    - 取得 **Channel access token**（之後填到 N8N）。
    - 關閉「自動回覆訊息 / 加入好友的歡迎訊息」等預設回覆，避免和 N8N 的回覆衝突。
-3. 在該 channel 的 **LIFF** 分頁 → **Add**：
-   - **Endpoint URL**：步驟一的 GitHub Pages 網址（例：`https://<帳號>.github.io/line-liff/`）
-   - **Size**：`Full`
-   - Scope 至少勾 `profile`
-4. 取得 **LIFF ID**（形如 `2006xxxxxx-xxxxxxxx`），填到兩個地方：
-   - `js/liff-init.js` 的 `const LIFF_ID = '...'`
+3. 在該 channel 的 **LIFF** 分頁 → **Add**（每支 App 各建一個 LIFF）：
+   - 呼吸 **Endpoint URL**：`https://<帳號>.github.io/line-liff/breathing/`
+   - 步伐 **Endpoint URL**：`https://<帳號>.github.io/line-liff/step/`
+   - **Size**：`Full`；Scope 至少勾 `profile`
+4. 取得各 **LIFF ID**（形如 `2006xxxxxx-xxxxxxxx`），填到對應位置：
+   - 呼吸：`breathing/js/liff-init.js` 的 `const LIFF_ID = '...'`
+   - 步伐：`step/js/liff-init.js` 的 `const LIFF_ID = '...'`
    - `n8n/line-relaxation-router.json` 內 **Build Breathing Menu** 節點的 `const LIFF_ID = '...'`（或匯入後在 n8n 介面改）
 
-> 部署網址或 LIFF ID 變更後，記得同步更新這兩處。
+> 部署網址（含 `/breathing/`、`/step/` 子路徑）或 LIFF ID 變更後，記得同步更新這些位置。
 
 ---
 
@@ -113,6 +125,7 @@ LINE Webhook → Build Breathing Menu (Code) → LINE Reply (Flex)
 
 ## 後續階段（尚未實作）
 
-- **組合有氧 + 手眼協調遊戲**、**音樂節律步伐**：比照本結構新增獨立 LIFF 頁面與 `?type=`，並在選單加按鈕。
+- **組合有氧 + 手眼協調遊戲**：比照 `breathing/`、`step/` 的結構新增獨立 LIFF 頁面與 `?type=`，並在選單加按鈕。
+  （**音樂節律步伐** 已完成，見 `step/`。）
 - **AI 意圖/情緒判斷**：把 Code 節點的規則換成 AI 分類，依情緒給不同引導。
 - **健康數據排程主動推送**：另開 n8n Schedule workflow，讀取穿戴/戒指數據達閾值時用 `push_message` 主動發送（需先確認數據來源 API）。

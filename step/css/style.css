@@ -342,48 +342,34 @@ body.theme-morning {
 .foot-area {
   position: relative;
   width: 100%;
-<<<<<<< HEAD
   height: clamp(220px, 58vw, 250px);
-=======
-  height: clamp(235px, 64vw, 285px);
->>>>>>> parent of dfa0f78 ([FEATURE]rhythm step feature fine tune)
 }
 .foot {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(38px, 12.5vw, 48px);
+  width: clamp(46px, 15vw, 58px);
   transform: translate(-50%, -50%);
   transition: transform 0.22s var(--ease-breath); /* 位移滑動 */
   will-change: transform;
 }
 
-<<<<<<< HEAD
 /* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 100px、高 = 2·FOOT_UY = 116px）
    腳印下移 FOOT_BASE_Y 後，方塊中心正好落在軌道中央 */
-=======
-/* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 88px、高 = 2·FOOT_UY = 96px） */
->>>>>>> parent of dfa0f78 ([FEATURE]rhythm step feature fine tune)
 .step-square {
   position: absolute;
   left: 50%;
   top: 50%;
-<<<<<<< HEAD
   width: 100px;
   height: 116px;
   transform: translate(-50%, -50%);
-=======
-  width: 88px;
-  height: 96px;
-  transform: translate(-50%, calc(-50% - 48px));
->>>>>>> parent of dfa0f78 ([FEATURE]rhythm step feature fine tune)
   border: 2px dashed rgba(233, 236, 247, 0.30);
   border-radius: 12px;
 }
 .sq-dot {
   position: absolute;
-  width: 11px;
-  height: 11px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
   background: var(--c-orb-a);
   opacity: 0.7;

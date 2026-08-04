@@ -307,6 +307,7 @@
 <<<<<<< HEAD
       const FOOT_UX = 50;
       const FOOT_UY = 58;
+<<<<<<< HEAD
       // 待機腳印整體下移：方塊步向上的腳印落在較矮的軌道內，畫面更緊湊、按鈕不用捲動就看得到。
       // 須與 CSS .foot-area 高度、.step-square 位置一致。
       const FOOT_BASE_Y = 58;
@@ -314,12 +315,14 @@
       const FOOT_UX = 44;
       const FOOT_UY = 48;
 >>>>>>> parent of dfa0f78 ([FEATURE]rhythm step feature fine tune)
+=======
+>>>>>>> parent of 900a3b3 ([FEATURE]rhythm step feature fine tune)
       const footPos = { L: { x: -1, y: 0 }, R: { x: 1, y: 0 } };
       function applyFeet() {
         el.footL.style.transform =
-          'translate(calc(-50% + ' + (footPos.L.x * FOOT_UX) + 'px), calc(-50% + ' + (FOOT_BASE_Y + footPos.L.y * FOOT_UY) + 'px))';
+          'translate(calc(-50% + ' + (footPos.L.x * FOOT_UX) + 'px), calc(-50% + ' + (footPos.L.y * FOOT_UY) + 'px))';
         el.footR.style.transform =
-          'translate(calc(-50% + ' + (footPos.R.x * FOOT_UX) + 'px), calc(-50% + ' + (FOOT_BASE_Y + footPos.R.y * FOOT_UY) + 'px))';
+          'translate(calc(-50% + ' + (footPos.R.x * FOOT_UX) + 'px), calc(-50% + ' + (footPos.R.y * FOOT_UY) + 'px))';
       }
       function resetFeet() {
         footPos.L = { x: -1, y: 0 };

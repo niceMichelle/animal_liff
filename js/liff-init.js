@@ -1,12 +1,13 @@
 // LIFF 整合：初始化、登入、解析 ?type=、關閉視窗。
-// 與呼吸 App 相同，只是讀 STEP_PATTERNS。非 LINE 環境（瀏覽器直開）會 fallback 成 standalone。
+// 設計成「在 LINE 內」與「一般瀏覽器（開發測試）」都能運作：
+// 若沒有 liff SDK 或 LIFF_ID 尚未設定，會自動 fallback 成 standalone 模式，方便本機測試。
 
-// ⬇️ 在 LINE Developers Console 為「步伐訓練」建立 LIFF App 後，把這裡換成該 LIFF ID。
-const LIFF_ID = 'YOUR_STEP_LIFF_ID';
+// ⬇️ 在 LINE Developers Console 建立 LIFF App 後，把這裡換成你的 LIFF ID。
+const LIFF_ID = 'YOUR_LIFF_ID';
 
 window.AppLiff = {
   ready: false,
-  standalone: true,
+  standalone: true, // 非 LINE 環境（瀏覽器直開）
   profile: null,
 
   // 從一段字串取出 type，可吃 "?type=box"、"type=box"、"/?type=box"、"/path?type=box"。
@@ -17,37 +18,46 @@ window.AppLiff = {
     return new URLSearchParams(q).get('type');
   },
 
-  // 解析出「明確指定」的 type（合法才回傳，否則 null）。
-  // 透過 https://liff.line.me/{id}?type=box 進入時，LINE 會把原始 query 包進 liff.state。
+  // 解析出「明確指定」的 type（合法才回傳，否則 null；不套用預設）。
+  // 注意：透過 https://liff.line.me/{id}?type=box 進入時，LINE 會把原始 query
+  // 包進 liff.state（例如 ?liff.state=%3Ftype%3Dbox），需額外解析。
   _rawType() {
     const params = new URLSearchParams(window.location.search);
+
+    // 1) 直接帶在網址上（瀏覽器測試、或 LIFF 已把參數展開）
     let t = params.get('type');
 
+    // 2) 被包進 liff.state（LINE in-app 常見）；可能再多一層編碼，故再 decode 一次。
     if (!t) {
-      const state = params.get('liff.state');
+      const state = params.get('liff.state'); // URLSearchParams 已解一層碼
       if (state) {
         let decoded = state;
         try { decoded = decodeURIComponent(state); } catch (_) { /* 保留原值 */ }
         t = this._readType(decoded);
       }
     }
+
+    // 3) 保險：有些情況參數會落在 hash
     if (!t && window.location.hash) {
       t = this._readType(window.location.hash.replace(/^#/, ''));
     }
-    return (t && window.STEP_PATTERNS[t]) ? t : null;
+
+    return (t && window.BREATHING_PATTERNS[t]) ? t : null;
   },
 
+  // 是否由 Flex 深連結明確指定呼吸法（有 → 直接進引導；無 → 顯示首頁選單）。
   hasType() {
     return this._rawType() !== null;
   },
 
+  // 回傳合法的模式 id，未指定時用預設。
   getType() {
     return this._rawType() || window.DEFAULT_PATTERN;
   },
 
   async init() {
     const hasSdk = typeof window.liff !== 'undefined';
-    const idSet = LIFF_ID && LIFF_ID !== 'YOUR_STEP_LIFF_ID';
+    const idSet = LIFF_ID && LIFF_ID !== 'YOUR_LIFF_ID';
 
     if (!hasSdk || !idSet) {
       this.standalone = true;
@@ -59,15 +69,18 @@ window.AppLiff = {
       await window.liff.init({ liffId: LIFF_ID });
       this.standalone = false;
 
+      // 在外部瀏覽器開啟且未登入時導向登入；在 LINE App 內通常已登入。
       if (!window.liff.isInClient() && !window.liff.isLoggedIn()) {
         window.liff.login();
-        return;
+        return; // 會跳轉，後續不執行
       }
+
       try {
-        this.profile = await window.liff.getProfile();
+        this.profile = await window.liff.getProfile(); // { userId, displayName, ... }
       } catch (_) {
         this.profile = null;
       }
+
       this.ready = true;
     } catch (err) {
       console.warn('LIFF init 失敗，改用 standalone 模式：', err);
@@ -80,6 +93,7 @@ window.AppLiff = {
     if (!this.standalone && window.liff && window.liff.closeWindow) {
       window.liff.closeWindow();
     } else {
+      // 瀏覽器測試時無法關閉 LIFF，重整回到選擇畫面。
       window.location.href = window.location.pathname;
     }
   },

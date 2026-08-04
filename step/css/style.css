@@ -26,18 +26,6 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* —— 互動品質基線：行動端點擊不閃白、鍵盤聚焦看得見、顯示型文字不被長按選取 —— */
-button, .mode-item { -webkit-tap-highlight-color: transparent; }
-.eyebrow, .menu-title, .guide-title, .guide-sub, .cue-label, .cue-arrow,
-.countin, .beat-dots, .done-title, .done-sub, .mode-name, .mode-diff, button {
-  -webkit-user-select: none; user-select: none;
-}
-.btn-primary:focus-visible, .btn-ghost:focus-visible,
-.ctl:focus-visible, .guide-back:focus-visible, .mode-item:focus-visible {
-  outline: 2px solid var(--c-orb-a);
-  outline-offset: 3px;
-}
-
 html, body { height: 100%; }
 
 body {
@@ -251,13 +239,13 @@ body.theme-morning {
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 .mode-item::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: linear-gradient(var(--c-orb-a), var(--c-orb-b)); opacity: 0.35; transition: opacity 0.4s;
+  background: linear-gradient(var(--c-orb-a), var(--c-orb-b)); opacity: 0; transition: opacity 0.4s;
 }
 .mode-item:hover, .mode-item:active {
   transform: translateY(-3px); border-color: rgba(143, 227, 214, 0.5);
   background: linear-gradient(135deg, rgba(143,227,214,0.10), rgba(111,139,240,0.05));
 }
-.mode-item:hover::before, .mode-item:focus-visible::before { opacity: 1; }
+.mode-item:hover::before { opacity: 1; }
 .mode-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 0.5rem; }
 .mode-name { font-size: 1.18rem; font-weight: 500; letter-spacing: 0.05em; }
 .mode-diff { flex: none; font-size: 0.7rem; letter-spacing: 0.08em; padding: 3px 11px; border-radius: 999px; border: 1px solid transparent; }
@@ -308,7 +296,7 @@ body.theme-morning {
 
 .guide-sub {
   font-size: 0.85rem; letter-spacing: 0.14em; color: var(--c-mist-dim);
-  margin-bottom: clamp(0.5rem, 2vh, 1rem); min-height: 1.2em;
+  margin-bottom: clamp(1rem, 4vh, 2.2rem); min-height: 1.2em;
   transition: font-size 0.3s, color 0.3s;
 }
 /* 執行時放大說明文字（休息提示 / 階段說明 / 小節進度都顯示在此） */
@@ -323,19 +311,18 @@ body.theme-morning {
 .step-stage {
   position: relative; width: 100%;
   display: flex; flex-direction: column; align-items: center;
-  gap: clamp(0.5rem, 2.2vh, 1rem);
-  margin-bottom: clamp(0.8rem, 2.5vh, 1.6rem);
+  gap: clamp(1.2rem, 5vh, 2.4rem);
+  margin-bottom: clamp(1.5rem, 6vh, 3.5rem);
 }
-.beat-dots { display: flex; gap: 14px; align-items: center; }
+.beat-dots { display: flex; gap: 12px; }
 .beat-dot {
   width: 10px; height: 10px; border-radius: 50%;
   background: rgba(233, 236, 247, 0.18);
-  transition: transform 0.14s var(--ease-breath), background 0.14s ease, box-shadow 0.14s ease;
+  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
 }
-.beat-dot:first-child { box-shadow: 0 0 0 1.5px rgba(143, 227, 214, 0.30); } /* 標示每小節第一拍（下拍） */
 .beat-dot.lit {
-  background: var(--c-orb-a); transform: scale(1.6);
-  box-shadow: 0 0 14px rgba(143, 227, 214, 0.85);
+  background: var(--c-orb-a); transform: scale(1.5);
+  box-shadow: 0 0 12px rgba(143, 227, 214, 0.8);
 }
 
 /* 腳印在此軌道內以絕對定位移動；JS 用 transform:translate 帶到 cue 指定位置並平滑滑動 */
@@ -343,10 +330,14 @@ body.theme-morning {
   position: relative;
   width: 100%;
 <<<<<<< HEAD
+<<<<<<< HEAD
   height: clamp(220px, 58vw, 250px);
 =======
   height: clamp(235px, 64vw, 285px);
 >>>>>>> parent of dfa0f78 ([FEATURE]rhythm step feature fine tune)
+=======
+  height: clamp(320px, 82vw, 345px);
+>>>>>>> parent of 900a3b3 ([FEATURE]rhythm step feature fine tune)
 }
 .foot {
   position: absolute;
@@ -359,11 +350,15 @@ body.theme-morning {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 100px、高 = 2·FOOT_UY = 116px）
    腳印下移 FOOT_BASE_Y 後，方塊中心正好落在軌道中央 */
 =======
 /* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 88px、高 = 2·FOOT_UY = 96px） */
 >>>>>>> parent of dfa0f78 ([FEATURE]rhythm step feature fine tune)
+=======
+/* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 100px、高 = 2·FOOT_UY = 116px） */
+>>>>>>> parent of 900a3b3 ([FEATURE]rhythm step feature fine tune)
 .step-square {
   position: absolute;
   left: 50%;
@@ -371,12 +366,16 @@ body.theme-morning {
 <<<<<<< HEAD
   width: 100px;
   height: 116px;
+<<<<<<< HEAD
   transform: translate(-50%, -50%);
 =======
   width: 88px;
   height: 96px;
   transform: translate(-50%, calc(-50% - 48px));
 >>>>>>> parent of dfa0f78 ([FEATURE]rhythm step feature fine tune)
+=======
+  transform: translate(-50%, calc(-50% - 58px));
+>>>>>>> parent of 900a3b3 ([FEATURE]rhythm step feature fine tune)
   border: 2px dashed rgba(233, 236, 247, 0.30);
   border-radius: 12px;
 }
@@ -423,13 +422,11 @@ body.theme-morning {
 .cue-arrow {
   font-size: clamp(1.5rem, 7vw, 2.1rem); line-height: 1;
   color: var(--c-orb-a); min-height: 1.05em;
-  text-shadow: 0 0 16px rgba(143, 227, 214, 0.45);
+  text-shadow: 0 0 14px rgba(143, 227, 214, 0.5);
 }
-/* 目前動作＝踏步時的焦點：略放大、加一層柔光讓它「活」起來 */
 .cue-label {
-  font-size: clamp(1.5rem, 7.5vw, 2.15rem); font-weight: 600; letter-spacing: 0.08em;
+  font-size: clamp(1.4rem, 7vw, 2rem); font-weight: 600; letter-spacing: 0.06em;
   color: var(--c-mist); white-space: nowrap;
-  text-shadow: 0 2px 20px rgba(143, 227, 214, 0.16);
 }
 
 .countin {
@@ -454,10 +451,9 @@ body.theme-morning {
   font-family: var(--font-zh); font-size: 0.9rem; letter-spacing: 0.1em; color: var(--c-mist);
   padding: 12px 20px; border: 1px solid rgba(233, 236, 247, 0.22); border-radius: 999px;
   background: rgba(255,255,255,0.05); backdrop-filter: blur(6px); cursor: pointer;
-  transition: background 0.25s, border-color 0.25s, opacity 0.25s, transform 0.12s var(--ease-breath);
+  transition: background 0.3s, border-color 0.3s, opacity 0.3s;
 }
-.ctl:hover { background: rgba(255,255,255,0.12); border-color: rgba(143,227,214,0.5); }
-.ctl:active { background: rgba(255,255,255,0.16); border-color: rgba(143,227,214,0.6); transform: scale(0.95); }
+.ctl:hover, .ctl:active { background: rgba(255,255,255,0.12); border-color: rgba(143,227,214,0.5); }
 .ctl.off { opacity: 0.45; }
 
 /* ===================== 完成畫面（滿版） ===================== */
@@ -477,13 +473,10 @@ body.theme-morning {
   font-family: var(--font-zh); font-size: 1.05rem; letter-spacing: 0.16em; color: #0c1130;
   padding: 15px 56px; border: none; border-radius: 999px;
   background: linear-gradient(135deg, var(--c-orb-a), var(--c-orb-b));
-  box-shadow: 0 6px 22px rgba(111,139,240,0.40), inset 0 1px 0 rgba(255,255,255,0.40);
-  cursor: pointer;
-  transition: transform 0.3s var(--ease-breath), box-shadow 0.3s var(--ease-breath);
-  margin-bottom: 0.4rem;
+  box-shadow: 0 8px 30px rgba(111,139,240,0.5); cursor: pointer;
+  transition: transform 0.3s var(--ease-breath), box-shadow 0.3s; margin-bottom: 0.4rem;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(143,227,214,0.42), inset 0 1px 0 rgba(255,255,255,0.45); }
-.btn-primary:active { transform: translateY(0); box-shadow: 0 4px 14px rgba(111,139,240,0.35), inset 0 1px 0 rgba(255,255,255,0.35); }
+.btn-primary:hover, .btn-primary:active { transform: translateY(-2px); box-shadow: 0 12px 38px rgba(143,227,214,0.55); }
 .btn-ghost {
   font-family: var(--font-zh); font-size: 0.9rem; letter-spacing: 0.14em; color: var(--c-mist-dim);
   padding: 10px 24px; border: none; background: none; cursor: pointer; transition: color 0.3s;
@@ -492,9 +485,8 @@ body.theme-morning {
 
 @media (prefers-reduced-motion: reduce) {
   .aurora, .moon, .star, .sun, .sun-rays, .note, .done-mark,
-  .foot.active svg, .cue-center, .countin.show, .mode-item {
+  .foot.active svg, .cue-center, .countin.show {
     animation: none;
   }
   .note { opacity: 0.6; }
-  .mode-item { opacity: 1; } /* 取消 rise 進場的透明起點 */
 }

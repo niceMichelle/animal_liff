@@ -1,6 +1,6 @@
 /* ============================================================
-   靜息 · 呼吸練習 — 「拂曉星空」視覺
-   深夜→拂曉的漸層、漂浮極光、發光呼吸圈、顆粒紋理。
+   律動 · 節律步伐 — 沿用呼吸 App 的「拂曉星空 / 早晨」視覺
+   背景場景、選單、按鈕、滑動面板與呼吸 App 一致；中央改為步伐舞台。
    ============================================================ */
 
 :root {
@@ -14,9 +14,9 @@
   --c-orb-b: #6f8bf0; /* 長春花藍 */
   --c-orb-c: #b89cf0; /* 柔紫 */
   --c-accent: #f3d9a4; /* 暖光點綴 */
-  --c-silhouette: #28325f; /* 樹枝/停棲貓頭鷹剪影（比夜空底色略亮，才看得見） */
-  --c-flyer: #323d6e; /* 飛行剪影 */
-  --c-owl-eye: #f4d58d; /* 貓頭鷹眼 */
+  --c-silhouette: #28325f;
+  --c-flyer: #323d6e;
+  --c-owl-eye: #f4d58d;
 
   --font-zh: 'Noto Serif TC', serif;
   --font-num: 'Cormorant Garamond', 'Noto Serif TC', serif;
@@ -26,9 +26,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body {
-  height: 100%;
-}
+html, body { height: 100%; }
 
 body {
   font-family: var(--font-zh);
@@ -74,202 +72,71 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* —— 夜晚場景（在極光之上、內容之下） —— */
-.night {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* 滿月（緩緩呼吸的微笑臉） */
+/* —— 夜晚場景 —— */
+.night { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
 .moon {
-  position: absolute;
-  top: 7%;
-  right: 12%;
-  width: 86px;
-  height: 86px;
-  opacity: 0.72;
-  transform-origin: center;
+  position: absolute; top: 7%; right: 12%; width: 86px; height: 86px;
+  opacity: 0.72; transform-origin: center;
   filter: drop-shadow(0 0 12px rgba(244, 213, 141, 0.5));
   animation: moon-breathe 7s ease-in-out infinite;
 }
-.moon-face {
-  fill: #b89a5e;
-  stroke: #b89a5e;
-  opacity: 0.5;
-}
+.moon-face { fill: #b89a5e; stroke: #b89a5e; opacity: 0.5; }
 @keyframes moon-breathe {
   0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 10px rgba(244, 213, 141, 0.38)); }
   50%      { transform: scale(1.06); filter: drop-shadow(0 0 22px rgba(244, 213, 141, 0.65)); }
 }
-
-/* 星星 */
 .star {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: var(--s);
-  height: var(--s);
-  border-radius: 50%;
-  background: #eaf0ff;
-  opacity: 0.5;
-  animation: twinkle 3.4s ease-in-out infinite;
-  animation-delay: var(--d);
+  position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s);
+  border-radius: 50%; background: #eaf0ff; opacity: 0.5;
+  animation: twinkle 3.4s ease-in-out infinite; animation-delay: var(--d);
 }
 @keyframes twinkle {
   0%, 100% { opacity: 0.18; transform: scale(0.7); }
   50%      { opacity: 0.85; transform: scale(1.15); }
 }
+/* —— 地面場景：樹叢 + 動物 + 音符（步伐專用，與呼吸不同） —— */
+.scene { position: absolute; right: 0; bottom: 0; width: min(64vw, 340px); height: auto; }
 
-/* 飛行剪影（蝙蝠 / 貓頭鷹） */
-.bat, .owl-fly {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: var(--c-flyer);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-.bat { width: 42px; }
-.owl-fly { width: 60px; color: var(--c-silhouette); }
-.bat .wings, .owl-fly .wings {
-  fill: currentColor;
-  transform-origin: 50% 50%;
-  animation: flap 0.32s ease-in-out infinite;
-}
-.owl-fly .wings { animation-duration: 0.7s; }
-@keyframes flap {
-  0%, 100% { transform: scaleY(1); }
-  50%      { transform: scaleY(0.5); }
-}
+/* 樹叢（夜暗綠 / 日亮綠） */
+.scene-night .bush circle { fill: #21403a; }
+.scene-night .bush circle:nth-child(odd) { fill: #284c44; }
+.scene-day .bush circle { fill: #5aa551; }
+.scene-day .bush circle:nth-child(odd) { fill: #6cb862; }
 
-/* 各自的飛行路徑（穿越畫面 + 上下起伏） */
-.bat-1 { animation: fly-1 24s linear infinite; animation-delay: 2s; }
-.bat-2 { animation: fly-2 31s linear infinite; animation-delay: 12s; }
-.bat-3 { animation: fly-3 27s linear infinite; animation-delay: 20s; }
-.owl-fly { animation: fly-owl 46s linear infinite; animation-delay: 8s; }
+/* 浣熊（夜晚） */
+.rac-body, .rac-head, .rac-ear, .rac-cheek { fill: #8b939c; }
+.rac-cheek { stroke: #8b939c; stroke-width: 3.5; stroke-linejoin: round; } /* 尖端變鈍、略放大 */
+.rac-belly { fill: #b6bcc4; } /* 圓形肚皮，略淺於身體 */
+.rac-ear-in { fill: #c7ccd2; }
+.rac-tail { stroke: #8b939c; }
+.rac-ring { stroke: #2b2f36; stroke-dasharray: 9 21; } /* 尾巴環紋 */
+.rac-face { fill: #c9ced4; } /* 僅鼻子周圍的淺灰內圈 */
+.rac-mask { fill: #2b2f36; }
+.rac-eye  { fill: #eef1f4; }
+.rac-nose { fill: #1c1f24; }
 
-@keyframes fly-1 {
-  0%   { transform: translate(-14vw, 20vh) scale(0.8); opacity: 0; }
-  10%  { opacity: 0.5; }
-  50%  { transform: translate(50vw, 11vh) scale(0.95); opacity: 0.5; }
-  90%  { opacity: 0.5; }
-  100% { transform: translate(116vw, 24vh) scale(0.85); opacity: 0; }
+/* 音符（樹叢飄出） */
+.note {
+  position: absolute; left: var(--nx); bottom: var(--nb);
+  font-size: var(--nz, 18px); line-height: 1;
+  opacity: 0; will-change: transform, opacity;
+  animation: note-float var(--dur, 6s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
 }
-@keyframes fly-2 {
-  0%   { transform: translate(116vw, 32vh) scaleX(-0.75) scaleY(0.75); opacity: 0; }
-  12%  { opacity: 0.45; }
-  55%  { transform: translate(45vw, 22vh) scaleX(-0.9) scaleY(0.9); opacity: 0.45; }
-  88%  { opacity: 0.45; }
-  100% { transform: translate(-16vw, 30vh) scaleX(-0.8) scaleY(0.8); opacity: 0; }
-}
-@keyframes fly-3 {
-  0%   { transform: translate(-14vw, 40vh) scale(0.65); opacity: 0; }
-  15%  { opacity: 0.4; }
-  50%  { transform: translate(52vw, 33vh) scale(0.75); opacity: 0.4; }
-  85%  { opacity: 0.4; }
-  100% { transform: translate(116vw, 42vh) scale(0.7); opacity: 0; }
-}
-@keyframes fly-owl {
-  0%   { transform: translate(118vw, 14vh) scaleX(-0.9) scaleY(0.9); opacity: 0; }
-  14%  { opacity: 0.5; }
-  52%  { transform: translate(48vw, 9vh) scaleX(-1) scaleY(1); opacity: 0.5; }
-  86%  { opacity: 0.5; }
-  100% { transform: translate(-18vw, 16vh) scaleX(-0.85) scaleY(0.85); opacity: 0; }
+.night .note { color: #c3d0f7; text-shadow: 0 0 8px rgba(180, 200, 255, 0.5); }
+.day .note   { color: #2f8f6e; text-shadow: 0 0 8px rgba(120, 200, 150, 0.4); }
+@keyframes note-float {
+  0%   { opacity: 0;    transform: translate(0, 0) rotate(-10deg) scale(0.7); }
+  15%  { opacity: 0.95; }
+  70%  { opacity: 0.75; transform: translate(-26px, -70px) rotate(8deg) scale(1); }
+  100% { opacity: 0;    transform: translate(-44px, -120px) rotate(-4deg) scale(1.05); }
 }
 
-/* 鳥（成對飛過） */
-.bird {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 34px;
-  color: var(--c-flyer);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-.bird .wings {
-  fill: currentColor;
-  transform-origin: 50% 50%;
-  animation: flap-bird 0.5s ease-in-out infinite;
-}
-@keyframes flap-bird {
-  0%, 100% { transform: scaleY(1); }
-  50%      { transform: scaleY(0.55); }
-}
-.bird-1 { animation: fly-bird-1 34s linear infinite; animation-delay: 6s; }
-.bird-2 { width: 26px; animation: fly-bird-2 34s linear infinite; animation-delay: 7.4s; }
-@keyframes fly-bird-1 {
-  0%   { transform: translate(-16vw, 27vh) scale(0.9); opacity: 0; }
-  12%  { opacity: 0.5; }
-  50%  { transform: translate(50vw, 16vh) scale(1); opacity: 0.5; }
-  88%  { opacity: 0.5; }
-  100% { transform: translate(118vw, 22vh) scale(0.9); opacity: 0; }
-}
-@keyframes fly-bird-2 {
-  0%   { transform: translate(-16vw, 31vh) scale(0.8); opacity: 0; }
-  14%  { opacity: 0.45; }
-  50%  { transform: translate(46vw, 21vh) scale(0.9); opacity: 0.45; }
-  86%  { opacity: 0.45; }
-  100% { transform: translate(118vw, 28vh) scale(0.8); opacity: 0; }
-}
-
-/* 樹枝與停棲的貓頭鷹（右下角） */
-.branch {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: min(58vw, 300px);
-  height: auto;
-  opacity: 0.9;
-}
-.branch .bough { stroke: var(--c-silhouette); }
-.branch .leaf { fill: var(--c-silhouette); }
-/* 毛茸茸輪廓：描邊與填色同色，再經 #fuzzy 位移濾鏡打散邊緣（絨毛與身體同色） */
-.owl-sil {
-  fill: var(--c-silhouette);
-  stroke: var(--c-silhouette);
-  stroke-width: 2.4;
-  stroke-linejoin: round;
-}
-.owl-beak { fill: #10193a; }
-.owl-claw path {
-  fill: none;
-  stroke: var(--c-silhouette);
-  stroke-width: 1.1;
-  stroke-linecap: round;
-}
-.owl-eye {
-  fill: var(--c-owl-eye);
-  opacity: 0.85;
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  animation: blink 5.5s ease-in-out infinite;
-}
-.owl-b .owl-eye { animation-delay: 2.6s; }
-@keyframes blink {
-  0%, 92%, 100% { transform: scaleY(1); }
-  95%           { transform: scaleY(0.1); }
-}
-
-/* ============================================================
-   早晨場景 + 主題切換
-   ============================================================ */
-.day { /* 預設隱藏；.theme-morning 時才顯示 */
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: hidden;
-  display: none;
-}
+/* —— 早晨場景 + 主題切換 —— */
+.day { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; display: none; }
 .theme-morning .day { display: block; }
 .theme-morning .night { display: none; }
 .theme-morning .aurora { display: none; }
-
-/* 早晨天空與可讀的文字色（覆蓋深色主題變數） */
 body.theme-morning {
   background: radial-gradient(140% 120% at 50% -10%, #bfe9f7 0%, #ddf1ef 45%, #fdeecd 100%);
   background-attachment: fixed;
@@ -277,80 +144,30 @@ body.theme-morning {
   --c-mist-dim: #6f7d88;
   --c-accent: #e0912f;
 }
-
-/* 微笑的太陽（左上，緩緩呼吸、光芒慢轉） */
 .sun {
-  position: absolute;
-  top: 6%;
-  left: 8%;
-  width: 108px;
-  height: 108px;
+  position: absolute; top: 6%; left: 8%; width: 108px; height: 108px;
   filter: drop-shadow(0 0 20px rgba(255, 200, 80, 0.5));
-  transform-origin: center;
-  animation: sun-breathe 6.5s ease-in-out infinite;
+  transform-origin: center; animation: sun-breathe 6.5s ease-in-out infinite;
 }
-.sun-rays {
-  transform-box: view-box;
-  transform-origin: 60px 60px;
-  animation: sun-spin 60s linear infinite;
-}
+.sun-rays { transform-box: view-box; transform-origin: 60px 60px; animation: sun-spin 60s linear infinite; }
 .sun-face { fill: #cf7a1e; stroke: #cf7a1e; }
 @keyframes sun-spin { to { transform: rotate(360deg); } }
 @keyframes sun-breathe {
   0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 16px rgba(255, 200, 80, 0.45)); }
   50%      { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(255, 200, 80, 0.65)); }
 }
+/* 斑馬（白天） */
+.zeb-body, .zeb-neck, .zeb-head, .zeb-ear, .zeb-leg { fill: #f2f1ec; }
+.zeb-muzzle { fill: #6b7076; }
+.zeb-hoof { fill: #2b2f36; }
+.zeb-tail { stroke: #23262b; fill: none; stroke-width: 3; stroke-linecap: round; }
+.zeb-tail-tuft { fill: #23262b; }
+.zeb-mane { stroke: #23262b; fill: none; stroke-width: 4; stroke-linejoin: round; }
+.zeb-nstripe { stroke: #23262b; fill: none; stroke-linecap: round; }
+.zeb-hstripe { stroke: #23262b; fill: none; stroke-width: 6; stroke-linecap: round; } /* 臀部平行微弧條紋 */
+.zeb-stripes rect { fill: #23262b; }
 
-/* 樹（右下）與隨風搖曳的樹葉 */
-.tree {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: min(60vw, 320px);
-  height: auto;
-}
-.trunk { stroke: #9a6438; fill: none; }
-.foliage {
-  transform-box: view-box;
-  transform-origin: 268px 118px;
-  animation: sway 5.5s ease-in-out infinite;
-}
-.foliage circle { fill: #66ab52; }
-.foliage circle:nth-child(odd) { fill: #77b962; }
-@keyframes sway {
-  0%, 100% { transform: rotate(-1.6deg); }
-  50%      { transform: rotate(1.9deg); }
-}
-
-/* 無尾熊 */
-.koala-ear, .koala-head, .koala-body { fill: #a6afb6; }
-.koala-ear-in { fill: #cfd4d9; }
-.koala-nose { fill: #41474f; }
-.koala-eye { fill: #2c313a; }
-
-/* 隨風散出的光點 */
-.spark {
-  position: absolute;
-  left: var(--sx);
-  top: var(--sy);
-  width: calc(var(--sz, 4px) * 0.8);
-  height: calc(var(--sz, 4px) * 0.8);
-  border-radius: 50%;
-  background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.55) 42%, transparent 72%);
-  box-shadow: 0 0 7px 2px rgba(255, 255, 255, 0.7);
-  opacity: 0;
-  will-change: transform, opacity;
-  animation: wind-drift var(--dur, 8s) ease-in-out infinite;
-  animation-delay: var(--delay, 0s);
-}
-@keyframes wind-drift {
-  0%   { opacity: 0;   transform: translate(0, 0) scale(0.4); }
-  12%  { opacity: 1;   transform: translate(-16px, -10px) scale(1); }
-  65%  { opacity: 0.9; }
-  100% { opacity: 0;   transform: translate(-140px, -88px) scale(1.25); }
-}
-
-/* 早晨主題下，把深色玻璃表面改為淺色可讀 */
+/* 早晨主題下的淺色可讀表面 */
 .theme-morning .mode-item {
   background: linear-gradient(135deg, rgba(255,255,255,0.62), rgba(255,255,255,0.36));
   border-color: rgba(90, 110, 130, 0.22);
@@ -363,43 +180,29 @@ body.theme-morning {
 .theme-morning .mode-diff.diff-1 { color: #1f7a6e; background: rgba(95,180,150,0.18); border-color: rgba(95,180,150,0.4); }
 .theme-morning .mode-diff.diff-2 { color: #3350c0; background: rgba(111,139,240,0.16); border-color: rgba(111,139,240,0.4); }
 .theme-morning .mode-diff.diff-3 { color: #7a44b0; background: rgba(150,110,210,0.16); border-color: rgba(150,110,210,0.4); }
-.theme-morning .ctl,
-.theme-morning .guide-back {
-  background: rgba(255,255,255,0.55);
-  border-color: rgba(90, 110, 130, 0.28);
+.theme-morning .mode-diff.diff-4 { color: #c2632a; background: rgba(230,130,60,0.16); border-color: rgba(230,130,60,0.4); }
+.theme-morning .ctl, .theme-morning .guide-back {
+  background: rgba(255,255,255,0.55); border-color: rgba(90, 110, 130, 0.28);
 }
 .theme-morning .ctl:hover, .theme-morning .ctl:active { background: rgba(255,255,255,0.72); }
+.theme-morning .foot-shape { fill: rgba(90,110,130,0.14); stroke: rgba(90,110,130,0.32); }
+.theme-morning .beat-dot { background: rgba(90,110,130,0.22); }
 .theme-morning #screen-done {
   background:
     radial-gradient(120% 80% at 50% 26%, rgba(255,210,120,0.20), transparent 60%),
     radial-gradient(140% 120% at 50% 110%, rgba(120,200,230,0.22), transparent 70%);
 }
 
-/* —— 舞台（滿版滑動面板的容器） —— */
-.stage {
-  position: relative;
-  z-index: 2;
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
-/* 每個畫面都是滿版面板，上下滑動切換 */
+/* —— 舞台（滿版滑動面板） —— */
+.stage { position: relative; z-index: 2; min-height: 100vh; min-height: 100dvh; }
 .screen {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  justify-content: safe center; /* 內容過高時不裁切頂端（漸進增強） */
+  position: fixed; inset: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; justify-content: safe center;
   text-align: center;
   padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  opacity: 0;
-  transform: translateY(100%);
-  pointer-events: none;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  opacity: 0; transform: translateY(100%); pointer-events: none;
   transition: transform 0.55s var(--ease-breath), opacity 0.5s var(--ease-breath);
   will-change: transform, opacity;
 }
@@ -409,13 +212,9 @@ body.theme-morning {
 .screen.below     { opacity: 0; transform: translateY(100%);  pointer-events: none; }
 
 .eyebrow {
-  font-size: 0.72rem;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: var(--c-accent);
-  opacity: 0.85;
-  margin-bottom: 1.1rem;
-  padding-left: 0.42em;
+  font-size: 0.72rem; letter-spacing: 0.42em; text-transform: uppercase;
+  color: var(--c-accent); opacity: 0.85; margin-bottom: 1.1rem; padding-left: 0.42em;
+  transition: opacity 0.3s var(--ease-breath);
 }
 
 /* ===================== 首頁選單 ===================== */
@@ -425,250 +224,210 @@ body.theme-morning {
   padding-bottom: 40px;
 }
 .menu-title {
-  font-weight: 400;
-  font-size: clamp(1.6rem, 6.5vw, 2.2rem);
-  line-height: 1.5;
-  letter-spacing: 0.04em;
-  margin-bottom: 1.8rem;
+  font-weight: 400; font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+  line-height: 1.5; letter-spacing: 0.04em; margin-bottom: 1.8rem;
 }
-.mode-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+.mode-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
 .mode-item {
-  position: relative;
-  text-align: left;
-  padding: 18px 20px;
-  border: 1px solid rgba(233, 236, 247, 0.14);
-  border-radius: 20px;
+  position: relative; text-align: left; padding: 18px 20px;
+  border: 1px solid rgba(233, 236, 247, 0.14); border-radius: 20px;
   background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  backdrop-filter: blur(8px);
-  cursor: pointer;
-  overflow: hidden;
+  backdrop-filter: blur(8px); cursor: pointer; overflow: hidden;
   transition: transform 0.4s var(--ease-breath), border-color 0.4s, background 0.4s;
-  animation: rise 0.6s var(--ease-breath) both;
-  animation-delay: calc(var(--i) * 80ms + 120ms);
+  animation: rise 0.6s var(--ease-breath) both; animation-delay: calc(var(--i) * 80ms + 120ms);
 }
-@keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 .mode-item::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: linear-gradient(var(--c-orb-a), var(--c-orb-b));
-  opacity: 0;
-  transition: opacity 0.4s;
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(var(--c-orb-a), var(--c-orb-b)); opacity: 0; transition: opacity 0.4s;
 }
 .mode-item:hover, .mode-item:active {
-  transform: translateY(-3px);
-  border-color: rgba(143, 227, 214, 0.5);
+  transform: translateY(-3px); border-color: rgba(143, 227, 214, 0.5);
   background: linear-gradient(135deg, rgba(143,227,214,0.10), rgba(111,139,240,0.05));
 }
 .mode-item:hover::before { opacity: 1; }
-.mode-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 0.5rem;
-}
-.mode-name {
-  font-size: 1.18rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-}
-.mode-diff {
-  flex: none;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  padding: 3px 11px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-}
+.mode-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 0.5rem; }
+.mode-name { font-size: 1.18rem; font-weight: 500; letter-spacing: 0.05em; }
+.mode-diff { flex: none; font-size: 0.7rem; letter-spacing: 0.08em; padding: 3px 11px; border-radius: 999px; border: 1px solid transparent; }
 .mode-diff.diff-1 { color: #9ff0dd; background: rgba(143,227,214,0.16); border-color: rgba(143,227,214,0.35); }
 .mode-diff.diff-2 { color: #b6c4ff; background: rgba(111,139,240,0.18); border-color: rgba(111,139,240,0.38); }
 .mode-diff.diff-3 { color: #d7c2f5; background: rgba(184,156,240,0.18); border-color: rgba(184,156,240,0.40); }
-.mode-intro {
-  font-size: 0.86rem;
-  line-height: 1.75;
-  color: var(--c-mist);
-  font-weight: 300;
-  margin-bottom: 0.5rem;
-}
-.mode-situation {
-  font-size: 0.82rem;
-  line-height: 1.7;
-  color: var(--c-orb-a);
-  font-weight: 300;
-  margin-bottom: 0.3rem;
-}
-.mode-meta {
-  font-size: 0.74rem;
-  letter-spacing: 0.12em;
-  color: var(--c-mist-dim);
-}
+.mode-diff.diff-4 { color: #ffc9a3; background: rgba(240,150,90,0.18); border-color: rgba(240,150,90,0.42); }
+.mode-intro { font-size: 0.86rem; line-height: 1.75; color: var(--c-mist); font-weight: 300; margin-bottom: 0.5rem; }
+.mode-situation { font-size: 0.82rem; line-height: 1.7; color: var(--c-orb-a); font-weight: 300; margin-bottom: 0.3rem; }
+.mode-meta { font-size: 0.74rem; letter-spacing: 0.12em; color: var(--c-mist-dim); }
 
 /* ===================== 引導畫面 ===================== */
 .guide-back {
-  display: none;
-  position: absolute;
-  top: max(16px, calc(env(safe-area-inset-top) + 8px));
-  left: 16px;
-  width: auto;        /* 覆蓋 .screen > * 的 width:100%，否則會被撐滿 */
-  max-width: none;
-  font-family: var(--font-zh);
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  color: var(--c-mist-dim);
-  padding: 5px 11px;
-  border: 1px solid rgba(233, 236, 247, 0.18);
-  border-radius: 999px;
-  background: rgba(255,255,255,0.04);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
+  display: none; position: absolute;
+  top: max(16px, calc(env(safe-area-inset-top) + 8px)); left: 16px;
+  width: auto; max-width: none;
+  font-family: var(--font-zh); font-size: 0.78rem; letter-spacing: 0.06em; color: var(--c-mist-dim);
+  padding: 5px 11px; border: 1px solid rgba(233, 236, 247, 0.18); border-radius: 999px;
+  background: rgba(255,255,255,0.04); backdrop-filter: blur(6px); cursor: pointer;
   transition: color 0.3s, border-color 0.3s;
 }
 .guide-back:hover { color: var(--c-mist); border-color: rgba(143,227,214,0.5); }
 #screen-guide.from-menu #btn-menu { display: inline-flex; }
-#screen-guide.from-menu.running #btn-menu { display: none; } /* 呼吸進行中不干擾 */
+#screen-guide.from-menu.running #btn-menu { display: none; }
 
-.guide-title {
-  font-weight: 500;
-  font-size: clamp(1.8rem, 8vw, 2.6rem);
-  letter-spacing: 0.06em;
-  margin-bottom: 0.5rem;
+.guide-title { font-weight: 500; font-size: clamp(1.8rem, 8vw, 2.6rem); letter-spacing: 0.06em; margin-bottom: 0.5rem; transition: font-size 0.4s, opacity 0.3s; }
+/* 執行時標題略縮但保持清楚可見（休息提示與階段說明改放在下方 guide-sub） */
+#screen-guide.running .guide-title { font-size: clamp(1.5rem, 6.5vw, 2rem); margin-bottom: 0.35rem; }
+
+/* 綜合舞步預告膠囊：置於頂部、藍色強調（僅綜合舞步踏步時出現） */
+.stage-banner {
+  position: absolute; z-index: 3;
+  top: max(14px, calc(env(safe-area-inset-top) + 8px));
+  left: 50%; transform: translateX(-50%);
+  width: auto; max-width: 92%;
+  font-size: clamp(0.95rem, 4.4vw, 1.12rem); letter-spacing: 0.04em; font-weight: 600;
+  line-height: 1.45; text-align: center;
+  color: #fff; background: var(--c-orb-b);
+  padding: 9px 20px; border-radius: 18px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.32);
+  opacity: 0; transition: opacity 0.3s var(--ease-breath);
+  pointer-events: none;
 }
+.stage-banner.show { opacity: 1; }
+/* 綜合舞步踏步時淡出眉標與標題，讓預告膠囊獨佔頂部（不位移版面） */
+#screen-guide.combo-running .eyebrow,
+#screen-guide.combo-running .guide-title { opacity: 0; }
+
 .guide-sub {
-  font-size: 0.9rem;
-  letter-spacing: 0.16em;
-  color: var(--c-mist-dim);
-  margin-bottom: clamp(1.2rem, 5vh, 2.6rem);
-  min-height: 1.2em; /* 待機/循環文字切換時高度不跳動 */
+  font-size: 0.85rem; letter-spacing: 0.14em; color: var(--c-mist-dim);
+  margin-bottom: clamp(0.5rem, 2vh, 1rem); min-height: 1.2em;
+  transition: font-size 0.3s, color 0.3s;
+}
+/* 執行時放大說明文字（休息提示 / 階段說明 / 小節進度都顯示在此） */
+#screen-guide.running .guide-sub {
+  font-size: clamp(1.05rem, 5vw, 1.35rem);
+  color: var(--c-mist); font-weight: 500; letter-spacing: 0.08em; line-height: 1.5;
+}
+/* 休息提示：暖色，語氣親切 */
+#screen-guide.running .guide-sub.note-rest { color: var(--c-accent); }
+
+/* ===================== 步伐舞台 ===================== */
+.step-stage {
+  position: relative; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(0.5rem, 2.2vh, 1rem);
+  margin-bottom: clamp(0.8rem, 2.5vh, 1.6rem);
+}
+.beat-dots { display: flex; gap: 12px; }
+.beat-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(233, 236, 247, 0.18);
+  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+}
+.beat-dot.lit {
+  background: var(--c-orb-a); transform: scale(1.5);
+  box-shadow: 0 0 12px rgba(143, 227, 214, 0.8);
 }
 
-.orb-wrap {
+/* 腳印在此軌道內以絕對定位移動；JS 用 transform:translate 帶到 cue 指定位置並平滑滑動 */
+.foot-area {
   position: relative;
-  width: min(68vw, 300px);
-  height: min(68vw, 300px);
-  display: grid;
-  place-items: center;
-  margin-bottom: clamp(1.5rem, 6vh, 3.5rem);
+  width: 100%;
+  height: clamp(220px, 58vw, 250px);
 }
-
-.orb-halo {
+.foot {
   position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(143,227,214,0.45), rgba(111,139,240,0.18) 55%, transparent 72%);
-  filter: blur(26px);
-  transform: scale(0.6);
-  opacity: 0.5;
-  transition: transform var(--ease-breath), opacity 1.2s ease;
-  will-change: transform, opacity;
-}
-
-.orb {
-  position: relative;
-  width: 64%;
-  height: 64%;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 28%, rgba(255,255,255,0.75), transparent 42%),
-    conic-gradient(from 200deg, var(--c-orb-a), var(--c-orb-c), var(--c-orb-b), var(--c-orb-a));
-  box-shadow:
-    inset 0 0 40px rgba(255,255,255,0.25),
-    0 0 60px rgba(111,139,240,0.45);
-  display: grid;
-  place-items: center;
-  transform: scale(0.45);
-  transition: transform var(--ease-breath);
+  left: 50%;
+  top: 50%;
+  width: clamp(46px, 15vw, 58px);
+  transform: translate(-50%, -50%);
+  transition: transform 0.22s var(--ease-breath); /* 位移滑動 */
   will-change: transform;
-  animation: orb-shimmer 9s ease-in-out infinite;
-}
-@keyframes orb-shimmer {
-  0%, 100% { filter: hue-rotate(0deg) brightness(1); }
-  50%      { filter: hue-rotate(18deg) brightness(1.08); }
-}
-.orb.paused { animation-play-state: paused; }
-
-.orb-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.15rem;
-  width: 84%;          /* 限制在圈內，文字不外溢 */
-  max-width: 84%;
-  color: #0c1130;
-  text-align: center;
-  overflow: hidden;
-}
-.phase-label {
-  font-size: clamp(0.9rem, 4.2vw, 1.05rem);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
-  white-space: nowrap;
-  text-shadow: 0 1px 8px rgba(255,255,255,0.5);
-}
-.phase-count {
-  font-family: var(--font-num);
-  font-size: clamp(2.6rem, 13vw, 3.4rem);
-  font-weight: 400;
-  line-height: 1;
-  text-shadow: 0 1px 10px rgba(255,255,255,0.45);
 }
 
-/* 圈下方的引導提示（腹部鼓起、放下念頭…），避免塞進圈內造成溢出 */
-.phase-hint {
-  font-size: 0.9rem;
-  letter-spacing: 0.12em;
-  color: var(--c-mist);
-  font-weight: 300;
-  min-height: 1.3em;
-  margin-top: -0.6rem;
-  margin-bottom: clamp(1rem, 4vh, 2rem);
+/* 方塊步的方塊背景（四角＝腳步目標位置；寬 = 2·FOOT_UX = 100px、高 = 2·FOOT_UY = 116px）
+   腳印下移 FOOT_BASE_Y 後，方塊中心正好落在軌道中央 */
+.step-square {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100px;
+  height: 116px;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(233, 236, 247, 0.30);
+  border-radius: 12px;
+}
+.sq-dot {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--c-orb-a);
+  opacity: 0.7;
+  transform: translate(-50%, -50%);
+}
+.theme-morning .step-square { border-color: rgba(90, 110, 130, 0.4); }
+.foot-l .foot-rot { transform: rotate(-9deg); }
+.foot-r .foot-rot { transform: rotate(9deg); }
+.foot svg { width: 100%; height: auto; display: block; }
+.foot-shape {
+  fill: rgba(233, 236, 247, 0.12);
+  stroke: rgba(233, 236, 247, 0.28);
+  stroke-width: 2;
+  transition: fill 0.12s ease, stroke 0.12s ease;
+}
+/* 左右腳以不同顏色區分：左＝薄荷、右＝柔紫（待機淡淡染色，踏出時亮起） */
+.foot-l .foot-shape { stroke: rgba(143, 227, 214, 0.55); }
+.foot-r .foot-shape { stroke: rgba(184, 156, 240, 0.6); }
+.foot-l.active .foot-shape { fill: var(--c-orb-a); stroke: var(--c-orb-b); }
+.foot-r.active .foot-shape { fill: var(--c-orb-c); stroke: #8f6fe0; }
+/* 抬腳（在 svg 上，與外層的位移 transform 互不干擾） */
+.foot.active svg { animation: foot-pop 0.3s var(--ease-breath); }
+@keyframes foot-pop {
+  0%   { transform: translateY(0) scale(1); }
+  40%  { transform: translateY(-12px) scale(1.12); }
+  100% { transform: translateY(0) scale(1); }
 }
 
-.controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
+.cue-center {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.1rem; min-width: 4.2em;
 }
-.ctl-row {
-  display: none; /* 待機時隱藏，按「開始」後（.running）才顯示 */
-  gap: 12px;
+.cue-center.pulse { animation: cue-pulse 0.3s var(--ease-breath); }
+.cue-center.accent.pulse { animation: cue-pulse-accent 0.3s var(--ease-breath); }
+@keyframes cue-pulse { 0% { transform: scale(1.1); } 100% { transform: scale(1); } }
+@keyframes cue-pulse-accent { 0% { transform: scale(1.28); } 100% { transform: scale(1); } }
+.cue-arrow {
+  font-size: clamp(1.5rem, 7vw, 2.1rem); line-height: 1;
+  color: var(--c-orb-a); min-height: 1.05em;
+  text-shadow: 0 0 14px rgba(143, 227, 214, 0.5);
 }
+.cue-label {
+  font-size: clamp(1.4rem, 7vw, 2rem); font-weight: 600; letter-spacing: 0.06em;
+  color: var(--c-mist); white-space: nowrap;
+}
+
+.countin {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font-family: var(--font-num); font-size: clamp(4rem, 26vw, 8rem); line-height: 1;
+  color: var(--c-orb-a); text-shadow: 0 0 30px rgba(143, 227, 214, 0.6);
+  opacity: 0; pointer-events: none;
+}
+.countin.show { animation: countin-pop 0.6s ease-out; }
+@keyframes countin-pop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+  30%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
+
+/* ===================== 控制列 ===================== */
+.controls { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.ctl-row { display: none; gap: 12px; }
 #screen-guide.running .ctl-row { display: flex; }
-/* 待機：開始鈕醒目；進行中：縮小成「重新開始」 */
-#screen-guide.running #btn-start {
-  padding: 12px 40px;
-  font-size: 0.98rem;
-  margin-bottom: 0;
-}
+#screen-guide.running #btn-start { padding: 12px 40px; font-size: 0.98rem; margin-bottom: 0; }
 .ctl {
-  font-family: var(--font-zh);
-  font-size: 0.9rem;
-  letter-spacing: 0.1em;
-  color: var(--c-mist);
-  padding: 12px 20px;
-  border: 1px solid rgba(233, 236, 247, 0.22);
-  border-radius: 999px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
+  font-family: var(--font-zh); font-size: 0.9rem; letter-spacing: 0.1em; color: var(--c-mist);
+  padding: 12px 20px; border: 1px solid rgba(233, 236, 247, 0.22); border-radius: 999px;
+  background: rgba(255,255,255,0.05); backdrop-filter: blur(6px); cursor: pointer;
   transition: background 0.3s, border-color 0.3s, opacity 0.3s;
 }
-.ctl:hover, .ctl:active {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(143,227,214,0.5);
-}
+.ctl:hover, .ctl:active { background: rgba(255,255,255,0.12); border-color: rgba(143,227,214,0.5); }
 .ctl.off { opacity: 0.45; }
 
 /* ===================== 完成畫面（滿版） ===================== */
@@ -677,80 +436,31 @@ body.theme-morning {
     radial-gradient(120% 80% at 50% 28%, rgba(143,227,214,0.12), transparent 60%),
     radial-gradient(140% 120% at 50% 110%, rgba(111,139,240,0.20), transparent 70%);
 }
-.done-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-}
-.done-mark {
-  font-size: 3.4rem;
-  margin-bottom: 0.4rem;
-  animation: float 4s ease-in-out infinite;
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-8px); }
-}
-.done-title {
-  font-weight: 500;
-  font-size: 2.2rem;
-  letter-spacing: 0.16em;
-}
-.done-sub {
-  font-size: 0.95rem;
-  font-weight: 300;
-  line-height: 2;
-  color: var(--c-mist-dim);
-  margin-bottom: 1.8rem;
-}
+.done-card { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+.done-mark { font-size: 3.4rem; margin-bottom: 0.4rem; animation: float 4s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.done-title { font-weight: 500; font-size: 2.2rem; letter-spacing: 0.16em; }
+.done-sub { font-size: 0.95rem; font-weight: 300; line-height: 2; color: var(--c-mist-dim); margin-bottom: 1.8rem; }
 
 /* ===================== 按鈕 ===================== */
 .btn-primary {
-  font-family: var(--font-zh);
-  font-size: 1.05rem;
-  letter-spacing: 0.16em;
-  color: #0c1130;
-  padding: 15px 56px;
-  border: none;
-  border-radius: 999px;
+  font-family: var(--font-zh); font-size: 1.05rem; letter-spacing: 0.16em; color: #0c1130;
+  padding: 15px 56px; border: none; border-radius: 999px;
   background: linear-gradient(135deg, var(--c-orb-a), var(--c-orb-b));
-  box-shadow: 0 8px 30px rgba(111,139,240,0.5);
-  cursor: pointer;
-  transition: transform 0.3s var(--ease-breath), box-shadow 0.3s;
-  margin-bottom: 0.4rem;
+  box-shadow: 0 8px 30px rgba(111,139,240,0.5); cursor: pointer;
+  transition: transform 0.3s var(--ease-breath), box-shadow 0.3s; margin-bottom: 0.4rem;
 }
-.btn-primary:hover, .btn-primary:active {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 38px rgba(143,227,214,0.55);
-}
+.btn-primary:hover, .btn-primary:active { transform: translateY(-2px); box-shadow: 0 12px 38px rgba(143,227,214,0.55); }
 .btn-ghost {
-  font-family: var(--font-zh);
-  font-size: 0.9rem;
-  letter-spacing: 0.14em;
-  color: var(--c-mist-dim);
-  padding: 10px 24px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  transition: color 0.3s;
+  font-family: var(--font-zh); font-size: 0.9rem; letter-spacing: 0.14em; color: var(--c-mist-dim);
+  padding: 10px 24px; border: none; background: none; cursor: pointer; transition: color 0.3s;
 }
 .btn-ghost:hover { color: var(--c-mist); }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora, .orb, .done-mark, .moon,
-  .star, .bat, .owl-fly, .bird,
-  .bat .wings, .owl-fly .wings, .bird .wings, .owl-eye,
-  .sun, .sun-rays, .foliage, .spark {
+  .aurora, .moon, .star, .sun, .sun-rays, .note, .done-mark,
+  .foot.active svg, .cue-center, .countin.show {
     animation: none;
   }
-  .spark { opacity: 0.5; }
-  /* 靜態時仍讓夜行動物停在畫面內、不要卡在畫面外 */
-  .bat, .owl-fly, .bird { opacity: 0.4; }
-  .bat-1 { transform: translate(20vw, 14vh); }
-  .bat-2 { transform: translate(70vw, 20vh) scaleX(-0.85) scaleY(0.85); }
-  .bat-3 { transform: translate(40vw, 34vh) scale(0.7); }
-  .owl-fly { transform: translate(60vw, 10vh) scaleX(-0.9) scaleY(0.9); }
-  .bird-1 { transform: translate(30vw, 20vh); }
-  .bird-2 { transform: translate(64vw, 24vh) scale(0.8); }
+  .note { opacity: 0.6; }
 }

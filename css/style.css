@@ -408,6 +408,18 @@ body.theme-morning {
 .screen.above     { opacity: 0; transform: translateY(-100%); pointer-events: none; }
 .screen.below     { opacity: 0; transform: translateY(100%);  pointer-events: none; }
 
+/* —— 互動品質基線：行動端點擊不閃白、鍵盤聚焦看得見、顯示型文字不被長按選取 —— */
+button, .mode-item { -webkit-tap-highlight-color: transparent; }
+.eyebrow, .menu-title, .guide-title, .guide-sub, .phase-label, .phase-count,
+.phase-hint, .done-title, .done-sub, .mode-name, .mode-diff, button {
+  -webkit-user-select: none; user-select: none;
+}
+.btn-primary:focus-visible, .btn-ghost:focus-visible,
+.ctl:focus-visible, .guide-back:focus-visible, .mode-item:focus-visible {
+  outline: 2px solid var(--c-orb-a);
+  outline-offset: 3px;
+}
+
 .eyebrow {
   font-size: 0.72rem;
   letter-spacing: 0.42em;
@@ -461,7 +473,7 @@ body.theme-morning {
   left: 0; top: 0; bottom: 0;
   width: 3px;
   background: linear-gradient(var(--c-orb-a), var(--c-orb-b));
-  opacity: 0;
+  opacity: 0.35;
   transition: opacity 0.4s;
 }
 .mode-item:hover, .mode-item:active {
@@ -469,7 +481,7 @@ body.theme-morning {
   border-color: rgba(143, 227, 214, 0.5);
   background: linear-gradient(135deg, rgba(143,227,214,0.10), rgba(111,139,240,0.05));
 }
-.mode-item:hover::before { opacity: 1; }
+.mode-item:hover::before, .mode-item:focus-visible::before { opacity: 1; }
 .mode-head {
   display: flex;
   align-items: center;
@@ -663,12 +675,10 @@ body.theme-morning {
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   cursor: pointer;
-  transition: background 0.3s, border-color 0.3s, opacity 0.3s;
+  transition: background 0.25s, border-color 0.25s, opacity 0.25s, transform 0.12s var(--ease-breath);
 }
-.ctl:hover, .ctl:active {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(143,227,214,0.5);
-}
+.ctl:hover { background: rgba(255,255,255,0.12); border-color: rgba(143,227,214,0.5); }
+.ctl:active { background: rgba(255,255,255,0.16); border-color: rgba(143,227,214,0.6); transform: scale(0.95); }
 .ctl.off { opacity: 0.45; }
 
 /* ===================== 完成畫面（滿版） ===================== */
@@ -715,15 +725,13 @@ body.theme-morning {
   border: none;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--c-orb-a), var(--c-orb-b));
-  box-shadow: 0 8px 30px rgba(111,139,240,0.5);
+  box-shadow: 0 6px 22px rgba(111,139,240,0.40), inset 0 1px 0 rgba(255,255,255,0.40);
   cursor: pointer;
-  transition: transform 0.3s var(--ease-breath), box-shadow 0.3s;
+  transition: transform 0.3s var(--ease-breath), box-shadow 0.3s var(--ease-breath);
   margin-bottom: 0.4rem;
 }
-.btn-primary:hover, .btn-primary:active {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 38px rgba(143,227,214,0.55);
-}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(143,227,214,0.42), inset 0 1px 0 rgba(255,255,255,0.45); }
+.btn-primary:active { transform: translateY(0); box-shadow: 0 4px 14px rgba(111,139,240,0.35), inset 0 1px 0 rgba(255,255,255,0.35); }
 .btn-ghost {
   font-family: var(--font-zh);
   font-size: 0.9rem;
@@ -741,10 +749,11 @@ body.theme-morning {
   .aurora, .orb, .done-mark, .moon,
   .star, .bat, .owl-fly, .bird,
   .bat .wings, .owl-fly .wings, .bird .wings, .owl-eye,
-  .sun, .sun-rays, .foliage, .spark {
+  .sun, .sun-rays, .foliage, .spark, .mode-item {
     animation: none;
   }
   .spark { opacity: 0.5; }
+  .mode-item { opacity: 1; } /* 取消 rise 進場的透明起點 */
   /* 靜態時仍讓夜行動物停在畫面內、不要卡在畫面外 */
   .bat, .owl-fly, .bird { opacity: 0.4; }
   .bat-1 { transform: translate(20vw, 14vh); }

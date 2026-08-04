@@ -57,15 +57,6 @@ python3 -m http.server 8080
 ```
 未設定 LIFF ID 時會自動以 standalone 模式運作，方便先看動畫與音效。
 
-### 背景主題（白天 / 夜晚自動切換）
-畫面背景會依**裝置當地時間**自動切換白天／夜晚場景：
-
-- **白天（morning）**：06:00–17:59
-- **夜晚（night）**：18:00–翌日 05:59
-
-可用網址參數強制指定，方便測試：`?bg=morning`（或 `?bg=day`）、`?bg=night`。
-呼吸 App 與節律步伐 App（`step/`）採用相同切換規則。
-
 ---
 
 ## 二、建立全新 LINE channel + LIFF App

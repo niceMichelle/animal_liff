@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>認知步行 · 律動</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Serif+TC:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 背景：極光漂移 + 顆粒紋理 -->
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- 夜晚場景 -->
+  <div class="night" aria-hidden="true">
+    <svg class="moon" viewBox="0 0 100 100">
+      <defs>
+        <radialGradient id="moonGrad" cx="38%" cy="34%" r="72%">
+          <stop offset="0%" stop-color="#fdf6de" />
+          <stop offset="60%" stop-color="#f0e2b2" />
+          <stop offset="100%" stop-color="#e3cf96" />
+        </radialGradient>
+      </defs>
+      <circle class="moon-disc" cx="50" cy="50" r="42" fill="url(#moonGrad)" />
+      <g class="moon-face">
+        <path d="M32 43 Q38 49 44 43" fill="none" stroke-width="3" stroke-linecap="round" />
+        <path d="M56 43 Q62 49 68 43" fill="none" stroke-width="3" stroke-linecap="round" />
+        <path d="M37 59 Q50 69 63 59" fill="none" stroke-width="3" stroke-linecap="round" />
+      </g>
+    </svg>
+
+    <span class="star" style="--x:14%;--y:16%;--s:2px;--d:0s"></span>
+    <span class="star" style="--x:26%;--y:9%;--s:1.5px;--d:1.1s"></span>
+    <span class="star" style="--x:63%;--y:12%;--s:2.5px;--d:.5s"></span>
+    <span class="star" style="--x:82%;--y:20%;--s:1.5px;--d:1.8s"></span>
+    <span class="star" style="--x:47%;--y:7%;--s:2px;--d:2.4s"></span>
+    <span class="star" style="--x:91%;--y:38%;--s:2px;--d:1.4s"></span>
+    <span class="star" style="--x:8%;--y:34%;--s:1.5px;--d:3s"></span>
+    <span class="star" style="--x:72%;--y:28%;--s:1.5px;--d:.8s"></span>
+
+
+    <!-- 樹叢 + 大象（右下角） -->
+    <svg class="scene scene-night" viewBox="0 0 340 180" preserveAspectRatio="xMaxYMax meet">
+      <!-- 面向右方、象鼻伸進樹叢吃葉子；四腳對角交替，慢慢原地踏步 -->
+      <g class="elephant" transform="translate(-24,0)">
+        <!-- 尾巴 + 毛尖 -->
+        <path class="ele-tail" d="M90 126 q-12 8 -10 24" fill="none"/>
+        <path class="ele-tuft" d="M80 149 q-5 6 1 10 q6 -3 3 -10 z"/>
+        <!-- 遠側腿（較暗） -->
+        <g class="ele-leg-b"><rect class="ele-leg-far" x="110" y="146" width="18" height="30" rx="7"/></g>
+        <g class="ele-leg-a"><rect class="ele-leg-far" x="166" y="146" width="18" height="30" rx="7"/></g>
+        <!-- 身體 -->
+        <ellipse class="ele-body" cx="140" cy="132" rx="54" ry="34"/>
+        <!-- 近側腿 + 趾甲 -->
+        <g class="ele-leg-a">
+          <rect class="ele-leg" x="96" y="148" width="20" height="28" rx="7"/>
+          <ellipse class="ele-nail" cx="101" cy="174" rx="3" ry="1.7"/><ellipse class="ele-nail" cx="110" cy="174" rx="3" ry="1.7"/>
+        </g>
+        <g class="ele-leg-b">
+          <rect class="ele-leg" x="152" y="148" width="20" height="28" rx="7"/>
+          <ellipse class="ele-nail" cx="157" cy="174" rx="3" ry="1.7"/><ellipse class="ele-nail" cx="166" cy="174" rx="3" ry="1.7"/>
+        </g>
+        <!-- 象鼻（畫在頭之前，根部被頭蓋住；尖端沒入樹叢） -->
+        <path class="ele-trunk" d="M208 116 C222 124 226 142 232 162" fill="none"/>
+        <!-- 頭 -->
+        <circle class="ele-head" cx="192" cy="108" r="27"/>
+        <!-- 大耳朵 -->
+        <ellipse class="ele-ear" cx="176" cy="112" rx="17" ry="24"/>
+        <ellipse class="ele-ear-in" cx="177" cy="114" rx="10" ry="16"/>
+        <!-- 眼睛 -->
+        <circle class="ele-eye" cx="203" cy="101" r="2.8"/>
+        <!-- 象牙 -->
+        <path class="ele-tusk" d="M203 124 q8 9 18 4" fill="none"/>
+      </g>
+      <g class="bush">
+        <circle cx="248" cy="162" r="40"/>
+        <circle cx="292" cy="170" r="36"/>
+        <circle cx="320" cy="162" r="30"/>
+        <circle cx="270" cy="140" r="30"/>
+        <circle cx="302" cy="146" r="26"/>
+      </g>
+    </svg>
+
+    <!-- 樹叢飄出的音符 -->
+    <span class="note" style="--nx:80%;--nb:14%;--nz:20px;--dur:6s;--delay:0s">♪</span>
+    <span class="note" style="--nx:86%;--nb:18%;--nz:16px;--dur:7s;--delay:1.4s">♫</span>
+    <span class="note" style="--nx:74%;--nb:12%;--nz:22px;--dur:6.5s;--delay:2.6s">♩</span>
+    <span class="note" style="--nx:90%;--nb:16%;--nz:16px;--dur:7.5s;--delay:3.8s">♪</span>
+    <span class="note" style="--nx:78%;--nb:20%;--nz:18px;--dur:6.8s;--delay:5s">♫</span>
+  </div>
+
+  <!-- 早晨場景 -->
+  <div class="day" aria-hidden="true">
+    <svg class="sun" viewBox="0 0 120 120">
+      <defs>
+        <radialGradient id="sunGrad" cx="42%" cy="38%" r="65%">
+          <stop offset="0%" stop-color="#fff6c2" />
+          <stop offset="55%" stop-color="#ffd24d" />
+          <stop offset="100%" stop-color="#ffb020" />
+        </radialGradient>
+      </defs>
+      <g class="sun-rays" stroke="#ffc84d" stroke-width="4" stroke-linecap="round">
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(0 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(45 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(90 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(135 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(180 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(225 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(270 60 60)" />
+        <line x1="60" y1="6" x2="60" y2="20" transform="rotate(315 60 60)" />
+      </g>
+      <circle class="sun-disc" cx="60" cy="60" r="32" fill="url(#sunGrad)" />
+      <g class="sun-face">
+        <circle cx="51" cy="56" r="3" />
+        <circle cx="69" cy="56" r="3" />
+        <path d="M49 66 Q60 76 71 66" fill="none" stroke-width="3.5" stroke-linecap="round" />
+      </g>
+    </svg>
+
+    <!-- 樹叢 + 大象（右下角） -->
+    <svg class="scene scene-day" viewBox="0 0 340 180" preserveAspectRatio="xMaxYMax meet">
+      <!-- 面向右方、象鼻伸進樹叢吃葉子；四腳對角交替，慢慢原地踏步 -->
+      <g class="elephant" transform="translate(-24,0)">
+        <!-- 尾巴 + 毛尖 -->
+        <path class="ele-tail" d="M90 126 q-12 8 -10 24" fill="none"/>
+        <path class="ele-tuft" d="M80 149 q-5 6 1 10 q6 -3 3 -10 z"/>
+        <!-- 遠側腿（較暗） -->
+        <g class="ele-leg-b"><rect class="ele-leg-far" x="110" y="146" width="18" height="30" rx="7"/></g>
+        <g class="ele-leg-a"><rect class="ele-leg-far" x="166" y="146" width="18" height="30" rx="7"/></g>
+        <!-- 身體 -->
+        <ellipse class="ele-body" cx="140" cy="132" rx="54" ry="34"/>
+        <!-- 近側腿 + 趾甲 -->
+        <g class="ele-leg-a">
+          <rect class="ele-leg" x="96" y="148" width="20" height="28" rx="7"/>
+          <ellipse class="ele-nail" cx="101" cy="174" rx="3" ry="1.7"/><ellipse class="ele-nail" cx="110" cy="174" rx="3" ry="1.7"/>
+        </g>
+        <g class="ele-leg-b">
+          <rect class="ele-leg" x="152" y="148" width="20" height="28" rx="7"/>
+          <ellipse class="ele-nail" cx="157" cy="174" rx="3" ry="1.7"/><ellipse class="ele-nail" cx="166" cy="174" rx="3" ry="1.7"/>
+        </g>
+        <!-- 象鼻（畫在頭之前，根部被頭蓋住；尖端沒入樹叢） -->
+        <path class="ele-trunk" d="M208 116 C222 124 226 142 232 162" fill="none"/>
+        <!-- 頭 -->
+        <circle class="ele-head" cx="192" cy="108" r="27"/>
+        <!-- 大耳朵 -->
+        <ellipse class="ele-ear" cx="176" cy="112" rx="17" ry="24"/>
+        <ellipse class="ele-ear-in" cx="177" cy="114" rx="10" ry="16"/>
+        <!-- 眼睛 -->
+        <circle class="ele-eye" cx="203" cy="101" r="2.8"/>
+        <!-- 象牙 -->
+        <path class="ele-tusk" d="M203 124 q8 9 18 4" fill="none"/>
+      </g>
+      <g class="bush">
+        <circle cx="248" cy="162" r="40"/>
+        <circle cx="292" cy="170" r="36"/>
+        <circle cx="320" cy="162" r="30"/>
+        <circle cx="270" cy="140" r="30"/>
+        <circle cx="302" cy="146" r="26"/>
+      </g>
+    </svg>
+
+    <!-- 樹叢飄出的音符 -->
+    <span class="note" style="--nx:80%;--nb:14%;--nz:20px;--dur:6s;--delay:0s">♪</span>
+    <span class="note" style="--nx:86%;--nb:18%;--nz:16px;--dur:7s;--delay:1.4s">♫</span>
+    <span class="note" style="--nx:74%;--nb:12%;--nz:22px;--dur:6.5s;--delay:2.6s">♩</span>
+    <span class="note" style="--nx:90%;--nb:16%;--nz:16px;--dur:7.5s;--delay:3.8s">♪</span>
+    <span class="note" style="--nx:78%;--nb:20%;--nz:18px;--dur:6.8s;--delay:5s">♫</span>
+  </div>
+
+  <main class="stage">
+
+    <!-- 畫面 0：首頁選單 -->
+    <section id="screen-menu" class="screen">
+      <p class="eyebrow">律動 · WALK</p>
+      <h1 class="menu-title">邊走邊說<br />讓腦袋也動起來</h1>
+      <ul class="mode-list" id="mode-list"><!-- JS 依 patterns 產生 --></ul>
+    </section>
+
+    <!-- 畫面 1：引導（題目卡 + 踏步舞台） -->
+    <section id="screen-guide" class="screen">
+      <button class="guide-back" id="btn-menu" aria-label="返回選單">‹ 選單</button>
+      <p class="eyebrow">認知步行</p>
+      <h2 class="guide-title" id="guide-title">踏步報數</h2>
+      <p class="guide-sub" id="guide-sub"></p>
+
+      <div class="walk-stage">
+        <!-- 題目卡：任務說明 / 目前題目 / 上一題答案 -->
+        <div class="task-card" id="task-card" aria-live="polite">
+          <p class="task-hint" id="task-hint"></p>
+          <p class="task-prompt" id="task-prompt"></p>
+          <p class="task-answer" id="task-answer"></p>
+        </div>
+
+        <div class="beat-dots" id="beat-dots"></div>
+
+        <div class="foot-area">
+          <div class="foot foot-l" id="foot-l">
+            <div class="foot-rot"><svg viewBox="0 0 60 96"><path class="foot-shape" d="M30 4 C43 4 49 18 47 38 C46 54 44 66 42 78 C41 88 36 92 30 92 C24 92 19 88 18 78 C16 66 14 54 13 38 C11 18 17 4 30 4 Z"/></svg></div>
+          </div>
+          <div class="foot foot-r" id="foot-r">
+            <div class="foot-rot"><svg viewBox="0 0 60 96"><path class="foot-shape" d="M30 4 C43 4 49 18 47 38 C46 54 44 66 42 78 C41 88 36 92 30 92 C24 92 19 88 18 78 C16 66 14 54 13 38 C11 18 17 4 30 4 Z"/></svg></div>
+          </div>
+          <!-- 雙腳中間：目前這一步（左/右，或報數的數字） -->
+          <div class="cue-center" id="cue-center">
+            <span class="cue-label" id="cue-label">準備</span>
+          </div>
+          <div class="countin" id="countin"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary" id="btn-start">開始</button>
+        <div class="ctl-row" id="ctl-row">
+          <button class="ctl" id="btn-pause" aria-label="暫停或繼續">暫停</button>
+          <button class="ctl" id="btn-sound" aria-label="音效開關">♪ 音效</button>
+          <button class="ctl" id="btn-voice" aria-label="題目朗讀開關">🗣 朗讀</button>
+          <button class="ctl" id="btn-stop" aria-label="結束">結束</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 畫面 2：完成（滿版） -->
+    <section id="screen-done" class="screen">
+      <div class="done-card">
+        <div class="done-mark">🧠</div>
+        <h2 class="done-title">完成</h2>
+        <p class="done-sub">腳步和腦袋都動起來了，做得好！</p>
+        <button class="btn-primary" id="btn-again">再做一次</button>
+        <button class="btn-ghost" id="btn-close">關閉</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- LINE LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <!-- 應用程式模組 -->
+  <script src="js/patterns.js"></script>
+  <script src="js/rhythm-audio.js"></script>
+  <script src="js/rhythm-engine.js"></script>
+  <script src="js/speech.js"></script>
+  <script src="js/liff-init.js"></script>
+
+  <!-- 介面接線（DOM × 引擎 × 朗讀 × LIFF） -->
+  <script>
+    (function () {
+      const screens = {
+        menu: document.getElementById('screen-menu'),
+        guide: document.getElementById('screen-guide'),
+        done: document.getElementById('screen-done'),
+      };
+
+      const el = {
+        modeList: document.getElementById('mode-list'),
+        btnMenu: document.getElementById('btn-menu'),
+        guideEl: document.getElementById('screen-guide'),
+        guideTitle: document.getElementById('guide-title'),
+        guideSub: document.getElementById('guide-sub'),
+        taskCard: document.getElementById('task-card'),
+        taskHint: document.getElementById('task-hint'),
+        taskPrompt: document.getElementById('task-prompt'),
+        taskAnswer: document.getElementById('task-answer'),
+        footL: document.getElementById('foot-l'),
+        footR: document.getElementById('foot-r'),
+        cueCenter: document.getElementById('cue-center'),
+        cueLabel: document.getElementById('cue-label'),
+        beatDots: document.getElementById('beat-dots'),
+        countin: document.getElementById('countin'),
+        btnStart: document.getElementById('btn-start'),
+        btnPause: document.getElementById('btn-pause'),
+        btnSound: document.getElementById('btn-sound'),
+        btnVoice: document.getElementById('btn-voice'),
+        btnStop: document.getElementById('btn-stop'),
+        btnAgain: document.getElementById('btn-again'),
+        btnClose: document.getElementById('btn-close'),
+      };
+
+      const audio = new window.RhythmAudio();
+      const speech = window.WalkSpeech;
+      let engine = null;
+      let currentType = window.DEFAULT_PATTERN;
+      let currentScreen = null;
+      let cameFromMenu = false;
+      let taskSerial = 0;   // 本次訓練出到第幾題（跨階段累計，類別不重複）
+      let curTask = null;   // 目前題目（換題時揭示它的答案）
+
+      const DIFF_LEVEL = { '入門': 1, '初級': 2, '中級': 3, '進階': 4 };
+
+      // —— 上下滑動轉場 ——
+      function activate(name, dir) {
+        const target = screens[name];
+        if (currentScreen === target) return;
+        if (!currentScreen) { target.classList.add('is-active'); currentScreen = target; return; }
+        const prev = currentScreen;
+        target.classList.remove('is-active', 'above', 'below');
+        target.classList.add(dir === 'down' ? 'below' : 'above');
+        prev.classList.remove('is-active');
+        prev.classList.add(dir === 'down' ? 'above' : 'below');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          target.classList.remove('above', 'below');
+          target.classList.add('is-active');
+        }));
+        currentScreen = target;
+      }
+
+      // —— 選單 ——
+      function durationText(p) {
+        const sec = Math.round(p.bars * (p.beatsPerBar || 4) * 60 / p.bpm);
+        const m = Math.floor(sec / 60), s = sec % 60;
+        const t = m > 0 ? (m + ' 分' + (s ? ' ' + s + ' 秒' : '')) : (s + ' 秒');
+        return p.bpm + ' BPM · 約 ' + t;
+      }
+
+      function buildMenu() {
+        el.modeList.innerHTML = '';
+        Object.values(window.WALK_PATTERNS).forEach((p, i) => {
+          const li = document.createElement('li');
+          li.className = 'mode-item';
+          li.style.setProperty('--i', i);
+          const lvl = DIFF_LEVEL[p.difficulty] || 1;
+          li.innerHTML =
+            '<div class="mode-head">' +
+              '<span class="mode-name">' + p.name + '</span>' +
+              '<span class="mode-diff diff-' + lvl + '">' + p.difficulty + '</span>' +
+            '</div>' +
+            '<p class="mode-intro">' + p.intro + '</p>' +
+            '<p class="mode-situation">適合：' + p.situation + '</p>' +
+            '<p class="mode-meta">' + durationText(p) + '</p>';
+          li.addEventListener('click', () => selectFromMenu(p.id));
+          el.modeList.appendChild(li);
+        });
+      }
+
+      function selectFromMenu(type) {
+        cameFromMenu = true;
+        loadGuide(type);
+        activate('guide', 'down');
+      }
+
+      function buildBeatDots(n) {
+        el.beatDots.innerHTML = '';
+        for (let i = 0; i < n; i++) {
+          const d = document.createElement('span');
+          d.className = 'beat-dot';
+          el.beatDots.appendChild(d);
+        }
+      }
+
+      // —— 題目卡 ——
+      // answerText：顯示在題目下方的一行（上一題答案 / 範例）
+      function renderTask(task, hint, answerText) {
+        el.taskHint.textContent = hint || '';
+        el.taskPrompt.textContent = task ? task.prompt : '';
+        el.taskPrompt.style.color = (task && task.color) || '';
+        el.taskCard.classList.toggle('stroop', currentType === 'stroop');
+        el.taskAnswer.textContent = answerText || '';
+        // 換題淡入（移除再加以重新觸發動畫）
+        el.taskPrompt.classList.remove('swap');
+        void el.taskPrompt.offsetWidth;
+        el.taskPrompt.classList.add('swap');
+      }
+
+      function prevAnswerText() {
+        return curTask && curTask.answer ? '上一題：' + curTask.answer : '';
+      }
+
+      // 題目朗讀語速：節奏越快唸得越快一點，確保一小節內唸完
+      function speechRate(stage) {
+        return Math.min(1.2, Math.max(0.9, stage.bpm / 80));
+      }
+
+      // 每個階段的第一題：教學在預備拍時出題，練習/正式在休息一開始就出題，讓人有時間聽清楚
+      function presentStageTask(stage, index) {
+        const p = window.WALK_PATTERNS[currentType];
+        const answer = prevAnswerText();
+        curTask = p.makeTask(taskSerial++, stage);
+        const hint = p.instruction(stage);
+        renderTask(curTask, hint, answer);
+        // 第一個階段先唸題目再唸規則；之後有題目就只唸題目
+        const parts = (index === 0 || !curTask.speak) ? [curTask.speak, hint] : [curTask.speak];
+        speech.speak(parts.filter(Boolean).join('。'), speechRate(stage));
+      }
+
+      function nextTask(stage) {
+        const p = window.WALK_PATTERNS[currentType];
+        const answer = prevAnswerText();
+        curTask = p.makeTask(taskSerial++, stage);
+        renderTask(curTask, p.instruction(stage), answer);
+        speech.speak(curTask.speak, speechRate(stage));
+      }
+
+      // 待機時題目卡先放一題範例，讓人看懂要做什麼
+      function previewTask(p) {
+        p.reset();
+        const stage = { name: '教學' };
+        const t = p.makeTask(0, stage);
+        renderTask(t, p.instruction(stage), t.answer ? '這題要說：' + t.answer : '');
+      }
+
+      function setStageIdle() {
+        el.footL.classList.remove('active');
+        el.footR.classList.remove('active');
+        el.cueCenter.classList.remove('pulse', 'accent');
+        el.cueLabel.textContent = '準備';
+        el.countin.classList.remove('show');
+        Array.from(el.beatDots.children).forEach((d) => d.classList.remove('lit'));
+        el.guideSub.classList.remove('note-rest');
+      }
+
+      function loadGuide(type) {
+        currentType = type;
+        const p = window.WALK_PATTERNS[type];
+        el.guideTitle.textContent = p.name;
+        el.guideSub.textContent = durationText(p);
+        el.guideEl.classList.remove('running', 'paused');
+        el.guideEl.classList.toggle('from-menu', cameFromMenu);
+        el.btnStart.textContent = '開始';
+        buildBeatDots(p.beatsPerBar || 4);
+        setStageIdle();
+        curTask = null;
+        previewTask(p);
+      }
+
+      // —— 開始 / 重新開始 ——
+      function startRun() {
+        if (engine) engine.stop();
+        speech.cancel();
+        const p = window.WALK_PATTERNS[currentType];
+        p.reset(); // 每次重新洗牌題目
+        taskSerial = 0;
+        curTask = null;
+
+        el.guideEl.classList.add('running');
+        el.guideEl.classList.remove('paused');
+        el.btnStart.textContent = '重新開始';
+        el.btnPause.textContent = '暫停';
+        buildBeatDots(p.beatsPerBar || 4);
+        setStageIdle();
+        renderTask(null, p.instruction({ name: '教學' }), '');
+
+        engine = new window.RhythmEngine(p, audio, {
+          onRest(n, stage, index) {
+            // 休息 5 秒：腳步停下、先出下一階段的第一題
+            el.footL.classList.remove('active');
+            el.footR.classList.remove('active');
+            Array.from(el.beatDots.children).forEach((d) => d.classList.remove('lit'));
+            el.cueCenter.classList.remove('pulse', 'accent');
+            el.cueLabel.textContent = ''; // 倒數大數字疊在雙腳中間，提示文字先讓位（休息提示已在 guide-sub）
+
+            el.guideSub.textContent = (stage.name === '正式')
+              ? '準備好了嗎？要正式開始嘍！'
+              : '先喘口氣、放鬆一下～準備加快速度嘍！';
+            el.guideSub.classList.add('note-rest');
+            if (n === 5) presentStageTask(stage, index);
+
+            el.countin.textContent = n;
+            el.countin.classList.remove('show');
+            void el.countin.offsetWidth;
+            el.countin.classList.add('show');
+          },
+          onCountIn(n, stage, index) {
+            el.guideSub.textContent = stage.banner;
+            el.guideSub.classList.remove('note-rest');
+            el.cueLabel.textContent = '';
+            if (index === 0 && n === (p.beatsPerBar || 4)) presentStageTask(stage, index);
+            el.countin.textContent = n;
+            // 每個數字都要重新觸發動畫（否則第一次之後動畫已結束、停在 opacity:0 而看不見）
+            el.countin.classList.remove('show');
+            void el.countin.offsetWidth;
+            el.countin.classList.add('show');
+          },
+          onBeat(cue, beatInBar, barIndex, stageBars, stage, task) {
+            el.countin.classList.remove('show');
+            el.guideSub.classList.remove('note-rest');
+
+            // 換題（每階段第一題已在休息/預備拍出過）
+            if (task.start && task.index > 0) nextTask(stage);
+
+            el.cueLabel.textContent = p.beatLabel ? p.beatLabel(task.beat, stage) : cue.label;
+
+            const label = stage.name === '正式' ? '' : (stage.name + ' · ');
+            el.guideSub.textContent = label + '第 ' + (barIndex + 1) + ' / ' + stageBars + ' 小節';
+
+            // 腳印高亮 + 抬腳（移除再加以重新觸發動畫）
+            el.footL.classList.remove('active');
+            el.footR.classList.remove('active');
+            const f = cue.foot === 'L' ? el.footL : el.footR;
+            void f.offsetWidth;
+            f.classList.add('active');
+
+            // 中央脈動
+            el.cueCenter.classList.remove('pulse', 'accent');
+            void el.cueCenter.offsetWidth;
+            el.cueCenter.classList.add('pulse');
+            if (cue.accent) el.cueCenter.classList.add('accent');
+
+            // 拍點指示
+            Array.from(el.beatDots.children).forEach((d, i) => d.classList.toggle('lit', i === beatInBar));
+          },
+          onComplete() {
+            el.guideEl.classList.remove('running');
+            activate('done', 'down');
+          },
+        });
+        engine.start();
+      }
+
+      // —— 事件 ——
+      el.btnStart.addEventListener('click', () => {
+        // unlock() 會同步建立 AudioContext，resume 在背景進行（不 await，避免卡住畫面）
+        audio.unlock();
+        speech.unlock(); // iOS：朗讀須在手勢內先解鎖
+        startRun();
+      });
+
+      el.btnPause.addEventListener('click', () => {
+        if (!engine) return;
+        const paused = engine.togglePause();
+        if (paused) speech.cancel();
+        el.btnPause.textContent = paused ? '繼續' : '暫停';
+        el.guideEl.classList.toggle('paused', paused);
+      });
+
+      el.btnSound.addEventListener('click', () => {
+        audio.enabled = !audio.enabled;
+        el.btnSound.classList.toggle('off', !audio.enabled);
+        el.btnSound.textContent = audio.enabled ? '♪ 音效' : '♪ 靜音';
+      });
+
+      el.btnVoice.hidden = !speech.supported;
+      el.btnVoice.addEventListener('click', () => {
+        speech.enabled = !speech.enabled;
+        if (!speech.enabled) speech.cancel();
+        el.btnVoice.classList.toggle('off', !speech.enabled);
+        el.btnVoice.textContent = speech.enabled ? '🗣 朗讀' : '🗣 不唸';
+      });
+
+      el.btnStop.addEventListener('click', () => {
+        if (engine) engine.stop();
+        speech.cancel();
+        el.guideEl.classList.remove('running');
+        activate('done', 'down');
+      });
+
+      el.btnAgain.addEventListener('click', () => {
+        loadGuide(currentType);
+        activate('guide', 'up');
+      });
+
+      el.btnClose.addEventListener('click', () => window.AppLiff.close());
+
+      el.btnMenu.addEventListener('click', () => {
+        if (engine) engine.stop();
+        speech.cancel();
+        activate('menu', 'up');
+      });
+
+      // —— 啟動 ——
+      function pickTheme() {
+        const bg = new URLSearchParams(window.location.search).get('bg');
+        if (bg === 'morning' || bg === 'day') return 'morning';
+        if (bg === 'night') return 'night';
+        const h = new Date().getHours();
+        return (h >= 6 && h < 18) ? 'morning' : 'night';
+      }
+
+      (async function boot() {
+        document.body.classList.add('theme-' + pickTheme());
+        await window.AppLiff.init();
+        buildMenu();
+        if (window.AppLiff.hasType()) {
+          cameFromMenu = false;
+          loadGuide(window.AppLiff.getType());
+          activate('guide');
+        } else {
+          activate('menu');
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>

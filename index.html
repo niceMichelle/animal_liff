@@ -66,12 +66,14 @@
       animation: rise 0.6s var(--ease) both;
     }
     .card:nth-child(2) { animation-delay: 0.12s; }
+    .card:nth-child(3) { animation-delay: 0.24s; }
     @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
     .card::before {
       content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
       background: linear-gradient(var(--c-orb-a), var(--c-orb-b)); opacity: 0.4; transition: opacity 0.4s;
     }
     .card.step::before { background: linear-gradient(var(--c-orb-b), var(--c-orb-c)); }
+    .card.walk::before { background: linear-gradient(var(--c-orb-c), var(--c-accent)); }
     .card:hover, .card:active { transform: translateY(-3px); border-color: rgba(143,227,214,0.5); background: linear-gradient(135deg, rgba(143,227,214,0.10), rgba(111,139,240,0.05)); }
     .card:hover::before, .card:focus-visible::before { opacity: 1; }
     .card:focus-visible { outline: 2px solid var(--c-orb-a); outline-offset: 3px; }
@@ -85,6 +87,13 @@
     .beat.b1 { animation-delay: 0s; } .beat.b2 { animation-delay: 0.35s; }
     .beat.b3 { animation-delay: 0.7s; } .beat.b4 { animation-delay: 1.05s; }
     @keyframes pulse { 0%,25% { fill: var(--c-orb-a); opacity: 1; transform: scale(1.35); } 26%,100% { fill: var(--c-orb-b); opacity: 0.35; transform: scale(1); } }
+    .bubble { fill: none; stroke: var(--c-orb-c); stroke-width: 2.2; stroke-linejoin: round; opacity: 0.9; }
+    .say { fill: var(--c-orb-c); opacity: 0.35; animation: say 1.8s ease-in-out infinite; }
+    .say.s2 { animation-delay: 0.3s; } .say.s3 { animation-delay: 0.6s; }
+    @keyframes say { 0%,60%,100% { opacity: 0.35; } 30% { opacity: 1; } }
+    .print { fill: var(--c-orb-a); opacity: 0.4; animation: tread 1.4s steps(1) infinite; }
+    .print.p2 { animation-delay: 0.7s; }
+    @keyframes tread { 0%,49% { opacity: 1; } 50%,100% { opacity: 0.4; } }
     .card-body { flex: 1; min-width: 0; }
     .card-name { font-size: 1.16rem; font-weight: 500; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
     .card-desc { font-size: 0.82rem; font-weight: 300; line-height: 1.7; color: var(--c-mist-dim); }
@@ -92,7 +101,7 @@
     .card:hover .card-arrow { color: var(--c-orb-a); transform: translateX(3px); }
     .foot { margin-top: 2rem; font-size: 0.72rem; letter-spacing: 0.14em; color: var(--c-mist-dim); opacity: 0.7; }
     @media (prefers-reduced-motion: reduce) {
-      .aurora, .breath-ring, .beat.on, .card { animation: none; }
+      .aurora, .breath-ring, .beat.on, .card, .say, .print { animation: none; }
       .card { opacity: 1; }
     }
   </style>
@@ -132,6 +141,24 @@
         <span class="card-body">
           <span class="card-name">節律步伐</span>
           <span class="card-desc">跟著節拍做原地踏步、併步、方塊步與綜合舞步暖身。</span>
+        </span>
+        <span class="card-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="card walk" href="walk/">
+        <span class="glyph" aria-hidden="true">
+          <svg viewBox="0 0 52 52">
+            <path class="bubble" d="M20 6 h24 a5 5 0 0 1 5 5 v10 a5 5 0 0 1 -5 5 h-14 l-6 5 v-5 h-4 a5 5 0 0 1 -5 -5 v-10 a5 5 0 0 1 5 -5 z" />
+            <circle class="say s1" cx="25" cy="16" r="2.2" />
+            <circle class="say s2" cx="32" cy="16" r="2.2" />
+            <circle class="say s3" cx="39" cy="16" r="2.2" />
+            <ellipse class="print p1" cx="9" cy="42" rx="4" ry="7" transform="rotate(-8 9 42)" />
+            <ellipse class="print p2" cx="19" cy="36" rx="4" ry="7" transform="rotate(8 19 36)" />
+          </svg>
+        </span>
+        <span class="card-body">
+          <span class="card-name">認知步行</span>
+          <span class="card-desc">邊踏步邊說話：報數、分類說詞、顏色字反應，讓腦袋也動起來。</span>
         </span>
         <span class="card-arrow" aria-hidden="true">→</span>
       </a>

@@ -484,6 +484,12 @@
 
             el.cueLabel.textContent = p.beatLabel ? p.beatLabel(task.beat, stage) : cue.label;
 
+            // 教學階段：語音示範這一拍該說什麼（報數的數字、類別的詞、字的顏色）
+            if (stage.name === '教學' && p.demo) {
+              const say = p.demo(curTask, task, stage);
+              if (say) speech.speak(say, speechRate(stage));
+            }
+
             const label = stage.name === '正式' ? '' : (stage.name + ' · ');
             el.guideSub.textContent = label + '第 ' + (barIndex + 1) + ' / ' + stageBars + ' 小節';
 

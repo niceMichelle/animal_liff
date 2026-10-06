@@ -11,7 +11,7 @@
 //   onRest(n, stage, index)                         階段前休息倒數 5→1
 //   onCountIn(n, stage, index)                       預備拍倒數
 //   onBeat(cue, beatInBar, barIndex, stageBars, stage, task)  每一正式拍
-//     task = { beat: 階段內第幾拍, index: 階段內第幾題, start: 這拍是否換題 }
+//     task = { beat: 階段內第幾拍, index: 階段內第幾題, offset: 本題第幾拍, start: 這拍是否換題 }
 //   onComplete()                                    全部階段跑完
 
 class RhythmEngine {
@@ -27,7 +27,7 @@ class RhythmEngine {
     const loops = seqLen <= 6 ? 4 : 1;
     // 三階段（速度倍率 + 拍數）
     this.stages = [
-      { name: '教學', banner: '先慢慢走，聽清楚題目再開口', bpm: base * 0.5,  beats: seqLen * loops },
+      { name: '教學', banner: '先慢慢走，跟著語音一起說', bpm: base * 0.5,  beats: seqLen * loops },
       { name: '練習', banner: '腳步穩了嗎？邊走邊說，再快一點點', bpm: base * 0.72, beats: seqLen * loops },
       { name: '正式', banner: '放輕鬆，腳步跟著節拍、嘴巴跟著題目！', bpm: base, beats: pattern.bars * this.beatsPerBar },
     ];
@@ -72,7 +72,7 @@ class RhythmEngine {
         this.events.push({
           type: 'beat', dur: st.beatDur, stage: st, stageIndex: si,
           cue: seq[b % seqLen], beatInBar: b % bpb, barIndex: Math.floor(b / bpb), stageBars: st.bars,
-          task: { beat: b, index: Math.floor(b / every), start: b % every === 0 },
+          task: { beat: b, index: Math.floor(b / every), offset: b % every, start: b % every === 0 },
         });
       }
     });

@@ -34,9 +34,12 @@ window.WalkSpeech = {
   },
 
   // rate 依節奏微調：題目要在一小節內唸完，又不能快到聽不清
-  speak(text, rate = 1) {
+  // interrupt=false：前一句還沒唸完就略過這句（教學示範不截斷說明與題目）
+  speak(text, rate = 1, interrupt = true) {
     if (!this.enabled || !this.supported || !text) return;
-    window.speechSynthesis.cancel(); // 新題目蓋掉還沒唸完的舊題目
+    const ss = window.speechSynthesis;
+    if (!interrupt && (ss.speaking || ss.pending)) return;
+    ss.cancel(); // 新題目蓋掉還沒唸完的舊題目
     const u = new SpeechSynthesisUtterance(text);
     u.lang = this._voice ? this._voice.lang : 'zh-TW';
     if (this._voice) u.voice = this._voice;

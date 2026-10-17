@@ -233,6 +233,16 @@
 
   </main>
 
+  <!-- 進入主選單時的提醒：開啟聲音 -->
+  <div class="sound-tip" id="sound-tip" role="dialog" aria-modal="true" aria-labelledby="sound-tip-title" hidden>
+    <div class="sound-tip-card">
+      <div class="sound-tip-icon" aria-hidden="true">🔊</div>
+      <h2 class="sound-tip-title" id="sound-tip-title">請開啟聲音</h2>
+      <p class="sound-tip-text">練習時會有柔和的提示音，<br />帶你掌握吸氣、屏息與吐氣的節奏；<br />請調高音量，並關閉手機的靜音模式。</p>
+      <button class="btn-primary" id="btn-sound-tip">好，我知道了</button>
+    </div>
+  </div>
+
   <!-- LINE LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
@@ -268,6 +278,8 @@
         btnStop: document.getElementById('btn-stop'),
         btnAgain: document.getElementById('btn-again'),
         btnClose: document.getElementById('btn-close'),
+        soundTip: document.getElementById('sound-tip'),
+        btnSoundTip: document.getElementById('btn-sound-tip'),
       };
 
       const audio = new window.BreathAudio();
@@ -431,6 +443,17 @@
 
       el.btnClose.addEventListener('click', () => window.AppLiff.close());
 
+      // —— 開啟聲音提醒（每次開啟 App 進到主選單時顯示一次） ——
+      function showSoundTip() {
+        el.soundTip.hidden = false;
+        requestAnimationFrame(() => el.soundTip.classList.add('show'));
+        el.btnSoundTip.focus();
+      }
+      el.btnSoundTip.addEventListener('click', () => {
+        el.soundTip.classList.remove('show');
+        setTimeout(() => { el.soundTip.hidden = true; }, 300);
+      });
+
       el.btnMenu.addEventListener('click', () => {
         if (engine) engine.stop();
         activate('menu', 'up'); // 往上返回首頁選單
@@ -458,6 +481,7 @@
           activate('guide');
         } else {
           activate('menu');
+          showSoundTip();
         }
       })();
     })();

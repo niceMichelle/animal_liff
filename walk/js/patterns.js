@@ -2,6 +2,7 @@
 // 腳步固定為左右交替原地踏步；認知任務疊加在節拍上（雙重任務：邊走邊說）。
 //   sequence   : 每拍一個腳步提示（同節律步伐 march 的 L/R）
 //   taskEvery  : 每幾拍換一題（0 / 省略 = 整個階段只有一題）
+//   speakInstruction : false = 階段開始時不朗讀 instruction（預設會唸）
 //   reset()    : 每次開始前重置題目狀態（洗牌）
 //   instruction(stage) : 該階段的任務說明（顯示在題目卡上方，預備拍時朗讀）
 //   makeTask(serial, stage) : 回傳 { prompt, speak, answer, color }
@@ -67,6 +68,7 @@ window.WALK_PATTERNS = {
     bars: 30,
     sequence: WALK_STEPS,
     taskEvery: 0,
+    speakInstruction: false, // 只唸題目那句、不加唸規則說明，才能在預備拍內唸完
     reset() {},
     instruction(stage) {
       return stage.name === '正式' ? '每一步跳著數，數到 20 再從 2 開始' : '每一步數一個數，數到 10 再從 1 開始';

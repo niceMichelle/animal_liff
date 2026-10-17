@@ -2,13 +2,13 @@
 
 一個**獨立的 LINE 放鬆/運動頻道**：使用者傳訊息或加好友時，由 **N8N** 回覆一張呼吸練習卡片；點選後開啟 **LIFF** 互動小功能，跟著動畫與柔和音效完成呼吸練習。全部後端邏輯在 N8N 上，**不需要任何後端伺服器（無 Flask）**。
 
-完整願景含三大類（呼吸引導 / 組合有氧 + 手眼協調 / 音樂節律步伐）。目前已完成 **呼吸引導**（`breathing/`）、**音樂節律步伐**（`step/`）與 **認知步行**（`walk/`，結合語言與行走的雙重任務訓練）三支 LIFF App：`N8N 接收 → LINE 推送 → LIFF App`。
+完整願景含三大類（呼吸引導 / 組合有氧 + 手眼協調 / 音樂節律步伐）。目前已完成 **呼吸引導**（`breathing/`）、**音樂節律步伐**（`step/`）與 **認知步行**（`walk/`，結合語言與行走的雙重任務訓練）三支 LIFF App，另有季節限定小遊戲 **萬聖夜打地鼠**（`halloween/`）：`N8N 接收 → LINE 推送 → LIFF App`。
 
 ## 內容物
 
 ```
 Line_Liff/
-├── index.html                 # 根首頁：連到「呼吸練習 / 節律步伐 / 認知步行」三個 App
+├── index.html                 # 根首頁：連到「呼吸練習 / 節律步伐 / 認知步行 / 萬聖夜打地鼠」
 ├── breathing/                 # 呼吸引導 App
 │   ├── index.html             # LIFF 進入點（選擇 / 介紹 / 呼吸 / 完成）
 │   ├── css/style.css          # 「拂曉星空」視覺：極光背景、發光呼吸圈
@@ -25,6 +25,15 @@ Line_Liff/
 │   ├── index.html             # LIFF 進入點（選單 / 題目卡 + 原地踏步 / 完成）
 │   ├── css/style.css
 │   └── js/                    # patterns / rhythm-audio / rhythm-engine / speech（題目朗讀）/ liff-init
+├── halloween/                 # 萬聖夜打地鼠（季節限定小遊戲）
+│   ├── index.html             # LIFF 進入點（開始 / 遊戲 / 結算）
+│   ├── css/style.css          # 夜晚墓園視覺：南瓜橘、燭光黃、薄霧
+│   └── js/
+│       ├── characters.js      # 角色：黑貓巫師、小蝙蝠、貓頭鷹、南瓜狐狸（加分）；骷髏、幽靈（扣分）
+│       ├── difficulty.js      # 3 種難度與分數稱號
+│       ├── game.js            # 遊戲引擎：冒出、計時、計分、連擊、暫停（不碰 DOM）
+│       ├── sfx.js             # Web Audio 遊戲音效（免音檔）
+│       └── liff-init.js       # LIFF 初始化、解析 ?type=、分享分數卡、關閉視窗
 └── n8n/
     └── line-relaxation-router.json   # 可匯入 n8n.cloud 的 workflow
 ```
@@ -33,10 +42,13 @@ Line_Liff/
 - 呼吸（`breathing/`）：`478`（預設）、`box`、`belly`、`mindful`
 - 步伐（`step/`）：`march`（預設）、`sidestep`、`box`、`combo`
 - 認知步行（`walk/`）：`count`（預設，踏步報數）、`category`（分類說詞）、`stroop`（顏色字反應）
+- 萬聖夜打地鼠（`halloween/`）：`normal`（預設）、`easy`、`hard`（難度，開始畫面也能切換）
 
 認知步行會用瀏覽器內建的 `speechSynthesis` 朗讀題目（中文語音，可在畫面上關閉），不需要音檔、也不需要麥克風權限；使用者大聲回答；顏色字反應模式在下一題出現時會揭示上一題的答案，方便自我核對。
 
 新增模式只要在該 App 的 `js/patterns.js` 加一筆資料即可，引擎與 UI 會自動套用。
+
+萬聖夜打地鼠一局 30 秒，越後面越快；連續打中 5／10／15 下分數變成 ×2／×3／×4，打到骷髏或幽靈會扣分、連擊歸零。各難度的最佳紀錄存在瀏覽器（`localStorage`）。新增角色在 `halloween/js/characters.js`、新增難度在 `halloween/js/difficulty.js` 加一筆即可。
 
 ## 架構
 
@@ -73,6 +85,7 @@ python3 -m http.server 8080
 # 呼吸：   http://localhost:8080/breathing/?type=478（或 box / belly / mindful）
 # 步伐：   http://localhost:8080/step/?type=march（或 sidestep / box / combo）
 # 認知步行：http://localhost:8080/walk/?type=count（或 category / stroop）
+# 打地鼠： http://localhost:8080/halloween/?type=normal（或 easy / hard）
 ```
 未設定 LIFF ID 時會自動以 standalone 模式運作，方便先看動畫與音效。
 
@@ -83,7 +96,7 @@ python3 -m http.server 8080
 - **夜晚（night）**：18:00–翌日 05:59
 
 可用網址參數強制指定，方便測試：`?bg=morning`（或 `?bg=day`）、`?bg=night`。
-呼吸 App、節律步伐 App（`step/`）與認知步行 App（`walk/`）採用相同切換規則。
+呼吸 App、節律步伐 App（`step/`）與認知步行 App（`walk/`）採用相同切換規則。萬聖夜打地鼠固定為夜晚場景。
 
 ---
 
@@ -97,14 +110,16 @@ python3 -m http.server 8080
    - 呼吸 **Endpoint URL**：`https://<帳號>.github.io/line-liff/breathing/`
    - 步伐 **Endpoint URL**：`https://<帳號>.github.io/line-liff/step/`
    - 認知步行 **Endpoint URL**：`https://<帳號>.github.io/line-liff/walk/`
+   - 萬聖夜打地鼠 **Endpoint URL**：`https://<帳號>.github.io/line-liff/halloween/`，並開啟 **shareTargetPicker**（結算畫面的「傳給好友挑戰」需要它；沒開時按鈕會自動隱藏）
    - **Size**：`Full`；Scope 至少勾 `profile`
 4. 取得各 **LIFF ID**（形如 `2006xxxxxx-xxxxxxxx`），填到對應位置：
    - 呼吸：`breathing/js/liff-init.js` 的 `const LIFF_ID = '...'`
    - 步伐：`step/js/liff-init.js` 的 `const LIFF_ID = '...'`
    - 認知步行：`walk/js/liff-init.js` 的 `const LIFF_ID = '...'`
+   - 萬聖夜打地鼠：`halloween/js/liff-init.js` 的 `const LIFF_ID = '...'`（分享卡的「我也要挑戰」連結也用它）
    - `n8n/line-relaxation-router.json` 內 **Build Breathing Menu** 節點的 `const LIFF_ID = '...'`（或匯入後在 n8n 介面改）
 
-> 部署網址（含 `/breathing/`、`/step/`、`/walk/` 子路徑）或 LIFF ID 變更後，記得同步更新這些位置。
+> 部署網址（含 `/breathing/`、`/step/`、`/walk/`、`/halloween/` 子路徑）或 LIFF ID 變更後，記得同步更新這些位置。
 
 ---
 

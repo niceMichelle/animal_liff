@@ -1,8 +1,8 @@
 // LIFF 整合：初始化、登入、解析 ?type=、關閉視窗。
-// 與呼吸 App 相同，只是讀 STEP_PATTERNS。非 LINE 環境（瀏覽器直開）會 fallback 成 standalone。
+// 與呼吸 App 相同，只是讀 BREATHING_PATTERNS。非 LINE 環境（瀏覽器直開）會 fallback 成 standalone。
 
-// ⬇️ 在 LINE Developers Console 為「步伐訓練」建立 LIFF App 後，把這裡換成該 LIFF ID。
-const LIFF_ID = 'YOUR_STEP_LIFF_ID';
+// ⬇️ 在 LINE Developers Console 為「呼吸練習」建立 LIFF App 後，把這裡換成該 LIFF ID。
+const LIFF_ID = 'YOUR_BREATHING_LIFF_ID';
 
 window.AppLiff = {
   ready: false,
@@ -34,7 +34,7 @@ window.AppLiff = {
     if (!t && window.location.hash) {
       t = this._readType(window.location.hash.replace(/^#/, ''));
     }
-    return (t && window.STEP_PATTERNS[t]) ? t : null;
+    return (t && window.BREATHING_PATTERNS[t]) ? t : null;
   },
 
   hasType() {
@@ -47,7 +47,7 @@ window.AppLiff = {
 
   async init() {
     const hasSdk = typeof window.liff !== 'undefined';
-    const idSet = LIFF_ID && LIFF_ID !== 'YOUR_STEP_LIFF_ID';
+    const idSet = LIFF_ID && LIFF_ID !== 'YOUR_BREATHING_LIFF_ID';
 
     if (!hasSdk || !idSet) {
       this.standalone = true;

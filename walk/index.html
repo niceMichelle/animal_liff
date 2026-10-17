@@ -237,6 +237,16 @@
 
   </main>
 
+  <!-- 進入主選單時的提醒：開啟聲音 -->
+  <div class="sound-tip" id="sound-tip" role="dialog" aria-modal="true" aria-labelledby="sound-tip-title" hidden>
+    <div class="sound-tip-card">
+      <div class="sound-tip-icon" aria-hidden="true">🔊</div>
+      <h2 class="sound-tip-title" id="sound-tip-title">請開啟聲音</h2>
+      <p class="sound-tip-text">練習時會用語音唸題目、示範怎麼說，<br />請調高音量，並關閉手機的靜音模式。</p>
+      <button class="btn-primary" id="btn-sound-tip">好，我知道了</button>
+    </div>
+  </div>
+
   <!-- LINE LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
@@ -279,6 +289,8 @@
         btnStop: document.getElementById('btn-stop'),
         btnAgain: document.getElementById('btn-again'),
         btnClose: document.getElementById('btn-close'),
+        soundTip: document.getElementById('sound-tip'),
+        btnSoundTip: document.getElementById('btn-sound-tip'),
       };
 
       const audio = new window.RhythmAudio();
@@ -383,7 +395,8 @@
         const hint = p.instruction(stage);
         renderTask(curTask, hint, answer);
         // 第一個階段先唸題目再唸規則；之後有題目就只唸題目
-        const parts = (index === 0 || !curTask.speak) ? [curTask.speak, hint] : [curTask.speak];
+        const withHint = p.speakInstruction !== false && (index === 0 || !curTask.speak);
+        const parts = withHint ? [curTask.speak, hint] : [curTask.speak];
         speech.speak(parts.filter(Boolean).join('。'), speechRate(stage));
       }
 
@@ -487,7 +500,7 @@
             // 教學階段：語音示範這一拍該說什麼（報數的數字、類別的詞、字的顏色）
             if (stage.name === '教學' && p.demo) {
               const say = p.demo(curTask, task, stage);
-              if (say) speech.speak(say, speechRate(stage));
+              if (say) speech.speak(say, speechRate(stage), false); // 說明還在唸就先不示範，不截斷
             }
 
             const label = stage.name === '正式' ? '' : (stage.name + ' · ');
@@ -561,6 +574,17 @@
 
       el.btnClose.addEventListener('click', () => window.AppLiff.close());
 
+      // —— 開啟聲音提醒（每次開啟 App 進到主選單時顯示一次） ——
+      function showSoundTip() {
+        el.soundTip.hidden = false;
+        requestAnimationFrame(() => el.soundTip.classList.add('show'));
+        el.btnSoundTip.focus();
+      }
+      el.btnSoundTip.addEventListener('click', () => {
+        el.soundTip.classList.remove('show');
+        setTimeout(() => { el.soundTip.hidden = true; }, 300);
+      });
+
       el.btnMenu.addEventListener('click', () => {
         if (engine) engine.stop();
         speech.cancel();
@@ -586,6 +610,7 @@
           activate('guide');
         } else {
           activate('menu');
+          showSoundTip();
         }
       })();
     })();

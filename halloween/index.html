@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>萬聖夜打地鼠</title>
+  <title>Circle 搗蛋夜</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,8 +63,8 @@
 
     <!-- 開始畫面 -->
     <section class="screen is-active" id="screen-start" aria-labelledby="start-title">
-      <p class="eyebrow">Halloween · 萬聖夜</p>
-      <h1 class="title" id="start-title">萬聖夜打地鼠</h1>
+      <p class="eyebrow">動物夥伴變裝派對</p>
+      <h1 class="title" id="start-title">Circle 搗蛋夜</h1>
       <p class="lede">動物們扮好裝要去討糖了！<br />30 秒內盡量打中牠們，但別敲到骷髏和幽靈。</p>
 
       <ul class="legend" id="legend"></ul>
@@ -446,7 +446,7 @@
         lastResult = { score: summary.score, title, type: currentType, diffName: DIFFS[currentType].name };
 
         const name = window.AppLiff.profile && window.AppLiff.profile.displayName;
-        el.endDiff.textContent = '萬聖夜打地鼠 · ' + DIFFS[currentType].name;
+        el.endDiff.textContent = 'Circle 搗蛋夜 · ' + DIFFS[currentType].name;
         el.endWho.textContent = name ? name + ' 的戰績' : '你的戰績';
         el.endScore.textContent = summary.score;
         el.endBadge.hidden = !(isNew && summary.score > 0);

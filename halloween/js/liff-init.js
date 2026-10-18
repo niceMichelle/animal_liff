@@ -1,7 +1,7 @@
 // LIFF 整合：初始化、登入、解析 ?type=、分享分數、關閉視窗。
 // 與其他 App 相同，只是讀 HALLOWEEN_DIFFICULTY。非 LINE 環境（瀏覽器直開）會 fallback 成 standalone。
 
-// ⬇️ 在 LINE Developers Console 為「萬聖夜打地鼠」建立 LIFF App 後，把這裡換成該 LIFF ID。
+// ⬇️ 在 LINE Developers Console 為「Circle 搗蛋夜」建立 LIFF App 後，把這裡換成該 LIFF ID。
 const LIFF_ID = 'YOUR_HALLOWEEN_LIFF_ID';
 
 window.AppLiff = {
@@ -91,7 +91,7 @@ window.AppLiff = {
 
     const message = {
       type: 'flex',
-      altText: who + ' 在萬聖夜打地鼠拿到 ' + score + ' 分！來挑戰吧 🎃',
+      altText: who + ' 在Circle 搗蛋夜拿到 ' + score + ' 分！來挑戰吧 🎃',
       contents: {
         type: 'bubble',
         size: 'kilo',
@@ -99,7 +99,7 @@ window.AppLiff = {
         body: {
           type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: '20px',
           contents: [
-            { type: 'text', text: '🎃 萬聖夜打地鼠 · ' + diffName, size: 'xs', color: '#ffb36b' },
+            { type: 'text', text: '🎃 Circle 搗蛋夜 · ' + diffName, size: 'xs', color: '#ffb36b' },
             { type: 'text', text: who + ' 的戰績', size: 'sm', color: '#cfc4ea', margin: 'md' },
             { type: 'text', text: String(score), size: '4xl', weight: 'bold', color: '#ffd76a' },
             { type: 'text', text: '稱號：' + title, size: 'sm', color: '#efe8ff' },

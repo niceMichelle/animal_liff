@@ -1,4 +1,4 @@
-// 萬聖夜打地鼠的角色資料。新增角色只要在這裡加一筆，引擎與圖鑑會自動套用。
+// Circle 搗蛋夜的角色資料。新增角色只要在這裡加一筆，引擎與圖鑑會自動套用。
 // good：打到加分（加入 Combo 倍率）；bad：打到扣分、Combo 歸零。
 // weight：同一陣營內被抽中的機率權重；stayMul：停留時間倍率（越小越快縮回去）。
 // svg：viewBox 0 0 100 100，角色下半部會被洞口土堆擋住，臉放在上半部。
@@ -79,25 +79,28 @@ window.HALLOWEEN_CHARACTERS = {
       </svg>`,
   },
 
-  fox: {
-    name: '南瓜狐狸',
+  rabbit: {
+    name: '南瓜兔子',
     good: true,
     points: 20,
     weight: 1,
     stayMul: 0.7,
     svg: `
       <svg viewBox="0 0 100 100">
-        <path d="M50 80 C34 80 26 68 28 56 L22 30 L40 46 C46 44 54 44 60 46 L78 30 L72 56 C74 68 66 80 50 80 Z" fill="#d9622b" stroke="#f4a06b" stroke-width="1.5" stroke-linejoin="round"/>
-        <path d="M24 34 L27 46 L33 42 Z M76 34 L73 46 L67 42 Z" fill="#3a1f14"/>
-        <path d="M50 80 C40 80 32 72 31 64 C38 68 44 70 50 70 C56 70 62 68 69 64 C68 72 60 80 50 80 Z" fill="#fff4e6"/>
-        <path d="M37 58 q4 -4 8 0 M55 58 q4 -4 8 0" fill="none" stroke="#2a140c" stroke-width="2.4" stroke-linecap="round"/>
-        <ellipse cx="50" cy="71" rx="3.4" ry="2.6" fill="#2a140c"/>
-        <ellipse cx="34" cy="64" rx="3.5" ry="2" fill="#ff9bb3" opacity="0.7"/>
-        <ellipse cx="66" cy="64" rx="3.5" ry="2" fill="#ff9bb3" opacity="0.7"/>
-        <path d="M50 74 C52 74 54 72 55 70" fill="none" stroke="#e48a5a" stroke-width="1.2"/>
+        <path d="M39 52 C30 36 29 12 36 5 C44 9 47 32 45 52 Z" fill="#f4eee6" stroke="#cbbfd8" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M61 52 C70 38 74 16 68 8 C60 11 56 32 55 52 Z" fill="#f4eee6" stroke="#cbbfd8" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M40 47 C35 35 34 19 37 12 C41 18 42.5 33 42 47 Z" fill="#ffb3c4"/>
+        <path d="M60 47 C65 36 68 22 66 15 C61 20 58.5 33 58 47 Z" fill="#ffb3c4"/>
+        <ellipse cx="50" cy="64" rx="22" ry="19" fill="#f4eee6" stroke="#cbbfd8" stroke-width="1.5"/>
+        <path d="M37 61 q4 -4 8 0 M55 61 q4 -4 8 0" fill="none" stroke="#2a1a2a" stroke-width="2.4" stroke-linecap="round"/>
+        <ellipse cx="35" cy="68" rx="3.5" ry="2" fill="#ff9bb3" opacity="0.8"/>
+        <ellipse cx="65" cy="68" rx="3.5" ry="2" fill="#ff9bb3" opacity="0.8"/>
+        <path d="M47.5 67 h5 l-2.5 3 z" fill="#ff8fa8"/>
+        <path d="M50 70 q-2.5 3 -5 1.5 M50 70 q2.5 3 5 1.5" fill="none" stroke="#2a1a2a" stroke-width="1.4" stroke-linecap="round"/>
+        <rect x="48" y="71.5" width="4" height="3.5" rx="0.8" fill="#fff" stroke="#cbbfd8" stroke-width="0.8"/>
         <ellipse cx="50" cy="94" rx="38" ry="18" fill="#ff9a2e" stroke="#ffc27a" stroke-width="1.5"/>
         <path d="M36 78 C30 86 30 100 34 108 M50 76 V110 M64 78 C70 86 70 100 66 108" fill="none" stroke="#e07a14" stroke-width="2"/>
-        <path d="M50 77 q4 -6 10 -6 q-2 6 -10 6 Z" fill="#5d9b3a"/>
+        <path d="M60 79 q5 -5 11 -4 q-3 6 -11 4 Z" fill="#5d9b3a"/>
       </svg>`,
   },
 

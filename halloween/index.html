@@ -579,8 +579,16 @@
           renderBoard(r);
         } catch (err) {
           console.warn('上傳成績失敗：', err);
-          rankMsg('成績上傳失敗，請確認網路後再玩一次。', 'is-warn');
+          const code = uploadErrorCode(err);
+          rankMsg('成績上傳失敗（代碼：' + code + '）' + (code === 'network' ? '，請確認網路後再玩一次。' : '。'), 'is-warn');
         }
+      }
+
+      // 失敗原因代碼：伺服器回的 error（如 out_of_window、invalid_token）、HTTP 狀態碼，或 network（連不到伺服器）
+      function uploadErrorCode(err) {
+        if (!err) return 'no_session';
+        if (err instanceof TypeError) return 'network';
+        return String(err.message || err).replace(/\s+/g, '_').slice(0, 40);
       }
 
       function renderBoard(r) {

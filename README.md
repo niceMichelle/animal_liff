@@ -185,6 +185,20 @@ LINE Webhook → Build Breathing Menu (Code) → LINE Reply (Flex)
    - 若要改計分難度，`event.js` 的 `types` 與 **Validate & Rank** 節點的 `EVENT_TYPES` 要一起改。
 8. **活動辦法**寫在 `halloween/index.html` 的 `buildRules()`（通知期限、個資刪除時間等），請依實際做法調整。
 
+### 成績上傳失敗時的代碼
+結算畫面會顯示「成績上傳失敗（代碼：…）」，對照如下：
+
+| 代碼 | 原因 | 怎麼修 |
+|---|---|---|
+| `out_of_window` | 伺服器認為不在活動期間 | **Prepare Session**、**Validate & Rank** 的 `EVENT_START`／`EVENT_END` 與 `event.js` 不一致 |
+| `invalid_token` | LINE 不認這個身分 | 兩個 **LINE Verify** 節點的 `client_id` 不是 LIFF 所在 channel 的 Channel ID |
+| `HTTP_404` | 找不到 Webhook | workflow 沒 Activate，或 `event.js` 的 `api` 填錯（要用 `/webhook/`，不是 `/webhook-test/`） |
+| `HTTP_500` | n8n 流程執行出錯 | 到 n8n 的 **Executions** 看是哪個節點出錯（常見：沒選 Crypto 憑證、找不到 `halloween_scores`） |
+| `network` | 連不到 n8n | 網路問題，或 `api` 網址打錯 |
+| `no_session` | 沒拿到場次憑證 | 同 `HTTP_500`，到 Executions 查看 |
+
+若畫面顯示「這局未列入排行：…」，代表上傳成功、但成績被防作弊規則擋下（例如重複上傳、時間不足）。
+
 ### 活動結束後
 1. 打開 Google Sheets（或 n8n 的 `halloween_scores`），篩選 `status = ok`，**分別**篩選 `type = normal` 與 `type = hard`，依 `score` 由高到低、`playedAt` 由早到晚排序，各自的第一列就是該難度的第一名（同分時 `playedAt` 較早者得獎）。
    - **先決定「惡夢」得主**：`type = hard` 的第一名。

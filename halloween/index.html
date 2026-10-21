@@ -67,6 +67,16 @@
       <h1 class="title" id="start-title">Circle 搗蛋夜</h1>
       <p class="lede">動物們扮好裝要去討糖了！<br />30 秒內盡量打中牠們，但別敲到骷髏和幽靈。</p>
 
+      <!-- 活動橫幅：最高分送禮物（期間外自動隱藏，設定在 js/event.js） -->
+      <div class="event" id="event-banner" hidden>
+        <p class="event-head" id="event-head"></p>
+        <p class="event-sub" id="event-sub"></p>
+        <details class="event-rules">
+          <summary>活動辦法</summary>
+          <ol id="event-rules"></ol>
+        </details>
+      </div>
+
       <ul class="legend" id="legend"></ul>
 
       <fieldset class="diff" id="diff">
@@ -118,6 +128,13 @@
       </ul>
       <p class="best" id="best-end"></p>
 
+      <!-- 活動排行榜（只在活動期間顯示） -->
+      <div class="rank" id="rank" hidden>
+        <h3 class="rank-title" id="rank-title">🎁 活動排行榜</h3>
+        <p class="rank-me" id="rank-me" aria-live="polite"></p>
+        <ol class="rank-list" id="rank-list"></ol>
+      </div>
+
       <div class="end-actions">
         <button class="btn-primary" id="btn-share" type="button" hidden>傳給好友挑戰</button>
         <p class="share-status" id="share-status" aria-live="polite"></p>
@@ -150,6 +167,7 @@
   <script src="js/sfx.js"></script>
   <script src="js/game.js"></script>
   <script src="js/liff-init.js"></script>
+  <script src="js/event.js"></script>
 
   <!-- 介面接線（DOM × 引擎 × 音效 × LIFF） -->
   <script>
@@ -170,7 +188,11 @@
         bestEnd: $('best-end'), btnShare: $('btn-share'), shareStatus: $('share-status'),
         btnAgain: $('btn-again'), btnHome: $('btn-home'), btnClose: $('btn-close'),
         pause: $('pause'), btnResume: $('btn-resume'), btnQuit: $('btn-quit'),
+        eventBanner: $('event-banner'), eventHead: $('event-head'), eventSub: $('event-sub'),
+        eventRules: $('event-rules'), rank: $('rank'), rankTitle: $('rank-title'), rankMe: $('rank-me'), rankList: $('rank-list'),
       };
+      const EVENT = window.HALLOWEEN_EVENT;
+      const Ev = window.HalloweenEvent;
 
       const sfx = new window.HalloweenSfx();
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -178,6 +200,7 @@
       let game = null;
       let countdownTimers = [];
       let lastResult = null;
+      let sessionPromise = null; // 這局的活動場次憑證（不計入活動時為 null）
 
       // —— 畫面切換 ——
       function show(name) {
@@ -234,6 +257,51 @@
         currentType = key;
         el.diffDesc.textContent = DIFFS[key].desc;
         el.bestStart.textContent = bestText(key);
+        renderEvent();
+      }
+
+      // —— 活動橫幅 ——
+      // 活動難度名稱，例如「標準」與「惡夢」
+      function eventTypeNames() {
+        return EVENT.types.map((t) => '「' + DIFFS[t].name + '」').join('與');
+      }
+
+      function renderEvent() {
+        const phase = Ev.phase();
+        if (!Ev.configured() || phase === 'ended') { el.eventBanner.hidden = true; return; }
+        const names = eventTypeNames();
+        el.eventBanner.hidden = false;
+        if (phase === 'upcoming') {
+          el.eventHead.textContent = '🎁 ' + EVENT.label + ' 最高分挑戰';
+          el.eventSub.textContent = '活動期間' + names + '難度各自排名，各難度第一名可獲得' + EVENT.prize + '！';
+        } else {
+          el.eventHead.textContent = '🎁 ' + names + '第一名各送' + EVENT.prize + '！';
+          let sub = EVENT.label + '，兩個難度分開排名。';
+          if (window.AppLiff.standalone) sub += '請從 LINE 開啟遊戲才能登上排行榜。';
+          else if (!Ev.counts(currentType)) sub += '目前選的難度不計入活動喔。';
+          el.eventSub.textContent = sub;
+        }
+      }
+
+      function buildRules() {
+        const names = eventTypeNames();
+        const rules = [
+          '活動期間：' + EVENT.label + '（台灣時間），以伺服器收到成績的時間為準。',
+          '計分難度：' + names + '，兩個難度分開排名；每位玩家在各難度取自己的最高分。',
+          '排行榜同分時，依達到該分數的先後排名，越早達到者名次越前面（以伺服器收到成績的時間為準）。',
+          '各難度僅由該難度排行榜第一名，也就是「第一位達到最高分」的玩家獲得' + EVENT.prize + '一份；之後才達到相同分數者不得獎。',
+          '每人限領一份禮物：若同一位玩家同時是兩個難度的第一名，只頒發「' + DIFFS[EVENT.prizeOrder[0]].name + '」難度的禮物，不提供選擇；「' + DIFFS[EVENT.prizeOrder[1]].name + '」難度的禮物改由該難度第二名遞補。',
+          '須在 LINE 中開啟遊戲，並加入本官方帳號好友，以便通知得獎。',
+          '得獎者於活動結束後 7 天內以 LINE 訊息通知。',
+          '系統會自動檢查異常成績；主辦單位保留取消異常成績及調整活動辦法的權利。',
+          '參加即同意蒐集你的 LINE 顯示名稱與使用者識別碼，僅用於排名與聯絡得獎者，活動結束後刪除。',
+        ];
+        el.eventRules.innerHTML = '';
+        rules.forEach((t) => {
+          const li = document.createElement('li');
+          li.textContent = t;
+          el.eventRules.appendChild(li);
+        });
       }
 
       el.btnSound.addEventListener('click', () => {
@@ -388,6 +456,11 @@
         show('play');
         newGame();
 
+        // 計入活動的局：開局就先向伺服器領場次憑證（失敗也不影響遊戲）
+        sessionPromise = Ev.eligible(currentType)
+          ? Ev.startSession().catch((err) => ({ error: err }))
+          : null;
+
         // 3、2、1、開始！
         const steps = ['3', '2', '1', '開始！'];
         steps.forEach((t, k) => {
@@ -461,6 +534,70 @@
         resetBoard();
         show('end');
         el.btnAgain.focus();
+        renderRank(summary);
+      }
+
+      // —— 活動排行榜 ——
+      const REJECT_TEXT = {
+        out_of_window: '不在活動期間內',
+        wrong_type: '這個難度不計入活動',
+        replayed: '這一局已經上傳過了',
+        bad_session: '場次憑證無效，請重新開一局',
+        too_fast: '遊戲時間不足 30 秒',
+        bad_log: '成績紀錄異常',
+        score_mismatch: '成績紀錄異常',
+      };
+
+      function rankMsg(text, cls) {
+        el.rankMe.textContent = text;
+        el.rankMe.className = 'rank-me' + (cls ? ' ' + cls : '');
+      }
+
+      async function renderRank(summary) {
+        el.rankList.innerHTML = '';
+        const phase = Ev.phase();
+        if (!Ev.configured() || phase !== 'active') { el.rank.hidden = true; return; }
+        el.rank.hidden = false;
+
+        if (window.AppLiff.standalone) return rankMsg('從 LINE 開啟遊戲，成績才會登上排行榜。');
+        el.rankTitle.textContent = '🎁 活動排行榜' + (Ev.counts(currentType) ? ' · ' + DIFFS[currentType].name : '');
+        if (!Ev.counts(currentType)) return rankMsg('活動只計算' + eventTypeNames() + '難度，換個難度再挑戰吧！');
+        if (!sessionPromise) return rankMsg('無法確認你的 LINE 身分，這局成績未上傳。', 'is-warn');
+
+        rankMsg('成績上傳中…');
+        const promise = sessionPromise;
+        sessionPromise = null;
+        try {
+          const session = await promise;
+          if (!session || session.error) throw session && session.error;
+          const r = await Ev.submit(session, currentType, summary);
+          renderBoard(r);
+        } catch (err) {
+          console.warn('上傳成績失敗：', err);
+          rankMsg('成績上傳失敗，請確認網路後再玩一次。', 'is-warn');
+        }
+      }
+
+      function renderBoard(r) {
+        if (!r.ok) rankMsg('這局未列入排行：' + (REJECT_TEXT[r.reason] || '成績紀錄異常') + '。', 'is-warn');
+        else if (r.me && r.me.rank === 1) rankMsg('🏆 你目前是第一名！最佳 ' + r.me.best + ' 分', 'is-top');
+        else if (r.me) rankMsg('你目前第 ' + r.me.rank + ' 名・最佳 ' + r.me.best + ' 分（共 ' + r.total + ' 人參加）');
+
+        const rows = (r.top || []).slice();
+        if (r.me && !rows.some((x) => x.me)) rows.push({ gap: true }, { rank: r.me.rank, name: r.me.name, score: r.me.best, me: true });
+        el.rankList.innerHTML = '';
+        rows.forEach((x) => {
+          const li = document.createElement('li');
+          if (x.gap) { li.className = 'rank-gap'; li.textContent = '⋯'; }
+          else {
+            li.className = 'rank-row' + (x.me ? ' is-me' : '') + (x.rank === 1 ? ' is-first' : '');
+            li.innerHTML = '<span class="rank-no"></span><span class="rank-name"></span><span class="rank-score"></span>';
+            li.children[0].textContent = x.rank === 1 ? '👑' : x.rank;
+            li.children[1].textContent = x.name + (x.me ? '（你）' : '');
+            li.children[2].textContent = x.score;
+          }
+          el.rankList.appendChild(li);
+        });
       }
 
       el.btnShare.addEventListener('click', async () => {
@@ -492,6 +629,7 @@
         buildDiff();
         el.btnClose.hidden = window.AppLiff.standalone;
       });
+      buildRules();
       buildDiff();
     })();
   </script>

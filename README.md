@@ -33,9 +33,11 @@ Line_Liff/
 │       ├── difficulty.js      # 3 種難度與分數稱號
 │       ├── game.js            # 遊戲引擎：冒出、計時、計分、連擊、暫停（不碰 DOM）
 │       ├── sfx.js             # Web Audio 遊戲音效（免音檔）
-│       └── liff-init.js       # LIFF 初始化、解析 ?type=、分享分數卡、關閉視窗
+│       ├── liff-init.js       # LIFF 初始化、解析 ?type=、ID Token、分享分數卡、關閉視窗
+│       └── event.js           # 「最高分送禮物」活動設定與排行榜 API
 └── n8n/
-    └── line-relaxation-router.json   # 可匯入 n8n.cloud 的 workflow
+    ├── line-relaxation-router.json   # 可匯入 n8n.cloud 的 workflow（呼吸選單）
+    └── halloween-leaderboard.json    # Circle 搗蛋夜活動排行榜（Webhook × Data Table × Google Sheets）
 ```
 
 各 App 的模式由 `?type=` 決定：
@@ -137,6 +139,63 @@ LINE Webhook → Build Breathing Menu (Code) → LINE Reply (Flex)
    收事件          有可回覆對象才產出項目        回覆 4 種呼吸選項
                    （否則回傳空陣列，下游不執行）
 ```
+
+---
+
+## 三之一、Circle 搗蛋夜：最高分送禮物活動
+
+活動期間（預設 2026/10/25–10/31，台灣時間）玩「標準」或「惡夢」難度，成績會上傳到 n8n。兩個難度**分開排名、各送第一名一份禮物**；結算畫面顯示該難度的前 10 名（名稱遮蔽，例如「林*華」）與自己的名次，活動結束後由你通知得獎者。
+
+**同分規則**：排行榜同分時依達到該分數的先後排名，越早達到者名次越前面（以伺服器收到成績的時間為準）；每個難度只有排行榜第一名，也就是「第一位達到最高分」的玩家得獎。
+
+**每人限領一份**：同一位玩家同時是兩個難度的第一名時，只頒發「惡夢」難度的禮物（不提供選擇），「標準」難度的禮物改由該難度第二名遞補。優先順序設定在 `event.js` 的 `prizeOrder`。
+
+```
+開局 ─▶ POST /halloween/session ─▶ 向 LINE 驗證 ID Token ─▶ 簽發場次憑證（記下開始時間）
+結束 ─▶ POST /halloween/score   ─▶ 向 LINE 驗證 ─▶ 讀取所有成績 ─▶ 檢查並重算分數
+                                   ─▶ 寫入 Data Table（＋Google Sheets 備份）─▶ 回傳排行榜
+```
+
+**防作弊**：伺服器會依打擊紀錄重算分數，並拒絕以下成績：憑證偽造或過期（30 分鐘）、同一張憑證重複上傳、開局到上傳不足約 30 秒、難度不是標準或惡夢、連點快於 60 毫秒、分數與紀錄不符。被拒絕的成績照樣寫入（`status=rejected`、`reason` 寫原因）方便稽核，但不列入排行。分數終究是在手機上算的，**頒獎前請人工看一下前幾名的紀錄**（例如分數明顯高於其他人、或在很短時間內刷了很多局）。
+
+### 設定步驟
+1. **LIFF 權限**：LINE Developers → Circle 搗蛋夜的 LIFF → Scope 勾選 **`openid`** 與 `profile`（沒有 openid 拿不到 ID Token，成績不會上傳）。
+2. **Channel ID**：LIFF 所在的 LINE Login channel → Basic settings → **Channel ID**。之後填到 n8n 兩個「LINE Verify」節點的 `client_id`。
+   > 這個 LINE Login channel 必須和官方帳號的 Messaging API channel 在**同一個 Provider** 底下，取得的 userId 才能拿來推播通知得獎者。
+3. **建立 Data Table**：n8n → Overview → Data tables → 建立 **`halloween_scores`**，欄位如下（名稱要完全一致）：
+   | 欄位 | 型別 | 欄位 | 型別 |
+   |---|---|---|---|
+   | `playedAt` | String | `hits` | Number |
+   | `type` | String（`normal`／`hard`） | `bad` | Number |
+   | `userId` | String | `bestCombo` | Number |
+   | `name` | String | `status` | String |
+   | `score` | Number | `reason` | String |
+   | | | `nonce` | String |
+4. **匯入 workflow**：Import from File → `n8n/halloween-leaderboard.json`，然後：
+   - 兩個 Code 節點（**Sign Session**、**Validate & Rank**）的 `SECRET` 換成**同一串**長隨機字串（可用 `openssl rand -base64 32` 產生）。
+   - 兩個 **LINE Verify** 節點的 `client_id` 換成第 2 步的 Channel ID。
+   - **Activate** workflow。Code 節點用到 `crypto` 模組：n8n.cloud 可直接使用；自架的 n8n 需設定環境變數 `NODE_FUNCTION_ALLOW_BUILTIN=crypto`。
+5. **Google Sheets 備份（選用）**：建立試算表，分頁命名為 `scores`，第一列填上第 3 步的 11 個欄位名稱；在 **Append Score (Google Sheets)** 節點設定 Google 憑證與試算表網址，再**啟用該節點**（匯入時預設停用，沒設定也不影響排行榜）。
+6. **遊戲端設定** `halloween/js/event.js`：
+   - `api`：n8n Webhook 的 Production URL 去掉最後的 `/session`，例如 `https://你的帳號.app.n8n.cloud/webhook/halloween`
+   - `prize`：禮物名稱（會顯示在橫幅與活動辦法）
+   - 若要改活動期間，`event.js` 的 `start`／`end`／`label` 與兩個 Code 節點的 `EVENT_START`／`EVENT_END` 要一起改。
+   - 若要改計分難度，`event.js` 的 `types` 與 **Validate & Rank** 節點的 `EVENT_TYPES` 要一起改。
+7. **活動辦法**寫在 `halloween/index.html` 的 `buildRules()`（通知期限、個資刪除時間等），請依實際做法調整。
+
+### 活動結束後
+1. 打開 Google Sheets（或 n8n 的 `halloween_scores`），篩選 `status = ok`，**分別**篩選 `type = normal` 與 `type = hard`，依 `score` 由高到低、`playedAt` 由早到晚排序，各自的第一列就是該難度的第一名（同分時 `playedAt` 較早者得獎）。
+   - **先決定「惡夢」得主**：`type = hard` 的第一名。
+   - **再決定「標準」得主**：`type = normal` 由上往下，第一位**不是**惡夢得主的玩家（同一人兩邊第一時，就是標準的第二名）。
+   - 同一位玩家可能有多筆成績，請以 `userId` 判斷是否為同一人，並以每人的最高分排名。
+2. 人工檢查前幾名的紀錄是否合理。
+3. 用 Messaging API 推播通知得獎者（需對方已加好友）：
+   ```bash
+   curl -X POST https://api.line.me/v2/bot/message/push \
+     -H 'Authorization: Bearer <Channel access token>' -H 'Content-Type: application/json' \
+     -d '{"to":"<得獎者 userId>","messages":[{"type":"text","text":"恭喜你獲得 Circle 搗蛋夜第一名！"}]}'
+   ```
+4. 依活動辦法的承諾刪除成績資料。
 
 ---
 

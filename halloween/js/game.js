@@ -5,7 +5,10 @@
 //   score(info)              打中（含扣分）：{ i, key, good, delta, combo, mult, score }
 //   escape(i, key)           好角色沒被打到就逃走（Combo 歸零）
 //   tick(secondsLeft)        剩餘秒數變動時
-//   end(summary)             時間到：{ score, hits, bad, escaped, bestCombo }
+//   end(summary)             時間到：{ score, hits, bad, escaped, bestCombo, log }
+//
+// log 是本局的打擊紀錄 [{ t: 遊戲內毫秒, k: 角色, x?: 1 表示逃走 }]，
+// 活動排行榜的伺服器端會用它重算分數，確認與上傳的分數一致。
 
 class WhackGame {
   constructor({ holes, config, characters, on = {} }) {
@@ -30,6 +33,7 @@ class WhackGame {
     this.score = 0;
     this.combo = 0;
     this.stats = { hits: 0, bad: 0, escaped: 0, bestCombo: 0 };
+    this.log = [];
     this.startAt = 0;
     this.pausedAt = 0;
     this.pausedTotal = 0;
@@ -104,7 +108,7 @@ class WhackGame {
   _finish() {
     if (!this.running) return;
     this.stop();
-    this.on.end && this.on.end({ score: this.score, ...this.stats });
+    this.on.end && this.on.end({ score: this.score, ...this.stats, log: this.log });
   }
 
   // —— 冒出 ——
@@ -164,6 +168,7 @@ class WhackGame {
     if (this.chars[slot.key].good) {
       this.combo = 0;
       this.stats.escaped++;
+      this.log.push({ t: Math.round(this._elapsed()), k: slot.key, x: 1 });
       this.on.escape && this.on.escape(i, slot.key);
     }
     this.on.down && this.on.down(i, 'escape');
@@ -183,6 +188,7 @@ class WhackGame {
     if (!slot) return false;
 
     const ch = this.chars[slot.key];
+    this.log.push({ t: Math.round(this._elapsed()), k: slot.key });
     let delta, mult = 1;
     if (ch.good) {
       this.combo++;

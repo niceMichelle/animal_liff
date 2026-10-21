@@ -544,6 +544,56 @@ button:focus-visible { outline: 2px solid var(--c-candle); outline-offset: 3px; 
 .share-status:empty { display: none; }
 .end-row { display: flex; gap: 10px; }
 
+/* —— 活動：最高分送禮物 —— */
+.event {
+  width: 100%;
+  margin-bottom: 1.1rem;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 179, 107, 0.45);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 138, 61, 0.16), rgba(107, 63, 160, 0.14));
+  text-align: left;
+}
+.event[hidden] { display: none; }
+.event-head { font-size: 0.98rem; font-weight: 700; color: var(--c-candle); }
+.event-sub { font-size: 0.8rem; line-height: 1.7; color: var(--c-mist); margin-top: 4px; }
+.event-rules { margin-top: 6px; font-size: 0.76rem; color: var(--c-mist-dim); }
+.event-rules summary { cursor: pointer; color: var(--c-pumpkin-hi); padding: 4px 0; }
+.event-rules ol { padding-left: 1.3em; line-height: 1.75; margin-top: 4px; }
+
+.rank {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 14px 14px 10px;
+  border: 1px solid rgba(255, 179, 107, 0.4);
+  border-radius: 18px;
+  background: rgba(255, 138, 61, 0.08);
+  text-align: left;
+}
+.rank[hidden] { display: none; }
+.rank-title { font-size: 0.92rem; color: var(--c-candle); margin-bottom: 4px; }
+.rank-me { font-size: 0.84rem; line-height: 1.6; color: var(--c-mist); }
+.rank-me.is-top { color: var(--c-candle); font-weight: 700; }
+.rank-me.is-warn { color: var(--c-blood); }
+.rank-list { list-style: none; margin-top: 8px; }
+.rank-list:empty { display: none; }
+.rank-row {
+  display: grid;
+  grid-template-columns: 2em 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+}
+.rank-row + .rank-row { border-top: 1px solid rgba(239, 232, 255, 0.06); }
+.rank-row.is-me { background: rgba(155, 229, 100, 0.14); border-top-color: transparent; }
+.rank-no { text-align: center; font-family: var(--font-num); font-weight: 700; color: var(--c-mist-dim); }
+.rank-row.is-first .rank-name, .rank-row.is-first .rank-score { color: var(--c-candle); }
+.rank-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank-score { font-family: var(--font-num); font-size: 1.1rem; font-weight: 700; }
+.rank-gap { text-align: center; color: var(--c-mist-dim); font-size: 0.8rem; }
+
 /* —— 暫停 —— */
 .overlay {
   position: fixed;

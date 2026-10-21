@@ -1,0 +1,432 @@
+{
+  "name": "Circle 搗蛋夜 · 活動排行榜",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "halloween/session",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "2183c27f-fcb4-4768-9c84-ece5689ac68c",
+      "name": "Session Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "d9a1194b-26fe-4afa-838c-b2b889de28d4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/oauth2/v2.1/verify",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id_token",
+              "value": "={{ $json.body.idToken }}"
+            },
+            {
+              "name": "client_id",
+              "value": "YOUR_LINE_LOGIN_CHANNEL_ID"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "2a9d7961-0c39-4244-93ee-33e4b0b19cf8",
+      "name": "LINE Verify (session)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 開局領場次憑證：確認 LINE 身分與活動期間後，簽一張 HMAC 憑證（含使用者、開始時間、一次性編號）。\n// ⬇️ 換成一串夠長的隨機字串，且必須與「Validate & Rank」節點的 SECRET 相同。\nconst SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';\nconst EVENT_START = Date.parse('2026-10-25T00:00:00+08:00');\nconst EVENT_END = Date.parse('2026-11-01T00:00:00+08:00');\n\nconst crypto = require('crypto');\nconst v = $input.first().json;\nconst user = v.statusCode === 200 && v.body && v.body.sub ? v.body : null;\nif (!user) return [{ json: { response: { ok: false, error: 'invalid_token' } } }];\n\nconst now = Date.now();\nif (now < EVENT_START || now >= EVENT_END) {\n  return [{ json: { response: { ok: false, error: 'out_of_window' } } }];\n}\n\nconst payload = Buffer.from(JSON.stringify({\n  u: user.sub,\n  iat: now,\n  n: crypto.randomBytes(9).toString('base64url'),\n})).toString('base64url');\nconst sig = crypto.createHmac('sha256', SECRET).update(payload).digest('base64url');\nreturn [{ json: { response: { ok: true, session: payload + '.' + sig } } }];\n"
+      },
+      "id": "350fe1ee-5c30-4adf-8ba3-bb34eeb47c5e",
+      "name": "Sign Session",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.response) }}",
+        "options": {}
+      },
+      "id": "197cc0b8-acac-4d34-b207-1853f1b48e7b",
+      "name": "Respond Session",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "halloween/score",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "d32e6a07-6b8d-4264-aecd-6bc2ac31ebd0",
+      "name": "Score Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "e8cd0ff0-dcde-4cd0-9d32-312fcf8ca51f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/oauth2/v2.1/verify",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id_token",
+              "value": "={{ $json.body.idToken }}"
+            },
+            {
+              "name": "client_id",
+              "value": "YOUR_LINE_LOGIN_CHANNEL_ID"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "6d59289f-4f93-4d36-8332-456c2a7e5683",
+      "name": "LINE Verify (score)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "halloween_scores"
+        },
+        "returnAll": true
+      },
+      "id": "a04cd57f-784b-4ac7-995d-40a50769f7e8",
+      "name": "Get All Scores",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// 驗證一局成績並計算排行榜。\n// 輸入：Data Table 的所有成績列（$input）；另外讀 Webhook 的請求與 LINE 驗證結果。\n// 輸出：{ store: 是否寫入成績, row: 要寫入的成績列, response: 回給遊戲的 JSON }\n// ⬇️ 必須與「Sign Session」節點的 SECRET 相同。\nconst SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';\nconst EVENT_START = Date.parse('2026-10-25T00:00:00+08:00');\nconst EVENT_END = Date.parse('2026-11-01T00:00:00+08:00');\nconst EVENT_TYPES = ['normal', 'hard'];   // 計入活動的難度，各自排名\nconst GAME_MS = 30000;\n// 與 halloween/js/characters.js 一致：[分數, 是否加分]\nconst CHARS = { cat: [10, true], bat: [10, true], owl: [15, true], rabbit: [20, true], skull: [15, false], ghost: [10, false] };\n\nconst crypto = require('crypto');\nconst req = $('Score Webhook').first().json.body || {};\nconst v = $('LINE Verify (score)').first().json;\nconst rows = $input.all().map((i) => i.json).filter((r) => r && r.userId);\nconst now = Date.now();\n\nconst user = v.statusCode === 200 && v.body && v.body.sub ? v.body : null;\nif (!user) return [{ json: { store: false, row: {}, response: { ok: false, error: 'invalid_token' } } }];\n\n// —— 場次憑證 ——\nfunction readSession(tok) {\n  if (typeof tok !== 'string') return null;\n  const [p, sig] = tok.split('.');\n  if (!p || !sig) return null;\n  const good = crypto.createHmac('sha256', SECRET).update(p).digest('base64url');\n  if (sig.length !== good.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(good))) return null;\n  try { return JSON.parse(Buffer.from(p, 'base64url').toString()); } catch (e) { return null; }\n}\n\n// —— 依打擊紀錄重算分數（規則同 halloween/js/game.js） ——\nfunction replay(log) {\n  if (!Array.isArray(log) || log.length > 160) return null;\n  let score = 0, combo = 0, bestCombo = 0, hits = 0, bad = 0, lastT = 0, lastHitT = -1e9;\n  for (const e of log) {\n    const c = e && CHARS[e.k];\n    if (!c || typeof e.t !== 'number' || e.t < lastT || e.t > GAME_MS + 500) return null;\n    lastT = e.t;\n    if (e.x) { if (c[1]) combo = 0; continue; }       // 好角色逃走：連擊歸零\n    if (e.t - lastHitT < 60) return null;             // 人手連點不會這麼快\n    lastHitT = e.t;\n    if (c[1]) {\n      combo++; hits++; bestCombo = Math.max(bestCombo, combo);\n      score += c[0] * (1 + Math.min(3, Math.floor(combo / 5)));\n    } else {\n      combo = 0; bad++;\n      score = Math.max(0, score - c[0]);\n    }\n  }\n  return { score, hits, bad, bestCombo };\n}\n\nconst ses = readSession(req.session);\nlet reason = '';\nlet replayed = null;\nif (!ses || ses.u !== user.sub) reason = 'bad_session';\nelse if (ses.iat < EVENT_START || ses.iat >= EVENT_END) reason = 'out_of_window';\nelse if (!EVENT_TYPES.includes(req.type)) reason = 'wrong_type';\nelse if (rows.some((r) => r.nonce === ses.n)) reason = 'replayed';\nelse if (now - ses.iat < GAME_MS - 2000) reason = 'too_fast';     // 預留網路延遲\nelse if (now - ses.iat > 30 * 60 * 1000) reason = 'bad_session';  // 憑證 30 分鐘內有效\nelse {\n  replayed = replay(req.log);\n  if (!replayed) reason = 'bad_log';\n  else if (replayed.score !== req.score) reason = 'score_mismatch';\n}\n\nconst row = {\n  playedAt: new Date(now).toISOString(),\n  type: String(req.type || ''),\n  userId: user.sub,\n  name: String(user.name || ''),\n  score: Number(req.score) || 0,\n  hits: replayed ? replayed.hits : Number(req.hits) || 0,\n  bad: replayed ? replayed.bad : Number(req.bad) || 0,\n  bestCombo: replayed ? replayed.bestCombo : Number(req.bestCombo) || 0,\n  status: reason ? 'rejected' : 'ok',\n  reason,\n  nonce: ses ? String(ses.n) : '',\n};\n\n// —— 排行榜：同一難度內每人取最高分；同分以伺服器先收到者為準（只有第一位達到最高分的人是第一名） ——\nfunction mask(name) {\n  const c = Array.from(String(name || '').trim());\n  if (!c.length) return '玩家';\n  if (c.length === 1) return c[0] + '*';\n  if (c.length === 2) return c[0] + '*';\n  return c[0] + '*'.repeat(Math.min(c.length - 2, 3)) + c[c.length - 1];\n}\n\nconst best = new Map();\nfor (const r of rows.concat(reason ? [] : [row])) {\n  if (r.status !== 'ok' || r.type !== row.type) continue;\n  const s = Number(r.score) || 0;\n  const cur = best.get(r.userId);\n  if (!cur || s > cur.score || (s === cur.score && r.playedAt < cur.playedAt)) {\n    best.set(r.userId, { userId: r.userId, name: r.name, score: s, playedAt: r.playedAt });\n  }\n}\nconst ranked = [...best.values()].sort((a, b) => b.score - a.score || (a.playedAt < b.playedAt ? -1 : 1));\nconst myIdx = ranked.findIndex((x) => x.userId === user.sub);\n\nconst response = {\n  ok: !reason,\n  reason: reason || undefined,\n  total: ranked.length,\n  me: myIdx >= 0 ? { rank: myIdx + 1, best: ranked[myIdx].score, name: mask(ranked[myIdx].name) } : null,\n  top: ranked.slice(0, 10).map((x, i) => ({ rank: i + 1, name: mask(x.name), score: x.score, me: x.userId === user.sub })),\n};\n\nreturn [{ json: { store: true, row, response } }];\n"
+      },
+      "id": "d9d7d26c-7dce-4e49-9bf1-f249eef06532",
+      "name": "Validate & Rank",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8da6aeb8-19ce-4c9e-b99d-46dcdbbfa71a",
+              "leftValue": "={{ $json.store }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b7c12f48-d6c8-4418-89c5-9ad44514c605",
+      "name": "Should Store?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 只留下成績欄位，交給 Data Table 與 Google Sheets 自動對應欄位\nreturn [{ json: $input.first().json.row }];"
+      },
+      "id": "d61b7556-c41d-4fbf-ac64-607008ca5484",
+      "name": "Pick Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "halloween_scores"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "4b62a45e-0050-44c0-9b3d-edc194355c05",
+      "name": "Insert Score (Data Table)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "scores"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "119f867d-07e9-43fe-baf2-ff2491ff27d5",
+      "name": "Append Score (Google Sheets)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1540,
+        200
+      ],
+      "onError": "continueRegularOutput",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($('Validate & Rank').first().json.response) }}",
+        "options": {}
+      },
+      "id": "b62060a5-5948-49ee-a41e-a23f806941f3",
+      "name": "Respond Score",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1760,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Session Webhook": {
+      "main": [
+        [
+          {
+            "node": "LINE Verify (session)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LINE Verify (session)": {
+      "main": [
+        [
+          {
+            "node": "Sign Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign Session": {
+      "main": [
+        [
+          {
+            "node": "Respond Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Webhook": {
+      "main": [
+        [
+          {
+            "node": "LINE Verify (score)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LINE Verify (score)": {
+      "main": [
+        [
+          {
+            "node": "Get All Scores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Scores": {
+      "main": [
+        [
+          {
+            "node": "Validate & Rank",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Rank": {
+      "main": [
+        [
+          {
+            "node": "Should Store?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Store?": {
+      "main": [
+        [
+          {
+            "node": "Pick Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Row": {
+      "main": [
+        [
+          {
+            "node": "Insert Score (Data Table)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Score (Data Table)": {
+      "main": [
+        [
+          {
+            "node": "Append Score (Google Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Score (Google Sheets)": {
+      "main": [
+        [
+          {
+            "node": "Respond Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

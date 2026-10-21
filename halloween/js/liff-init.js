@@ -76,6 +76,13 @@ window.AppLiff = {
     }
   },
 
+  // 活動排行榜用來證明玩家身分（伺服器會向 LINE 驗證）。
+  // 需在 LIFF 設定的 Scope 勾選 openid，否則回傳 null。
+  idToken() {
+    if (this.standalone || !window.liff || typeof window.liff.getIDToken !== 'function') return null;
+    try { return window.liff.getIDToken() || null; } catch (_) { return null; }
+  },
+
   // 需在 LINE Developers Console 的 LIFF 設定開啟 shareTargetPicker。
   canShare() {
     return !this.standalone && !!window.liff &&
@@ -91,7 +98,7 @@ window.AppLiff = {
 
     const message = {
       type: 'flex',
-      altText: who + ' 在Circle 搗蛋夜拿到 ' + score + ' 分！來挑戰吧 🎃',
+      altText: who + ' 在 Circle 搗蛋夜拿到 ' + score + ' 分！來挑戰吧 🎃',
       contents: {
         type: 'bubble',
         size: 'kilo',

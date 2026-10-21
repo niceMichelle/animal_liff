@@ -12,7 +12,7 @@ window.HALLOWEEN_EVENT = {
 
   // ⬇️ n8n Webhook 的網址前綴（不含最後的 /session、/score），
   //    例如 'https://你的帳號.app.n8n.cloud/webhook/halloween'
-  api: 'YOUR_N8N_WEBHOOK_BASE',
+  api: 'https://circle--n8n--cg72dwtmgvbz.code.run/webhook/halloween',
 };
 
 window.HalloweenEvent = {

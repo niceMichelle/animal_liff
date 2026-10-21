@@ -171,17 +171,19 @@ LINE Webhook → Build Breathing Menu (Code) → LINE Reply (Flex)
    | `name` | String | `status` | String |
    | `score` | Number | `reason` | String |
    | | | `nonce` | String |
-4. **匯入 workflow**：Import from File → `n8n/halloween-leaderboard.json`，然後：
-   - 兩個 Code 節點（**Sign Session**、**Validate & Rank**）的 `SECRET` 換成**同一串**長隨機字串（可用 `openssl rand -base64 32` 產生）。
+4. **建立 Crypto 憑證**（簽發與檢查場次憑證用）：n8n → Credentials → Create → 選 **Crypto** → 在 **Hmac Secret** 填一串長隨機字串（可用 `openssl rand -hex 32` 產生），其他欄位留空，命名例如 `Halloween HMAC`。
+5. **匯入 workflow**：Import from File → `n8n/halloween-leaderboard.json`，然後：
+   - 兩個 Crypto 節點（**Sign Session (HMAC)**、**Check Session (HMAC)**）都選第 4 步的**同一個**憑證。
    - 兩個 **LINE Verify** 節點的 `client_id` 換成第 2 步的 Channel ID。
-   - **Activate** workflow。Code 節點用到 `crypto` 模組：n8n.cloud 可直接使用；自架的 n8n 需設定環境變數 `NODE_FUNCTION_ALLOW_BUILTIN=crypto`。
-5. **Google Sheets 備份（選用）**：建立試算表，分頁命名為 `scores`，第一列填上第 3 步的 11 個欄位名稱；在 **Append Score (Google Sheets)** 節點設定 Google 憑證與試算表網址，再**啟用該節點**（匯入時預設停用，沒設定也不影響排行榜）。
-6. **遊戲端設定** `halloween/js/event.js`：
+   - **Activate** workflow。
+   > 簽章用的是 n8n 內建的 Crypto 節點，Code 節點不需要 `crypto` 模組，n8n.cloud 與自架都能直接執行。
+6. **Google Sheets 備份（選用）**：建立試算表，分頁命名為 `scores`，第一列填上第 3 步的 11 個欄位名稱；在 **Append Score (Google Sheets)** 節點設定 Google 憑證與試算表網址，再**啟用該節點**（匯入時預設停用，沒設定也不影響排行榜）。
+7. **遊戲端設定** `halloween/js/event.js`：
    - `api`：n8n Webhook 的 Production URL 去掉最後的 `/session`，例如 `https://你的帳號.app.n8n.cloud/webhook/halloween`
    - `prize`：禮物名稱（會顯示在橫幅與活動辦法）
-   - 若要改活動期間，`event.js` 的 `start`／`end`／`label` 與兩個 Code 節點的 `EVENT_START`／`EVENT_END` 要一起改。
+   - 若要改活動期間，`event.js` 的 `start`／`end`／`label` 與兩個 Code 節點（**Prepare Session**、**Validate & Rank**）的 `EVENT_START`／`EVENT_END` 要一起改。
    - 若要改計分難度，`event.js` 的 `types` 與 **Validate & Rank** 節點的 `EVENT_TYPES` 要一起改。
-7. **活動辦法**寫在 `halloween/index.html` 的 `buildRules()`（通知期限、個資刪除時間等），請依實際做法調整。
+8. **活動辦法**寫在 `halloween/index.html` 的 `buildRules()`（通知期限、個資刪除時間等），請依實際做法調整。
 
 ### 活動結束後
 1. 打開 Google Sheets（或 n8n 的 `halloween_scores`），篩選 `status = ok`，**分別**篩選 `type = normal` 與 `type = hard`，依 `score` 由高到低、`playedAt` 由早到晚排序，各自的第一列就是該難度的第一名（同分時 `playedAt` 較早者得獎）。

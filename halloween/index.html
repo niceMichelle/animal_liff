@@ -556,8 +556,13 @@
       async function renderRank(summary) {
         el.rankList.innerHTML = '';
         const phase = Ev.phase();
-        if (!Ev.configured() || phase !== 'active') { el.rank.hidden = true; return; }
+        if (!Ev.configured() || phase === 'ended') { el.rank.hidden = true; return; }
         el.rank.hidden = false;
+
+        if (phase === 'upcoming') {
+          el.rankTitle.textContent = '🎁 活動排行榜';
+          return rankMsg('活動期間 ' + EVENT.label + '，開始後' + eventTypeNames() + '難度的成績才會列入排行榜。');
+        }
 
         if (window.AppLiff.standalone) return rankMsg('從 LINE 開啟遊戲，成績才會登上排行榜。');
         el.rankTitle.textContent = '🎁 活動排行榜' + (Ev.counts(currentType) ? ' · ' + DIFFS[currentType].name : '');

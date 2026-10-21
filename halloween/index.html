@@ -594,7 +594,7 @@
       function renderBoard(r) {
         if (!r.ok) rankMsg('這局未列入排行：' + (REJECT_TEXT[r.reason] || '成績紀錄異常') + '。', 'is-warn');
         else if (r.me && r.me.rank === 1) rankMsg('🏆 你目前是第一名！最佳 ' + r.me.best + ' 分', 'is-top');
-        else if (r.me) rankMsg('你目前第 ' + r.me.rank + ' 名・最佳 ' + r.me.best + ' 分（共 ' + r.total + ' 人參加）');
+        else if (r.me) rankMsg('你目前第 ' + r.me.rank + ' 名・最佳 ' + r.me.best + ' 分');
 
         const rows = (r.top || []).slice();
         if (r.me && !rows.some((x) => x.me)) rows.push({ gap: true }, { rank: r.me.rank, name: r.me.name, score: r.me.best, me: true });

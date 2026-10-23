@@ -2,7 +2,7 @@
 // 與其他 App 相同，只是讀 HALLOWEEN_DIFFICULTY。非 LINE 環境（瀏覽器直開）會 fallback 成 standalone。
 
 // ⬇️ 在 LINE Developers Console 為「Circle 搗蛋夜」建立 LIFF App 後，把這裡換成該 LIFF ID。
-const LIFF_ID = 'YOUR_HALLOWEEN_LIFF_ID';
+const LIFF_ID = '2005860539-TAEycLB5';
 
 window.AppLiff = {
   ready: false,

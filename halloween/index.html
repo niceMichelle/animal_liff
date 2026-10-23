@@ -266,6 +266,11 @@
         return EVENT.types.map((t) => '「' + DIFFS[t].name + '」').join('與');
       }
 
+      // 各難度的禮物，例如「「標準」第一名：A、「惡夢」第一名：B」
+      function prizeList() {
+        return EVENT.types.map((t) => '「' + DIFFS[t].name + '」第一名：' + EVENT.prizes[t]).join('、');
+      }
+
       function renderEvent() {
         const phase = Ev.phase();
         if (!Ev.configured() || phase === 'ended') { el.eventBanner.hidden = true; return; }
@@ -273,10 +278,10 @@
         el.eventBanner.hidden = false;
         if (phase === 'upcoming') {
           el.eventHead.textContent = '🎁 ' + EVENT.label + ' 最高分挑戰';
-          el.eventSub.textContent = '活動期間' + names + '難度各自排名，各難度第一名可獲得' + EVENT.prize + '！';
+          el.eventSub.textContent = '活動期間' + names + '難度各自排名。' + prizeList() + '！';
         } else {
-          el.eventHead.textContent = '🎁 ' + names + '第一名各送' + EVENT.prize + '！';
-          let sub = EVENT.label + '，兩個難度分開排名。';
+          el.eventHead.textContent = '🎁 ' + names + '第一名各有好禮！';
+          let sub = prizeList() + '。' + EVENT.label + '，兩個難度分開排名。';
           if (window.AppLiff.standalone) sub += '請從 LINE 開啟遊戲才能登上排行榜。';
           else if (!Ev.counts(currentType)) sub += '目前選的難度不計入活動喔。';
           el.eventSub.textContent = sub;
@@ -289,7 +294,7 @@
           '活動期間：' + EVENT.label + '（台灣時間），以伺服器收到成績的時間為準。',
           '計分難度：' + names + '，兩個難度分開排名；每位玩家在各難度取自己的最高分。',
           '排行榜同分時，依達到該分數的先後排名，越早達到者名次越前面（以伺服器收到成績的時間為準）。',
-          '各難度僅由該難度排行榜第一名，也就是「第一位達到最高分」的玩家獲得' + EVENT.prize + '一份；之後才達到相同分數者不得獎。',
+          '各難度僅由該難度排行榜第一名，也就是「第一位達到最高分」的玩家獲得該難度的禮物一份（' + prizeList() + '）；之後才達到相同分數者不得獎。',
           '每人限領一份禮物：若同一位玩家同時是兩個難度的第一名，只頒發「' + DIFFS[EVENT.prizeOrder[0]].name + '」難度的禮物，不提供選擇；「' + DIFFS[EVENT.prizeOrder[1]].name + '」難度的禮物改由該難度第二名遞補。',
           '須在 LINE 中開啟遊戲，並加入本官方帳號好友，以便通知得獎。',
           '得獎者於活動結束後 7 天內以 LINE 訊息通知。',

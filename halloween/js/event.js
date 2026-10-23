@@ -8,7 +8,11 @@ window.HALLOWEEN_EVENT = {
   label: '10/25（六）～ 10/31（五）',
   types: ['normal', 'hard'],           // 計入活動的難度，各自排名、各送第一名
   prizeOrder: ['hard', 'normal'],      // 每人限領一份：同時是多個難度第一名時，依此順序只頒第一個，其餘由下一名遞補
-  prize: 'Circle暖心戒(‘惡夢’等級) 或 Jellycat歡樂小蜜蜂16cm(‘標準’等級)',              // ⬅️ 換成實際的禮物名稱
+  // ⬇️ 各難度第一名的禮物名稱（會顯示在橫幅與活動辦法）
+  prizes: {
+    normal: 'JELLYCAT歡樂小蜜蜂(16cm)',            // ⬅️ 「標準」第一名的禮物
+    hard: 'Circle暖心戒',              // ⬅️ 「惡夢」第一名的禮物
+  },
 
   // ⬇️ n8n Webhook 的網址前綴（不含最後的 /session、/score），
   //    例如 'https://你的帳號.app.n8n.cloud/webhook/halloween'

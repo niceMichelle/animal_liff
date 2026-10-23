@@ -10,7 +10,7 @@ window.HALLOWEEN_EVENT = {
   prizeOrder: ['hard', 'normal'],      // 每人限領一份：同時是多個難度第一名時，依此順序只頒第一個，其餘由下一名遞補
   // ⬇️ 各難度第一名的禮物名稱（會顯示在橫幅與活動辦法）
   prizes: {
-    normal: 'JELLYCAT歡樂小蜜蜂',            // ⬅️ 「標準」第一名的禮物
+    normal: 'JELLYCAT歡樂小蜜蜂(16cm)',            // ⬅️ 「標準」第一名的禮物
     hard: 'Circle暖心戒',              // ⬅️ 「惡夢」第一名的禮物
   },
 
